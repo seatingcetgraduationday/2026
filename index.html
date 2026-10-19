@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CET Graduation Day 2026 — Seating Arrangement & Ceremony Flow</title>
+  <title>CET Graduation Day 2026 — Seating Arrangement</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -101,7 +101,7 @@
     }
 
     .container {
-      max-width: 1220px;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 24px 16px;
     }
@@ -258,23 +258,27 @@
     .ceremony-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
     .wave-pill {
-      padding: 7px 12px;
+      padding: 6px 11px;
       border-radius: 8px;
       font-size: 11.5px;
       font-weight: 700;
-      letter-spacing: 0.04em;
       border: 1px solid #d5cfc2;
       background: #fff;
       cursor: pointer;
       transition: all 0.15s;
     }
-    .wave-pill.active-blue { background: var(--wave-blue); color: #fff; border-color: var(--wave-blue); }
-    .wave-pill.active-green { background: var(--wave-green); color: #fff; border-color: var(--wave-green); }
-    .wave-pill.active-red { background: var(--wave-red); color: #fff; border-color: var(--wave-red); }
+    .wave-pill:hover {
+      background: #f1efe8;
+    }
+    .wave-pill.active-wave {
+      background: var(--navy-dark);
+      color: #fff;
+      border-color: var(--navy-dark);
+    }
 
     /* Hall Viewport */
     .hall-viewport {
@@ -292,17 +296,17 @@
       transform-origin: top left;
       transition: transform 0.15s ease-out;
       display: inline-block;
-      min-width: 1250px;
+      min-width: 1260px;
       padding: 12px 28px 34px 28px;
     }
 
-    /* Architectural Stage & Entries (Matching Video & Excel) */
+    /* Architectural Stage, Wait Areas & Entries */
     .hall-top-architecture {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       position: relative;
-      height: 175px;
+      height: 185px;
       margin-bottom: 18px;
     }
     .entry-box {
@@ -312,40 +316,74 @@
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.08em;
-      padding: 7px 48px;
+      padding: 7px 44px;
       border-radius: 4px;
       text-transform: uppercase;
     }
-    .stage-wrapper {
+    .stage-cluster {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
       top: 4px;
       display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    /* Wait Area before common stage entry */
+    .wait-area-box {
+      width: 96px;
+      height: 86px;
+      background: #fef9c3;
+      border: 1.5px dashed #ca8a04;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6px;
+      font-size: 8px;
+      font-weight: 700;
+      color: #854d0e;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.25;
+      z-index: 2;
+    }
+    .stage-side-steps {
+      width: 24px;
+      height: 44px;
+      background: repeating-linear-gradient(90deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
+      border: 1.5px solid #7f97b2;
+    }
+    .stage-wrapper {
+      display: flex;
       flex-direction: column;
       align-items: center;
     }
     .stage-main-rect {
-      width: 560px;
+      width: 520px;
       height: 132px;
-      background: #f5f7fa;
-      border: 1.5px solid #9ab0c7;
-      border-radius: 6px;
+      background: var(--navy-card);
+      border: 1.5px solid #152542;
+      border-radius: 8px;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       padding: 0 24px 10px 24px;
-      box-shadow: 0 4px 14px rgba(21,37,66,0.06);
+      box-shadow: 0 4px 14px rgba(21,37,66,0.18);
+      color: #fff;
     }
     .stage-header-pill {
-      background: var(--navy-dark);
-      color: #fff;
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-family: 'Fraunces', serif;
       font-weight: 700;
       font-size: 11px;
-      letter-spacing: 0.1em;
-      padding: 6px 36px;
+      letter-spacing: 0.08em;
+      padding: 5px 32px;
       border-radius: 0 0 6px 6px;
       text-transform: uppercase;
       text-align: center;
@@ -353,7 +391,7 @@
     .stage-led-tag {
       font-size: 8.5px;
       letter-spacing: 0.14em;
-      color: #697b92;
+      color: #9ab0d4;
       font-weight: 700;
       margin-top: -6px;
     }
@@ -362,13 +400,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 42px;
+      padding: 0 36px;
       margin-top: 4px;
     }
     .reception-desk {
-      border: 1.5px solid #6c88a6;
-      background: #ffffff;
-      border-radius: 4px;
+      border: 1.5px solid #e6b333;
+      background: rgba(255,255,255,0.08);
+      border-radius: 6px;
       padding: 5px 14px;
       text-align: center;
       position: relative;
@@ -377,19 +415,19 @@
       font-size: 8.5px;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #2c4460;
+      color: #ffffff;
       text-transform: uppercase;
       line-height: 1.25;
     }
     .stage-floor-label {
       font-size: 9px;
       letter-spacing: 0.1em;
-      color: #697b92;
+      color: #b0bfd8;
       font-weight: 700;
       text-transform: uppercase;
     }
     .center-return-stairs {
-      width: 72px;
+      width: 68px;
       height: 22px;
       background: repeating-linear-gradient(180deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
       border: 1.5px solid #7f97b2;
@@ -398,7 +436,7 @@
     }
     .return-stairs-label {
       position: absolute;
-      left: 80px;
+      left: 74px;
       top: 4px;
       font-size: 8.5px;
       font-weight: 700;
@@ -413,7 +451,7 @@
       font-weight: 700;
       letter-spacing: 0.08em;
       color: #5e6b7c;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       text-transform: uppercase;
     }
 
@@ -526,7 +564,26 @@
       transform: scale(1.2);
     }
     .seat-active-wave {
-      box-shadow: 0 0 0 2px #1e64b4;
+      box-shadow: 0 0 0 2px #152542;
+    }
+
+    /* Corner Occupancy Status Dot (Red = Unoccupied, Green = Filled) */
+    .occ-dot {
+      position: absolute;
+      top: 1.5px;
+      right: 1.5px;
+      width: 4.5px;
+      height: 4.5px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .occ-dot.filled {
+      background-color: #16a34a;
+      box-shadow: 0 0 0 1px #ffffff;
+    }
+    .occ-dot.unoccupied {
+      background-color: #ef4444;
+      box-shadow: 0 0 0 1px #ffffff;
     }
 
     /* Department Colors */
@@ -543,7 +600,7 @@
     .seat-EC  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
 
     .seat-assigned {
-      filter: saturate(1.45) contrast(1.08);
+      filter: saturate(1.4) contrast(1.06);
       font-weight: 800;
     }
     .seat-empty-slot {
@@ -557,7 +614,7 @@
       color: #ffffff !important;
     }
 
-    /* Passage Columns (3 ft & 6 ft Center Passage) */
+    /* Passage Columns */
     .passage-col {
       width: 20px;
       background: #f4f1e8;
@@ -585,7 +642,7 @@
       text-transform: uppercase;
     }
 
-    /* SVG Overlay for Walk & Convocation Ceremony Animation */
+    /* SVG Overlay for Walk Animation */
     #walkOverlaySvg {
       position: absolute;
       top: 0;
@@ -691,7 +748,7 @@
       gap: 8px;
     }
 
-    /* Walk Status Banner (Matches Video Bottom Bar) */
+    /* Walk Status Banner */
     .walk-banner-card {
       border: 2px solid var(--wave-blue);
       background: #ffffff;
@@ -765,7 +822,7 @@
       text-align: left;
     }
     .config-table input {
-      width: 64px;
+      width: 68px;
       padding: 5px 8px;
       border: 1px solid #cbd5e1;
       border-radius: 6px;
@@ -781,7 +838,7 @@
       <div class="brand-icon">🎓</div>
       <div>
         <div class="brand-title">CET Graduation Day 2026</div>
-        <div class="brand-sub">Seating arrangement &amp; Convocation flow</div>
+        <div class="brand-sub">Seating arrangement</div>
       </div>
     </div>
     <div class="nav-tabs">
@@ -795,7 +852,7 @@
     <div class="eyebrow">CERTIFICATE DISTRIBUTION · TWO STATIONS IN PARALLEL</div>
     <h1 class="hero-title">Find your seat for Graduation Day</h1>
     <p class="hero-desc">
-      Search your name or seat number to light up your chair on the hall map. Tap any seat to see who sits there, then watch how your row forms a queue in the outer passage, walks up the curved ramp to the stage, receives certificates, and returns down the center steps.
+      Search your name or seat number to light up your chair on the hall map. Tap any seat to see who sits there, then watch how your row walks to the wait area, enters the stage, receives certificates, and returns.
     </p>
 
     <!-- Search Bar -->
@@ -810,23 +867,25 @@
     <!-- Legend -->
     <div class="legend-card">
       <div class="legend-grid">
-        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (12)</div>
-        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (139)</div>
-        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (32)</div>
-        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS (162)</div>
-        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA (35)</div>
-        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE (201)</div>
-        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME (206)</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (89)</div>
-        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA (107)</div>
-        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC (176)</div>
+        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD</div>
+        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE</div>
+        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC</div>
+        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS</div>
+        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA</div>
+        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE</div>
+        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch</div>
+        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA</div>
+        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC</div>
         <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty</div>
+        <div class="legend-item"><span class="dot" style="background:#16a34a"></span> Seat Filled (Green corner dot)</div>
+        <div class="legend-item"><span class="dot" style="background:#ef4444"></span> Unoccupied (Red corner dot)</div>
         <div class="legend-item"><span class="dot dot-defective">✕</span> Defective</div>
         <div class="legend-item"><span class="dot dot-empty"></span> Kept empty</div>
       </div>
     </div>
 
-    <!-- Toolbar: Zoom & Full Ceremony Wave Simulator (From Video) -->
+    <!-- Toolbar: Zoom & Department Wave Simulator -->
     <div class="toolbar">
       <div class="zoom-controls">
         <button class="zoom-btn" onclick="adjustZoom(-0.12)">−</button>
@@ -835,14 +894,18 @@
         <span id="seatedCounter" style="font-size:13px; color:var(--text-muted); margin-left:8px;">0 students seated</span>
       </div>
 
-      <div class="ceremony-bar">
-        <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Simulate Waves:</span>
-        <button id="waveBtn1" class="wave-pill" onclick="startWaveSimulation(1)">01 Blue · Front</button>
-        <button id="waveBtn2" class="wave-pill" onclick="startWaveSimulation(2)">02 Blue · Last</button>
-        <button id="waveBtn3" class="wave-pill" onclick="startWaveSimulation(3)">03 Green · Front</button>
-        <button id="waveBtn4" class="wave-pill" onclick="startWaveSimulation(4)">04 Green · Last</button>
-        <button id="waveBtn5" class="wave-pill" onclick="startWaveSimulation(5)">05 Red · Front</button>
-        <button id="waveBtn6" class="wave-pill" onclick="startWaveSimulation(6)">06 Red · Last</button>
+      <div class="ceremony-bar" id="deptWaveBar">
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Department Wave:</span>
+        <button class="wave-pill" onclick="startDepartmentWave('PhD', this)">PhD</button>
+        <button class="wave-pill" onclick="startDepartmentWave('EE', this)">EE</button>
+        <button class="wave-pill" onclick="startDepartmentWave('PTDC', this)">PTDC</button>
+        <button class="wave-pill" onclick="startDepartmentWave('CS', this)">CS</button>
+        <button class="wave-pill" onclick="startDepartmentWave('MCA', this)">MCA</button>
+        <button class="wave-pill" onclick="startDepartmentWave('CE', this)">CE</button>
+        <button class="wave-pill" onclick="startDepartmentWave('ME', this)">ME</button>
+        <button class="wave-pill" onclick="startDepartmentWave('Arch', this)">Arch</button>
+        <button class="wave-pill" onclick="startDepartmentWave('MBA', this)">MBA</button>
+        <button class="wave-pill" onclick="startDepartmentWave('EC', this)">EC</button>
       </div>
     </div>
 
@@ -850,46 +913,61 @@
     <div id="walkStatusCard" class="walk-banner-card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div>
-          <div id="walkEyebrow" class="walk-eyebrow">STAGE 1 / 6 · 01 BLUE · FRONT ROWS</div>
+          <div id="walkEyebrow" class="walk-eyebrow">DEPARTMENT WAVE</div>
           <div id="walkStepTitle" class="serif-title" style="font-size:18px; font-weight:700;">
-            Forming the queue in the outer passage &rarr; Receive certificate &rarr; Return to your own seat
+            Walking to Wait Area &rarr; Stage Reception &rarr; Returning via center steps
           </div>
           <div id="walkSubtext" style="font-size:13px; color:var(--text-muted); margin-top:2px;">
-            Two certificate stations operating in parallel · Faculty rows remain seated
+            Next row starts automatically when half of the previous row exits the stage
           </div>
         </div>
-        <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:7px 14px;">Stop Simulation ✕</button>
+        <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:7px 14px;">Stop ✕</button>
       </div>
     </div>
 
     <!-- Hall Map Viewport -->
     <div class="hall-viewport" id="hallViewport">
       <div class="hall-canvas" id="hallCanvas">
-        <!-- SVG Overlay for Convocation Ceremony Walk Paths & Moving Students -->
+        <!-- SVG Overlay for Walk Paths -->
         <svg id="walkOverlaySvg"></svg>
 
-        <!-- Stage & Entries Top Architecture -->
+        <!-- Stage, Common Wait Areas & Entries -->
         <div class="hall-top-architecture">
           <div class="entry-box">ENTRY (29 ft)</div>
 
-          <div class="stage-wrapper" id="stageWrapper">
-            <div class="stage-main-rect" id="stageMainRect">
-              <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE 54 ft × 22 ft</div>
-              <div class="stage-led-tag">LED WALL</div>
-
-              <div class="stage-receptions-row">
-                <div class="reception-desk" id="station1Desk">
-                  <div class="reception-desk-title">CERTIFICATE<br>RECEPTION 1</div>
-                </div>
-                <div class="reception-desk" id="station2Desk">
-                  <div class="reception-desk-title">CERTIFICATE<br>RECEPTION 2</div>
-                </div>
-              </div>
-
-              <div class="stage-floor-label">MAIN STAGE</div>
+          <div class="stage-cluster" id="stageCluster">
+            <!-- Left Common Stage Entry & Wait Area -->
+            <div class="wait-area-box" id="leftWaitArea">
+              WAIT AREA<br><span style="font-size:7px; font-weight:600;">(Until Name Called)</span>
             </div>
-            <div class="center-return-stairs" id="centerReturnStairs">
-              <span class="return-stairs-label">RETURN STEPS</span>
+            <div class="stage-side-steps" id="leftStageSteps"></div>
+
+            <!-- Main Stage -->
+            <div class="stage-wrapper" id="stageWrapper">
+              <div class="stage-main-rect" id="stageMainRect">
+                <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE 54 ft × 22 ft</div>
+                <div class="stage-led-tag">LED WALL</div>
+
+                <div class="stage-receptions-row">
+                  <div class="reception-desk" id="station1Desk">
+                    <div class="reception-desk-title">CERTIFICATE<br>STATION 1</div>
+                  </div>
+                  <div class="reception-desk" id="station2Desk">
+                    <div class="reception-desk-title">CERTIFICATE<br>STATION 2</div>
+                  </div>
+                </div>
+
+                <div class="stage-floor-label">MAIN STAGE</div>
+              </div>
+              <div class="center-return-stairs" id="centerReturnStairs">
+                <span class="return-stairs-label">RETURN STEPS</span>
+              </div>
+            </div>
+
+            <!-- Right Common Stage Entry & Wait Area -->
+            <div class="stage-side-steps" id="rightStageSteps"></div>
+            <div class="wait-area-box" id="rightWaitArea">
+              WAIT AREA<br><span style="font-size:7px; font-weight:600;">(Until Name Called)</span>
             </div>
           </div>
 
@@ -899,36 +977,27 @@
         <div class="front-area-banner">FRONT AREA — 12 ft WIDE × 114 ft LONG · ROWS 3 ft WIDE</div>
 
         <!-- 6 Blocks + Passages Container -->
-        <div class="blocks-wrapper" id="blocksWrapper">
-          <!-- Dynamically populated by JS -->
-        </div>
+        <div class="blocks-wrapper" id="blocksWrapper"></div>
       </div>
     </div>
 
     <!-- Selected Seat Details Card -->
     <div id="seatInfoCard" class="info-card info-card-empty">
       <h3 class="serif-title">Tap any seat</h3>
-      <p>See the student's name, branch and seat number, or watch how their row walks to the stage and back.</p>
+      <p>See the student's name, branch, PG stream and seat number, or watch how their row walks to the stage and back.</p>
     </div>
 
-    <!-- How Distribution Works Card (With Requested Note Additions) -->
+    <!-- How Distribution Works Card -->
     <div class="info-card">
       <h3 class="serif-title" style="font-size:19px; margin-bottom:12px;">How distribution works</h3>
       <p style="font-size:14.5px; color:#3b4656; margin-bottom:10px;">
-        <strong>Two stations run together in parallel:</strong> Left wing (Blocks 1–3) receives certificates at <strong>Certificate Reception 1</strong>, while Right wing (Blocks 4–6) receives certificates simultaneously at <strong>Certificate Reception 2</strong>.
+        <strong>Two stations run together in parallel:</strong> Blocks 1–3 receive at <strong>Certificate Station 1</strong> (via the Left Wait Area), and Blocks 4–6 receive at <strong>Certificate Station 2</strong> (via the Right Wait Area).
       </p>
       <p style="font-size:14.5px; color:#3b4656; margin-bottom:10px;">
-        <strong>Order of movement (Outer blocks first, followed by inner):</strong>
-        <span style="color:var(--wave-blue); font-weight:700;">BLUE</span> outer blocks (Blocks 1 &amp; 6) go first, followed by
-        <span style="color:var(--wave-green); font-weight:700;">GREEN</span> middle blocks (Blocks 2 &amp; 5), and finally
-        <span style="color:var(--wave-red); font-weight:700;">RED</span> inner blocks (Blocks 3 &amp; 4).
-        Within every block, the <strong>first student row goes first</strong>, followed sequentially by the next rows (`BLUE FRONT → BLUE LAST → GREEN FRONT → GREEN LAST → RED FRONT → RED LAST`).
+        <strong>Order of movement:</strong> Outer blocks (<span style="color:var(--wave-blue); font-weight:700;">Blocks 1 &amp; 6</span>) proceed first, followed by middle blocks (<span style="color:var(--wave-green); font-weight:700;">Blocks 2 &amp; 5</span>), and inner blocks (<span style="color:var(--wave-red); font-weight:700;">Blocks 3 &amp; 4</span>). Within each block/department, the <strong>first row goes first</strong>, followed by the next row as soon as half of the previous row exits the stage.
       </p>
-      <p style="font-size:14.5px; color:#3b4656; margin-bottom:10px;">
-        <strong>Circulation Path:</strong> Students step out into their block's <strong>outer passage</strong>, walk forward and up the curved side stage entry to the Certificate Reception desk, then walk down the <strong>center return steps</strong>, return along their block's <strong>inner passage</strong>, and file back into their own seats.
-      </p>
-      <p style="font-size:13.5px; color:#475569; background:#f1f5f9; padding:10px 14px; border-radius:10px;">
-        <strong>Note on Faculty Seats:</strong> Faculty rows (Row 1 at the front and Rows 24–25 at the back) remain seated throughout the ceremony; stage movement is disabled for faculty.
+      <p style="font-size:14.5px; color:#3b4656; margin-bottom:0;">
+        <strong>Untangled Circulation Path:</strong> Students step out into their block's <strong>outer passage</strong>, walk up to the <strong>Wait Area</strong> until their name is called, ascend the side stage steps to receive their certificate, come down the <strong>center return steps</strong>, and walk back down their block's <strong>inner passage</strong> to their seats.
       </p>
     </div>
   </main>
@@ -940,7 +1009,7 @@
       <div class="eyebrow">PROTECTED ACCESS</div>
       <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Faculty Sign-In</h2>
       <p style="font-size:14px; color:var(--text-muted); margin-bottom:18px;">
-        Enter the graduation password to generate/upload department Excel sheets, mark seats defective or empty, or modify block rows, seats per row, and department counts.
+        Enter the graduation password to download/upload department Excel sheets (with Branch &amp; PG Stream), mark seats defective or empty, or adjust block dimensions.
       </p>
       <div class="form-group">
         <label>Password</label>
@@ -964,7 +1033,7 @@
         <div class="info-card" style="margin-top:0;">
           <h3 class="serif-title" style="font-size:19px; margin-bottom:8px;">1. Department Excel Upload</h3>
           <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px;">
-            Select a department to generate an Excel sheet pre-populated with its exact seat numbers. Fill in student names and upload.
+            Select a department to generate an Excel template containing <strong>Seat_Number, Department, Branch, Stream_PG (for PG if any), Student_Name, and Register_No</strong>. Fill it and upload back.
           </p>
           <label style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">Select Department</label>
           <div class="dept-pills" id="deptButtonsContainer"></div>
@@ -1009,20 +1078,19 @@
         <div class="info-card" style="margin-top:0; grid-column: 1 / -1;">
           <h3 class="serif-title" style="font-size:19px; margin-bottom:6px;">3. Customize Block Rows, Seats per Row &amp; Department Seat Counts</h3>
           <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">
-            If the number of rows or seats per row changes, update the values below and click <strong>Apply &amp; Rebuild Hall Map</strong>.
+            All rows face the stage. Adjust the number of rows, seats per row (columns), or faculty seats for each block below.
           </p>
 
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
             <div>
-              <h4 style="font-size:12px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Block Dimensions (Rows &amp; Seats per Row)</h4>
+              <h4 style="font-size:12px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Block Dimensions (All Rows Same Direction)</h4>
               <table class="config-table" id="blockConfigTable">
                 <thead>
                   <tr>
                     <th>Block</th>
                     <th>Total Rows</th>
                     <th>Seats / Row</th>
-                    <th>Front Fac. Rows</th>
-                    <th>Back Fac. Rows</th>
+                    <th>Faculty Seats</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -1055,7 +1123,7 @@
 
   <script>
     /********************************************************************
-     * 1. EXACT EXCEL SEATING CONFIGURATION (`GRADUATION DAY - Seating Arrangement.xlsx`)
+     * 1. STATE & EXACT EXCEL SEATING CONFIGURATION
      ********************************************************************/
     const FACULTY_PASSWORD = "CET_Graduation@2026";
     let isFacultyUnlocked = false;
@@ -1075,24 +1143,18 @@
       Arch: { name: "Architecture (Arch)", color: "#dc2626" },
       MBA:  { name: "Master of Business Administration (MBA)", color: "#c026d3" },
       EC:   { name: "Electronics & Communication Engineering (EC)", color: "#4f46e5" },
-      FAC:  { name: "Faculty Member", color: "#64748b" }
+      FAC:  { name: "Faculty", color: "#64748b" }
     };
 
-    // Matches the exact counts from GRADUATION DAY - Seating Arrangement.xlsx:
-    // Block 1 (8 cols): Row 1 Fac, PhD (1-12), EE (1-139), PTDC (1-32)
-    // Block 2 (9 cols): Row 1 Fac, CS (1-162), MCA (1-35), Rows 24-25 Fac
-    // Block 3 (9 cols): Row 1 Fac, CE (1-201), Row 25 Fac
-    // Block 4 (9 cols): Row 1 Fac, ME (1-206), Row 25 Fac
-    // Block 5 (9 cols): Row 1 Fac, Arch (1-89), MBA (1-107), Rows 24-25 Fac
-    // Block 6 (8 cols): Row 1 Fac, EC (1-176), Rows 24-25 Fac
+    // Unified facultySeats count per block (Row 1 is always faculty; remaining faculty seats go to back rows)
     const DEFAULT_LAYOUT = {
       blocks: [
-        { id: 1, rows: 25, cols: 8, frontFacultyRows: 1, backFacultyRows: 0 },
-        { id: 2, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 2 },
-        { id: 3, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 1 },
-        { id: 4, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 1 },
-        { id: 5, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 2 },
-        { id: 6, rows: 25, cols: 8, frontFacultyRows: 1, backFacultyRows: 2 }
+        { id: 1, rows: 25, cols: 8, facultySeats: 8 },
+        { id: 2, rows: 25, cols: 9, facultySeats: 27 },
+        { id: 3, rows: 25, cols: 9, facultySeats: 18 },
+        { id: 4, rows: 25, cols: 9, facultySeats: 18 },
+        { id: 5, rows: 25, cols: 9, facultySeats: 27 },
+        { id: 6, rows: 25, cols: 8, facultySeats: 24 }
       ],
       allocations: [
         { dept: "PhD",  block: 1, count: 12 },
@@ -1108,31 +1170,35 @@
       ]
     };
 
-    let layoutConfig = JSON.parse(localStorage.getItem("cet2026_layout_v3")) || JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
-    let studentRoster = JSON.parse(localStorage.getItem("cet2026_roster_v3")) || {};
-    let seatOverrides = JSON.parse(localStorage.getItem("cet2026_overrides_v3")) || {};
+    let layoutConfig = JSON.parse(localStorage.getItem("cet2026_layout_v4")) || JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
+    // studentRoster[code] = { name, regNo, branch, stream }
+    let studentRoster = JSON.parse(localStorage.getItem("cet2026_roster_v4")) || {};
+    let seatOverrides = JSON.parse(localStorage.getItem("cet2026_overrides_v4")) || {};
 
     let seatsByCoord = {};
     let seatsByCode = {};
+    // Track rows belonging to each department for wave simulation
+    let deptRowsMap = {};
 
     function saveAllStorage() {
-      localStorage.setItem("cet2026_layout_v3", JSON.stringify(layoutConfig));
-      localStorage.setItem("cet2026_roster_v3", JSON.stringify(studentRoster));
-      localStorage.setItem("cet2026_overrides_v3", JSON.stringify(seatOverrides));
+      localStorage.setItem("cet2026_layout_v4", JSON.stringify(layoutConfig));
+      localStorage.setItem("cet2026_roster_v4", JSON.stringify(studentRoster));
+      localStorage.setItem("cet2026_overrides_v4", JSON.stringify(seatOverrides));
     }
 
     /********************************************************************
-     * 2. BUILD & RENDER SEATING MAP WITH PASSAGES
+     * 2. BUILD & RENDER SEATING MAP
      ********************************************************************/
     function buildAndRenderMap() {
       seatsByCoord = {};
       seatsByCode = {};
+      deptRowsMap = {};
       const wrapper = document.getElementById("blocksWrapper");
       wrapper.innerHTML = "";
 
       const maxRows = Math.max(...layoutConfig.blocks.map(b => b.rows));
 
-      // Row Numbers Column (1 to 25)
+      // Row Numbers Column
       const rowNumCol = document.createElement("div");
       rowNumCol.className = "row-numbers-col";
       for (let r = 1; r <= maxRows; r++) {
@@ -1153,7 +1219,7 @@
 
         const header = document.createElement("div");
         header.className = "block-header";
-        header.textContent = `BLOCK ${blk.id} (${blk.cols} SEATS/ROW)`;
+        header.textContent = `BLOCK ${blk.id}`;
         blockEl.appendChild(header);
 
         const body = document.createElement("div");
@@ -1168,16 +1234,23 @@
         const blockAllocs = layoutConfig.allocations.filter(a => Number(a.block) === blk.id);
         const deptRowSpans = {};
 
+        // Calculate front and back faculty rows from total facultySeats
+        const totalFacSeats = blk.facultySeats ?? 8;
+        const frontFacSeats = Math.min(blk.cols, totalFacSeats);
+        const backFacSeats = Math.max(0, totalFacSeats - frontFacSeats);
+        const backFacRowsCount = Math.ceil(backFacSeats / blk.cols);
+
         let currentAllocIdx = 0;
         let currentDeptCounter = 1;
+        let backFacAssigned = 0;
 
         for (let r = 1; r <= blk.rows; r++) {
           const rowEl = document.createElement("div");
           rowEl.className = "seat-row";
           rowEl.id = `row-el-B${blk.id}-R${r}`;
 
-          const isFrontFaculty = r <= blk.frontFacultyRows;
-          const isBackFaculty = r > (blk.rows - blk.backFacultyRows);
+          const isFrontFacultyRow = (r === 1 && frontFacSeats > 0);
+          const isBackFacultyRow = (r > blk.rows - backFacRowsCount);
           const activeAlloc = blockAllocs[currentAllocIdx];
 
           for (let c = 1; c <= blk.cols; c++) {
@@ -1193,12 +1266,18 @@
               code: null
             };
 
-            if (isFrontFaculty || isBackFaculty) {
+            if (isFrontFacultyRow && c <= frontFacSeats) {
               seatObj.type = "faculty";
               seatObj.dept = "FAC";
               seatObj.num = "F";
               seatObj.code = `FAC B${blk.id}-R${r}-C${c}`;
-            } else if (activeAlloc) {
+            } else if (isBackFacultyRow && backFacAssigned < backFacSeats) {
+              seatObj.type = "faculty";
+              seatObj.dept = "FAC";
+              seatObj.num = "F";
+              seatObj.code = `FAC B${blk.id}-R${r}-C${c}`;
+              backFacAssigned++;
+            } else if (!isFrontFacultyRow && !isBackFacultyRow && activeAlloc) {
               if (currentDeptCounter <= activeAlloc.count) {
                 seatObj.type = "student";
                 seatObj.dept = activeAlloc.dept;
@@ -1210,6 +1289,12 @@
                 } else {
                   deptRowSpans[activeAlloc.dept].endRow = r;
                 }
+
+                if (!deptRowsMap[activeAlloc.dept]) deptRowsMap[activeAlloc.dept] = [];
+                if (!deptRowsMap[activeAlloc.dept].some(item => item.block === blk.id && item.row === r)) {
+                  deptRowsMap[activeAlloc.dept].push({ block: blk.id, row: r });
+                }
+
                 currentDeptCounter++;
               } else {
                 seatObj.type = "empty";
@@ -1226,7 +1311,7 @@
             rowEl.appendChild(createSeatDOM(seatObj));
           }
 
-          if (!isFrontFaculty && !isBackFaculty && activeAlloc && currentDeptCounter > activeAlloc.count) {
+          if (!isFrontFacultyRow && !isBackFacultyRow && activeAlloc && currentDeptCounter > activeAlloc.count) {
             currentAllocIdx++;
             currentDeptCounter = 1;
           }
@@ -1256,7 +1341,6 @@
         blockEl.appendChild(body);
         wrapper.appendChild(blockEl);
 
-        // Passages between blocks (6 ft in center between Block 3 and 4, 3 ft elsewhere)
         if (idx < layoutConfig.blocks.length - 1) {
           const isCenter = blk.id === 3;
           wrapper.appendChild(
@@ -1305,10 +1389,16 @@
         el.textContent = "F";
       } else {
         el.classList.add(`seat-${seatObj.dept}`);
-        if (studentRoster[seatObj.code]) {
+        const isFilled = Boolean(studentRoster[seatObj.code]?.name);
+        if (isFilled) {
           el.classList.add("seat-assigned");
         }
         el.textContent = seatObj.num;
+
+        // Corner dot: Green if filled, Red if unoccupied
+        const dot = document.createElement("span");
+        dot.className = `occ-dot ${isFilled ? 'filled' : 'unoccupied'}`;
+        el.appendChild(dot);
       }
 
       if (selectedSeatKey === seatObj.coordKey) {
@@ -1325,7 +1415,7 @@
     }
 
     /********************************************************************
-     * 3. SEAT SELECTION & DETAIL CARD (NO STAGE WALK FOR FACULTY)
+     * 3. SEAT SELECTION & DETAIL CARD
      ********************************************************************/
     function selectSeat(coordKey, autoScroll = false) {
       stopWalkAnimation();
@@ -1358,33 +1448,20 @@
 
       const assignedData = seatObj.code ? studentRoster[seatObj.code] : null;
       let titleText = "Not yet assigned";
-      if (isFaculty) titleText = "Faculty Seat";
+      if (isFaculty) titleText = "Faculty";
       else if (isDefective) titleText = "Defective Chair";
       else if (isEmpty) titleText = "Kept Empty";
       else if (assignedData && assignedData.name) titleText = assignedData.name;
 
       const stationNum = seatObj.block <= 3 ? 1 : 2;
-      let waveDesc = "Blue Wave — Outer Blocks (1st to move)";
-      let waveColor = "var(--wave-blue)";
-      if (seatObj.block === 2 || seatObj.block === 5) {
-        waveDesc = "Green Wave — Middle Blocks (2nd to move)";
-        waveColor = "var(--wave-green)";
-      } else if (seatObj.block === 3 || seatObj.block === 4) {
-        waveDesc = "Red Wave — Inner Blocks (3rd to move)";
-        waveColor = "var(--wave-red)";
-      }
+      const branchDisplay = assignedData?.branch || BRANCH_META[seatObj.dept]?.name || "Unallocated";
+      const streamDisplay = assignedData?.stream ? `<div class="meta-item-sub">Stream (PG): ${assignedData.stream}</div>` : "";
 
       let actionButtonsHTML = "";
-      if (isFaculty) {
-        actionButtonsHTML = `
-          <div style="background:#f1f5f9; color:#334155; padding:10px 16px; border-radius:10px; font-size:13.5px; font-weight:600;">
-            Faculty members remain seated during certificate distribution (stage movement disabled).
-          </div>
-        `;
-      } else if (!isEmpty && !isDefective) {
+      if (!isFaculty && !isEmpty && !isDefective) {
         actionButtonsHTML = `
           <button class="btn-outline" onclick="highlightMySeat('${seatObj.coordKey}')">This is my seat</button>
-          <button class="btn-primary" onclick="animateSingleRowWalk(${seatObj.block}, ${seatObj.row}, '${seatObj.coordKey}')">👣 Show row walk to stage</button>
+          <button class="btn-primary" onclick="animateSingleRowWalk(${seatObj.block}, ${seatObj.row}, '${seatObj.coordKey}')">👣 Show walk to stage</button>
         `;
       }
 
@@ -1412,8 +1489,9 @@
 
         <div class="meta-grid">
           <div>
-            <div class="meta-item-label">🎖 BRANCH</div>
-            <div class="meta-item-val">${BRANCH_META[seatObj.dept]?.name || "Unallocated"}</div>
+            <div class="meta-item-label">🎖 BRANCH / STREAM</div>
+            <div class="meta-item-val">${branchDisplay}</div>
+            ${streamDisplay}
           </div>
           <div>
             <div class="meta-item-label">💺 SEAT NUMBER</div>
@@ -1424,12 +1502,11 @@
             <div class="meta-item-val">Block ${seatObj.block} · Row ${seatObj.row}</div>
             <div class="meta-item-sub">Seat ${seatObj.col} in row</div>
           </div>
+          ${!isFaculty ? `
           <div>
             <div class="meta-item-label">👣 CERTIFICATE STATION</div>
-            <div class="meta-item-val">
-              ${isFaculty ? "Seated (No Stage Walk)" : `Reception ${stationNum} · <span style="color:${waveColor}">${waveDesc}</span>`}
-            </div>
-          </div>
+            <div class="meta-item-val">Station ${stationNum} (Wait Area${stationNum})</div>
+          </div>` : ""}
         </div>
 
         <div class="card-actions">${actionButtonsHTML}</div>
@@ -1443,16 +1520,10 @@
     }
 
     /********************************************************************
-     * 4. CONVOCATION CEREMONY ANIMATION ENGINE (MATCHING VIDEO)
+     * 4. UNTANGLED STAGE WAIT-AREA PATH & SEQUENTIAL DEPARTMENT WAVES
      ********************************************************************/
-    function getWaveColor(blockId) {
-      if (blockId === 1 || blockId === 6) return "#1e64b4"; // Blue Outer
-      if (blockId === 2 || blockId === 5) return "#167c4c"; // Green Middle
-      return "#b93829"; // Red Inner
-    }
-
-    // Builds the exact curved SVG circulation path for a given block & row
-    function buildCirculationPathData(blockId, rowNum, canvasRect) {
+    // Builds a clean, non-overlapping orthogonal loop through the common Wait Area & Stage
+    function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
         x: (rect.left - canvasRect.left) / currentZoom,
         y: (rect.top - canvasRect.top) / currentZoom,
@@ -1464,72 +1535,85 @@
 
       const blockEl = document.getElementById(`block-el-${blockId}`);
       const rowEl = document.getElementById(`row-el-B${blockId}-R${rowNum}`);
-      const stageEl = document.getElementById("stageMainRect");
-      const deskEl = document.getElementById(blockId <= 3 ? "station1Desk" : "station2Desk");
+      const isLeft = blockId <= 3;
+
+      const waitEl = document.getElementById(isLeft ? "leftWaitArea" : "rightWaitArea");
+      const stepsEl = document.getElementById(isLeft ? "leftStageSteps" : "rightStageSteps");
+      const deskEl = document.getElementById(isLeft ? "station1Desk" : "station2Desk");
       const stairsEl = document.getElementById("centerReturnStairs");
 
-      if (!blockEl || !rowEl || !stageEl || !deskEl || !stairsEl) return null;
+      if (!blockEl || !rowEl || !waitEl || !stepsEl || !deskEl || !stairsEl) return null;
 
       const bPos = toLocal(blockEl.getBoundingClientRect());
       const rPos = toLocal(rowEl.getBoundingClientRect());
-      const stgPos = toLocal(stageEl.getBoundingClientRect());
+      const wPos = toLocal(waitEl.getBoundingClientRect());
+      const stpPos = toLocal(stepsEl.getBoundingClientRect());
       const dskPos = toLocal(deskEl.getBoundingClientRect());
       const strPos = toLocal(stairsEl.getBoundingClientRect());
 
-      const isLeft = blockId <= 3;
+      // Outer passage (exit from row) & Inner passage (return to row)
+      const outerAisleX = isLeft ? (bPos.x - 10) : (bPos.x + bPos.w + 10);
+      const innerAisleX = isLeft ? (bPos.x + bPos.w + 10) : (bPos.x - 10);
 
-      // Outer passage X (where row steps out to queue) & Inner passage X (where row returns)
-      const outerX = isLeft ? (bPos.x - 12) : (bPos.x + bPos.w + 12);
-      const innerX = isLeft ? (bPos.x + bPos.w + 12) : (bPos.x - 12);
-
-      // Row start (outer edge of row) and Row return entry (inner edge of row)
-      const rowExitX = isLeft ? (bPos.x + 18) : (bPos.x + bPos.w - 4);
-      const rowEnterX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 18);
+      const rowOuterEdgeX = isLeft ? (bPos.x + 16) : (bPos.x + bPos.w - 4);
+      const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
-      // Top of block aisle
-      const blockTopY = bPos.y - 8;
+      // Two distinct horizontal lanes in the Front Area so entry & return paths never tangle:
+      // Outbound lane (higher up, leading into the Wait Area bottom)
+      const outboundFrontY = wPos.y + wPos.h + 14;
+      // Return lane (lower down, below Return Steps, leading to Inner Aisle)
+      const returnFrontY = strPos.y + strPos.h + 18;
 
-      // Curved Stage Side Entry points (matches curved arc in video)
-      const stageSideOuterX = isLeft ? (stgPos.x - 55) : (stgPos.x + stgPos.w + 55);
-      const stageSideTopY = stgPos.y + 38;
-      const stageSideEnterX = isLeft ? stgPos.x : (stgPos.x + stgPos.w);
+      const returnStairLaneX = isLeft ? (strPos.cx - 10) : (strPos.cx + 10);
+      const stageWalkY = stpPos.cy;
 
-      // Desk reception point
-      const deskFrontY = dskPos.y + dskPos.h + 10;
+      const pts = [
+        { x: rowOuterEdgeX, y: rowY },               // 0: Start at outer end of row
+        { x: outerAisleX, y: rowY },                 // 1: Step into outer passage
+        { x: outerAisleX, y: outboundFrontY },       // 2: Walk straight up outer passage
+        { x: wPos.cx, y: outboundFrontY },           // 3: Align with Wait Area
+        { x: wPos.cx, y: stageWalkY },               // 4: Inside Wait Area (until name is called)
+        { x: stpPos.cx, y: stageWalkY },             // 5: Common Stage Entry Steps
+        { x: dskPos.cx, y: stageWalkY },             // 6: Certificate Reception Station
+        { x: returnStairLaneX, y: stageWalkY },      // 7: Move to Center Stage Exit
+        { x: returnStairLaneX, y: returnFrontY },    // 8: Walk down Center Return Steps
+        { x: innerAisleX, y: returnFrontY },         // 9: Turn into block's Inner Passage
+        { x: innerAisleX, y: rowY },                 // 10: Walk down Inner Passage to row level
+        { x: rowInnerEdgeX, y: rowY }                // 11: File back into row seats
+      ];
 
-      // Center Return Steps top & bottom
-      const returnLaneX = isLeft ? (strPos.cx - 10) : (strPos.cx + 10);
-      const returnTopY = strPos.y - 6;
-      const returnBottomY = strPos.y + strPos.h + 12;
+      const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
 
-      // Construct smooth SVG path with cubic curves matching the video diagram
-      const d = [
-        `M ${rowExitX.toFixed(1)} ${rowY.toFixed(1)}`,
-        `L ${outerX.toFixed(1)} ${rowY.toFixed(1)}`,
-        `L ${outerX.toFixed(1)} ${blockTopY.toFixed(1)}`,
-        `C ${outerX.toFixed(1)} ${(stageSideTopY + 35).toFixed(1)}, ${stageSideOuterX.toFixed(1)} ${(stageSideTopY + 30).toFixed(1)}, ${stageSideOuterX.toFixed(1)} ${stageSideTopY.toFixed(1)}`,
-        `C ${stageSideOuterX.toFixed(1)} ${(stageSideTopY - 22).toFixed(1)}, ${stageSideEnterX.toFixed(1)} ${(stageSideTopY - 12).toFixed(1)}, ${stageSideEnterX.toFixed(1)} ${deskFrontY.toFixed(1)}`,
-        `L ${dskPos.cx.toFixed(1)} ${deskFrontY.toFixed(1)}`,
-        `Q ${(dskPos.cx + returnLaneX) / 2} ${(deskFrontY + 18).toFixed(1)}, ${returnLaneX.toFixed(1)} ${returnTopY.toFixed(1)}`,
-        `L ${returnLaneX.toFixed(1)} ${returnBottomY.toFixed(1)}`,
-        `C ${returnLaneX.toFixed(1)} ${(returnBottomY + 18).toFixed(1)}, ${innerX.toFixed(1)} ${(blockTopY - 14).toFixed(1)}, ${innerX.toFixed(1)} ${blockTopY.toFixed(1)}`,
-        `L ${innerX.toFixed(1)} ${rowY.toFixed(1)}`,
-        `L ${rowEnterX.toFixed(1)} ${rowY.toFixed(1)}`
-      ].join(" ");
+      // Count active student seats in this row
+      const blkConf = layoutConfig.blocks.find(b => b.id === blockId);
+      let studentCount = 0;
+      let rowDept = null;
+      for (let c = 1; c <= blkConf.cols; c++) {
+        const s = seatsByCoord[`B${blockId}-R${rowNum}-C${c}`];
+        if (s && s.type === "student" && s.statusOverride !== "defective" && s.statusOverride !== "empty") {
+          studentCount++;
+          if (!rowDept) rowDept = s.dept;
+        }
+      }
 
-      return { d, color: getWaveColor(blockId), numCols: layoutConfig.blocks.find(b => b.id === blockId).cols };
+      const color = BRANCH_META[rowDept]?.color || "#1e64b4";
+      return { d, color, studentCount: Math.max(1, studentCount), blockId, rowNum };
     }
 
-    // Animate a single selected student's row
+    // Single Row Walk Animation
     function animateSingleRowWalk(blockId, rowNum, highlightCoordKey) {
       stopWalkAnimation();
       const canvas = document.getElementById("hallCanvas");
-      const svg = document.getElementById("walkOverlaySvg");
       const cRect = canvas.getBoundingClientRect();
 
-      const pathInfo = buildCirculationPathData(blockId, rowNum, cRect);
+      const pathInfo = buildCleanRowPath(blockId, rowNum, cRect);
       if (!pathInfo) return;
+
+      const rowEl = document.getElementById(`row-el-B${blockId}-R${rowNum}`);
+      if (rowEl) {
+        Array.from(rowEl.children).forEach(el => el.classList.add("seat-active-wave"));
+      }
 
       const stationNum = blockId <= 3 ? 1 : 2;
       const seatObj = seatsByCoord[highlightCoordKey];
@@ -1539,120 +1623,147 @@
       statusCard.style.borderColor = pathInfo.color;
       document.getElementById("walkEyebrow").style.color = pathInfo.color;
       document.getElementById("walkEyebrow").textContent =
-        `ROW MOVEMENT · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW${rowNum}`} → RECEPTION ${stationNum}`;
+        `ROW WALK · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW${rowNum}`} → WAIT AREA ${stationNum} → STATION ${stationNum}`;
       document.getElementById("walkSubtext").textContent =
-        `Out by outer passage → Up side ramp → Certificate Reception ${stationNum} → Down Return Steps → Back via inner passage`;
+        `Outer passage → Wait Area (until name called) → Common Stage Entry → Station ${stationNum} → Center Return Steps → Inner passage`;
 
-      runMultiConvoySVGAnimation([pathInfo]);
+      runStaggeredRowsSVGAnimation([pathInfo], false);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    // Animate the 6 Synchronized Waves from the Video (Left & Right Parallel Stations)
-    function startWaveSimulation(stageIndex) {
+    // Department Wave Animation: All rows of selected Department go one by one;
+    // next row starts when half of the previous row exits the stage.
+    function startDepartmentWave(deptCode, btnEl) {
       stopWalkAnimation();
+      if (btnEl) btnEl.classList.add("active-wave");
 
-      // Highlight active wave button
-      const waveMap = {
-        1: { leftBlock: 1, rightBlock: 6, rows: [2, 3], label: "01 BLUE · FRONT TWO STUDENT ROWS", cls: "active-blue", color: "#1e64b4" },
-        2: { leftBlock: 1, rightBlock: 6, rows: [22, 23], label: "02 BLUE · LAST STUDENT ROWS", cls: "active-blue", color: "#1e64b4" },
-        3: { leftBlock: 2, rightBlock: 5, rows: [2, 3], label: "03 GREEN · FRONT TWO STUDENT ROWS", cls: "active-green", color: "#167c4c" },
-        4: { leftBlock: 2, rightBlock: 5, rows: [22, 23], label: "04 GREEN · LAST STUDENT ROWS", cls: "active-green", color: "#167c4c" },
-        5: { leftBlock: 3, rightBlock: 4, rows: [2, 3], label: "05 RED · FRONT TWO STUDENT ROWS", cls: "active-red", color: "#b93829" },
-        6: { leftBlock: 3, rightBlock: 4, rows: [22, 23], label: "06 RED · LAST STUDENT ROWS", cls: "active-red", color: "#b93829" }
-      };
-
-      const cfg = waveMap[stageIndex];
-      if (!cfg) return;
-
-      document.getElementById(`waveBtn${stageIndex}`).classList.add(cfg.cls);
+      const rowsList = deptRowsMap[deptCode] || [];
+      if (!rowsList.length) return;
 
       const canvas = document.getElementById("hallCanvas");
       const cRect = canvas.getBoundingClientRect();
 
-      // Highlight seats in the participating rows
-      [cfg.leftBlock, cfg.rightBlock].forEach(bId => {
-        cfg.rows.forEach(rNum => {
-          const rowEl = document.getElementById(`row-el-B${bId}-R${rNum}`);
-          if (rowEl) {
-            Array.from(rowEl.children).forEach(seatEl => seatEl.classList.add("seat-active-wave"));
-          }
-        });
+      const pathConfigs = [];
+      rowsList.forEach(item => {
+        const p = buildCleanRowPath(item.block, item.row, cRect);
+        if (p) pathConfigs.push(p);
       });
 
-      const leftPath = buildCirculationPathData(cfg.leftBlock, cfg.rows[0], cRect);
-      const rightPath = buildCirculationPathData(cfg.rightBlock, cfg.rows[0], cRect);
+      if (!pathConfigs.length) return;
 
+      const deptColor = BRANCH_META[deptCode]?.color || "#152542";
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      statusCard.style.borderColor = cfg.color;
-      document.getElementById("walkEyebrow").style.color = cfg.color;
-      document.getElementById("walkEyebrow").textContent = `STAGE ${stageIndex} / 6 · ${cfg.label} (IN PROGRESS)`;
+      statusCard.style.borderColor = deptColor;
+      document.getElementById("walkEyebrow").style.color = deptColor;
+      document.getElementById("walkEyebrow").textContent =
+        `DEPARTMENT WAVE · ${BRANCH_META[deptCode]?.name || deptCode} (${pathConfigs.length} ROWS)`;
       document.getElementById("walkSubtext").textContent =
-        `Blocks ${cfg.leftBlock} & ${cfg.rightBlock} moving in parallel to Certificate Receptions 1 & 2`;
+        `Row 1 starts first · Each subsequent row starts automatically when half of the previous row exits the stage`;
 
-      runMultiConvoySVGAnimation([leftPath, rightPath].filter(Boolean));
+      runStaggeredRowsSVGAnimation(pathConfigs, true);
+      document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function runMultiConvoySVGAnimation(pathConfigs) {
+    function runStaggeredRowsSVGAnimation(pathConfigs, isMultiRowWave) {
       const svg = document.getElementById("walkOverlaySvg");
       svg.innerHTML = "";
 
-      const pathElements = [];
-      const convoys = [];
+      const spacing = 18;
+      const rowConvoys = [];
 
-      pathConfigs.forEach((pCfg, idx) => {
-        // Draw guide trajectory line
+      pathConfigs.forEach((pCfg, rowIdx) => {
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
         pathEl.setAttribute("stroke", pCfg.color);
-        pathEl.setAttribute("stroke-width", "2.2");
+        pathEl.setAttribute("stroke-width", isMultiRowWave ? "1.6" : "2.4");
         pathEl.setAttribute("stroke-dasharray", "5 4");
-        pathEl.setAttribute("opacity", "0.85");
+        pathEl.setAttribute("opacity", isMultiRowWave ? "0.45" : "0.9");
         svg.appendChild(pathEl);
 
         const totalLength = pathEl.getTotalLength();
-        const dots = [];
-        const studentCount = pCfg.numCols || 9;
+        // Stage exit (Center Return Steps) is at ~66% of the path length.
+        // Next row starts when half of the previous row has passed the stage exit:
+        const stageExitDist = totalLength * 0.66;
+        const halfRowOffset = Math.floor(pCfg.studentCount / 2) * spacing;
+        const triggerOffsetPerRow = stageExitDist + halfRowOffset;
 
-        for (let i = 0; i < studentCount; i++) {
+        const dots = [];
+        for (let i = 0; i < pCfg.studentCount; i++) {
           const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-          // Person head + shoulders icon matching the video
+          g.style.opacity = "0";
           g.innerHTML = `
-            <circle cx="0" cy="-3" r="3.2" fill="${pCfg.color}" stroke="#fff" stroke-width="1"/>
-            <rect x="-3.5" y="0.5" width="7" height="4.5" rx="2" fill="${pCfg.color}" stroke="#fff" stroke-width="1"/>
+            <circle cx="0" cy="-3" r="3" fill="${pCfg.color}" stroke="#fff" stroke-width="1"/>
+            <rect x="-3.2" y="0.5" width="6.4" height="4.2" rx="1.8" fill="${pCfg.color}" stroke="#fff" stroke-width="1"/>
           `;
           svg.appendChild(g);
           dots.push(g);
         }
 
-        convoys.push({ pathEl, totalLength, dots, spacing: 22 });
+        rowConvoys.push({
+          blockId: pCfg.blockId,
+          rowNum: pCfg.rowNum,
+          pathEl,
+          totalLength,
+          dots,
+          startDelayDist: rowIdx * triggerOffsetPerRow,
+          finishDist: rowIdx * triggerOffsetPerRow + totalLength + pCfg.studentCount * spacing
+        });
       });
 
-      let headDist = 0;
-      const maxLen = Math.max(...convoys.map(c => c.totalLength + c.dots.length * c.spacing));
+      const maxGlobalDist = Math.max(...rowConvoys.map(c => c.finishDist)) + 40;
+      let globalDist = 0;
 
       function step() {
-        headDist += 2.6;
-        if (headDist > maxLen) headDist = 0;
+        globalDist += 2.8;
+        if (globalDist > maxGlobalDist) globalDist = 0;
 
-        convoys.forEach(c => {
+        let activeRowLabel = "";
+
+        rowConvoys.forEach((c, idx) => {
+          const localHeadDist = globalDist - c.startDelayDist;
+          const rowEl = document.getElementById(`row-el-B${c.blockId}-R${c.rowNum}`);
+          const isRowMoving = localHeadDist > 0 && localHeadDist < (c.totalLength + c.dots.length * spacing);
+
+          if (rowEl) {
+            Array.from(rowEl.children).forEach(el => {
+              el.classList.toggle("seat-active-wave", isRowMoving);
+            });
+          }
+
+          if (isRowMoving && !activeRowLabel) {
+            activeRowLabel = `Row ${c.rowNum} (Block ${c.blockId})`;
+          }
+
           c.dots.forEach((dotGroup, i) => {
-            const d = headDist - i * c.spacing;
-            const clamped = Math.max(0, Math.min(c.totalLength, d));
-            const pt = c.pathEl.getPointAtLength(clamped);
-            dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
+            const d = localHeadDist - i * spacing;
+            if (d <= 0 || d >= c.totalLength) {
+              dotGroup.style.opacity = "0";
+            } else {
+              dotGroup.style.opacity = "1";
+              const pt = c.pathEl.getPointAtLength(d);
+              dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
+            }
           });
         });
 
-        const ratio = headDist / maxLen;
         const stepTitle = document.getElementById("walkStepTitle");
-        if (ratio < 0.25) {
-          stepTitle.textContent = "1. Forming the queue in the outer passage...";
-        } else if (ratio < 0.62) {
-          stepTitle.textContent = "2. Walking onto the stage · Receiving certificate at Reception Desk...";
+        if (isMultiRowWave) {
+          stepTitle.textContent = activeRowLabel
+            ? `Currently moving: ${activeRowLabel} → Wait Area → Stage → Return Steps`
+            : "All rows completed stage circulation.";
         } else {
-          stepTitle.textContent = "3. Descending center return steps · Returning via inner passage to seats.";
+          const ratio = globalDist / maxGlobalDist;
+          if (ratio < 0.25) {
+            stepTitle.textContent = "1. Stepping into outer passage & walking to Stage Wait Area...";
+          } else if (ratio < 0.45) {
+            stepTitle.textContent = "2. Waiting in Wait Area until name is called, then ascending Stage Steps...";
+          } else if (ratio < 0.68) {
+            stepTitle.textContent = "3. Receiving certificate at Station & exiting down Center Return Steps...";
+          } else {
+            stepTitle.textContent = "4. Returning along inner passage back to row seats.";
+          }
         }
 
         walkAnimFrame = requestAnimationFrame(step);
@@ -1671,12 +1782,8 @@
       const statusCard = document.getElementById("walkStatusCard");
       if (statusCard) statusCard.style.display = "none";
 
-      document.querySelectorAll(".wave-pill").forEach(btn => {
-        btn.classList.remove("active-blue", "active-green", "active-red");
-      });
-      document.querySelectorAll(".seat-active-wave").forEach(el => {
-        el.classList.remove("seat-active-wave");
-      });
+      document.querySelectorAll(".wave-pill").forEach(btn => btn.classList.remove("active-wave"));
+      document.querySelectorAll(".seat-active-wave").forEach(el => el.classList.remove("seat-active-wave"));
     }
 
     /********************************************************************
@@ -1696,7 +1803,9 @@
       for (const [code, info] of Object.entries(studentRoster)) {
         if (
           (info.name && info.name.toUpperCase().includes(q)) ||
-          (info.regNo && info.regNo.toUpperCase().includes(q))
+          (info.regNo && info.regNo.toUpperCase().includes(q)) ||
+          (info.branch && info.branch.toUpperCase().includes(q)) ||
+          (info.stream && info.stream.toUpperCase().includes(q))
         ) {
           const seatObj = seatsByCode[code.toUpperCase()];
           if (seatObj) {
@@ -1721,7 +1830,7 @@
     }
 
     /********************************************************************
-     * 6. FACULTY PORTAL: PASSWORD, EXCEL IMPORT/EXPORT & BLOCK EDITOR
+     * 6. FACULTY PORTAL: PASSWORD, EXCEL (WITH BRANCH & PG STREAM) & BLOCK EDITOR
      ********************************************************************/
     function switchView(view) {
       const isSeat = view === "seat";
@@ -1762,15 +1871,24 @@
       });
     }
 
+    // Generates Excel with Seat_Number, Department, Branch, Stream_PG, Student_Name, Register_No
     function downloadBranchExcel() {
       const alloc = layoutConfig.allocations.find(a => a.dept === selectedDeptForExcel);
       if (!alloc) return;
 
-      const rows = [["Seat_Number", "Department", "Student_Name", "Register_No"]];
+      const defaultBranchName = BRANCH_META[alloc.dept]?.name || alloc.dept;
+      const rows = [["Seat_Number", "Department", "Branch", "Stream_PG", "Student_Name", "Register_No"]];
       for (let i = 1; i <= alloc.count; i++) {
         const code = `${alloc.dept} ${i}`;
         const existing = studentRoster[code] || {};
-        rows.push([code, alloc.dept, existing.name || "", existing.regNo || ""]);
+        rows.push([
+          code,
+          alloc.dept,
+          existing.branch || defaultBranchName,
+          existing.stream || "",
+          existing.name || "",
+          existing.regNo || ""
+        ]);
       }
 
       const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -1797,9 +1915,12 @@
           const rawCode = (row.Seat_Number || row.Seat || row.seat_number || "").toString().trim().toUpperCase();
           const name = (row.Student_Name || row.Name || row.student_name || "").toString().trim();
           const regNo = (row.Register_No || row.RegNo || row.register_no || "").toString().trim();
+          const branch = (row.Branch || row.branch || "").toString().trim();
+          const stream = (row.Stream_PG || row.Stream || row.stream_pg || row.stream || "").toString().trim();
+
           if (rawCode) {
             if (name) {
-              studentRoster[rawCode] = { name, regNo };
+              studentRoster[rawCode] = { name, regNo, branch, stream };
               count++;
             } else {
               delete studentRoster[rawCode];
@@ -1850,8 +1971,7 @@
           <td><strong>Block ${b.id}</strong></td>
           <td><input type="number" min="1" max="50" id="cfg-b-rows-${idx}" value="${b.rows}"></td>
           <td><input type="number" min="1" max="20" id="cfg-b-cols-${idx}" value="${b.cols}"></td>
-          <td><input type="number" min="0" max="10" id="cfg-b-ffac-${idx}" value="${b.frontFacultyRows}"></td>
-          <td><input type="number" min="0" max="10" id="cfg-b-bfac-${idx}" value="${b.backFacultyRows}"></td>
+          <td><input type="number" min="0" max="100" id="cfg-b-fac-${idx}" value="${b.facultySeats ?? 8}"></td>
         `;
         bBody.appendChild(tr);
       });
@@ -1873,8 +1993,7 @@
       layoutConfig.blocks.forEach((b, idx) => {
         b.rows = parseInt(document.getElementById(`cfg-b-rows-${idx}`).value) || b.rows;
         b.cols = parseInt(document.getElementById(`cfg-b-cols-${idx}`).value) || b.cols;
-        b.frontFacultyRows = parseInt(document.getElementById(`cfg-b-ffac-${idx}`).value) || 0;
-        b.backFacultyRows = parseInt(document.getElementById(`cfg-b-bfac-${idx}`).value) || 0;
+        b.facultySeats = parseInt(document.getElementById(`cfg-b-fac-${idx}`).value) || 0;
       });
 
       layoutConfig.allocations.forEach((a, idx) => {
@@ -1885,7 +2004,7 @@
       saveAllStorage();
       renderDeptPills();
       buildAndRenderMap();
-      alert("Block rows, columns, and department seat counts updated!");
+      alert("Block rows, seats per row, and department counts updated!");
       switchView("seat");
     }
 
