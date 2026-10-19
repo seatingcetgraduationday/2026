@@ -337,10 +337,11 @@
       gap: 0;
     }
     .stage-side-steps {
-      width: 24px;
-      height: 44px;
+      width: 28px;
+      height: 48px;
       background: repeating-linear-gradient(90deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
       border: 1.5px solid #7f97b2;
+      z-index: 5;
     }
     .stage-wrapper {
       display: flex;
@@ -1520,7 +1521,7 @@
     }
 
     /********************************************************************
-     * 4. ANIMATION ENGINE
+     * 4. ANIMATION ENGINE (FIXED STAGE ROUTING)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -1538,14 +1539,16 @@
 
       const stepsEl = document.getElementById(isLeft ? "leftStageSteps" : "rightStageSteps");
       const deskEl = document.getElementById(isLeft ? "station1Desk" : "station2Desk");
+      const stageEl = document.getElementById("stageMainRect");
       const stairsEl = document.getElementById("centerReturnStairs");
 
-      if (!blockEl || !rowEl || !stepsEl || !deskEl || !stairsEl) return null;
+      if (!blockEl || !rowEl || !stepsEl || !deskEl || !stageEl || !stairsEl) return null;
 
       const bPos = toLocal(blockEl.getBoundingClientRect());
       const rPos = toLocal(rowEl.getBoundingClientRect());
       const stpPos = toLocal(stepsEl.getBoundingClientRect());
       const dskPos = toLocal(deskEl.getBoundingClientRect());
+      const stgPos = toLocal(stageEl.getBoundingClientRect());
       const strPos = toLocal(stairsEl.getBoundingClientRect());
 
       const outerAisleX = isLeft ? (bPos.x - 10) : (bPos.x + bPos.w + 10);
@@ -1555,17 +1558,18 @@
       const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
-      const outboundFrontY = stpPos.y + stpPos.h + 14;
+      // Keep path safely below the stage rect and route precisely through side steps
+      const stagingY = stgPos.y + stgPos.h + 8;
       const returnFrontY = strPos.y + strPos.h + 18;
 
       const returnStairLaneX = isLeft ? (strPos.cx - 10) : (strPos.cx + 10);
-      const stageWalkY = stpPos.cy;
+      const stageWalkY = dskPos.cy;
 
       const pts = [
         { x: rowOuterEdgeX, y: rowY },
         { x: outerAisleX, y: rowY },
-        { x: outerAisleX, y: outboundFrontY },
-        { x: stpPos.cx, y: outboundFrontY },
+        { x: outerAisleX, y: stagingY },
+        { x: stpPos.cx, y: stagingY },
         { x: stpPos.cx, y: stageWalkY },
         { x: dskPos.cx, y: stageWalkY },
         { x: returnStairLaneX, y: stageWalkY },
