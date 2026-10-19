@@ -304,7 +304,7 @@
       padding: 12px 28px 34px 28px;
     }
 
-    /* Architectural Stage & Entries (Untangled - No Wait Area Boxes) */
+    /* Architectural Stage & Entries (Extended from mid Block 2 to mid Block 5) */
     .hall-top-architecture {
       display: flex;
       align-items: flex-start;
@@ -345,7 +345,7 @@
       align-items: center;
     }
     .stage-main-rect {
-      width: 520px;
+      width: 720px; /* Extended longer across blocks 2 to 5 */
       height: 132px;
       background: var(--navy-card);
       border: 1.5px solid #152542;
@@ -383,7 +383,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 36px;
+      padding: 0 50px;
       margin-top: 4px;
     }
     .reception-desk {
@@ -548,7 +548,6 @@
       box-shadow: 0 0 0 2px #152542;
     }
 
-    /* Seat Status Indicator Rectangles (Green = Filled, Red = Unoccupied) */
     .occ-rect {
       position: absolute;
       bottom: 1.5px;
@@ -559,15 +558,13 @@
       border-radius: 1px;
       pointer-events: none;
     }
-    .occ-rect.filled {
-      background-color: #16a34a;
-    }
-    .occ-rect.unoccupied {
-      background-color: #ef4444;
-    }
+    .occ-rect.filled { background-color: #16a34a; }
+    .occ-rect.unoccupied { background-color: #ef4444; }
 
     .seat-FAC { background: #7c8594; color: #fff; }
+    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; }
     .seat-EE  { background: #dceaff; color: #1e40af; border-color: #93c5fd; }
+    .seat-PTDC{ background: #d5f3f7; color: #0e7490; border-color: #67e8f9; }
     .seat-CS  { background: #d6f5e3; color: #065f46; border-color: #6ee7b7; }
     .seat-MCA { background: #e4f8cc; color: #3f6212; border-color: #bef264; }
     .seat-CE  { background: #fef0c7; color: #92400e; border-color: #fcd34d; }
@@ -723,7 +720,7 @@
     }
 
     .walk-banner-card {
-      border: 2px solid var(--wave-blue);
+      border: 2px solid #94a3b8;
       background: #ffffff;
       border-radius: 16px;
       padding: 18px 22px;
@@ -734,7 +731,7 @@
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.06em;
-      color: var(--wave-blue);
+      color: #64748b;
       text-transform: uppercase;
       margin-bottom: 4px;
     }
@@ -839,16 +836,18 @@
     <!-- Legend -->
     <div class="legend-card">
       <div class="legend-grid">
-        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (Includes PhD &amp; PTDC)</div>
-        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS</div>
-        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA</div>
-        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE</div>
-        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch</div>
-        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA</div>
-        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC</div>
-        <div class="legend-item"><span class="rect-indicator filled"></span> Seat Filled (Green rectangle)</div>
-        <div class="legend-item"><span class="rect-indicator unoccupied"></span> Unoccupied (Red rectangle)</div>
+        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (EE Dept)[span_1](start_span)[span_1](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (B.Tech)[span_2](start_span)[span_2](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (EE Dept)[span_3](start_span)[span_3](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS[span_4](start_span)[span_4](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA[span_5](start_span)[span_5](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE[span_6](start_span)[span_6](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME[span_7](start_span)[span_7](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch[span_8](start_span)[span_8](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA[span_9](start_span)[span_9](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC[span_10](start_span)[span_10](end_span)</div>
+        <div class="legend-item"><span class="rect-indicator filled"></span> Seat Filled</div>
+        <div class="legend-item"><span class="rect-indicator unoccupied"></span> Unoccupied</div>
         <div class="legend-item"><span class="dot dot-defective">✕</span> Defective</div>
         <div class="legend-item"><span class="dot dot-empty"></span> Kept empty</div>
       </div>
@@ -865,7 +864,9 @@
 
       <div class="ceremony-bar" id="deptWaveBar">
         <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Department Wave:</span>
-        <button class="wave-pill" onclick="startDepartmentWave('EE', this)">EE (incl. PhD/PTDC)</button>
+        <button class="wave-pill" onclick="startDepartmentWave('PhD', this)">PhD (EE)</button>
+        <button class="wave-pill" onclick="startDepartmentWave('EE', this)">EE</button>
+        <button class="wave-pill" onclick="startDepartmentWave('PTDC', this)">PTDC (EE)</button>
         <button class="wave-pill" onclick="startDepartmentWave('CS', this)">CS</button>
         <button class="wave-pill" onclick="startDepartmentWave('MCA', this)">MCA</button>
         <button class="wave-pill" onclick="startDepartmentWave('CE', this)">CE</button>
@@ -904,8 +905,9 @@
             <div class="stage-side-steps" id="leftStageSteps"></div>
 
             <div class="stage-wrapper" id="stageWrapper">
+              <!-- Extended Stage spanning from mid Block 2 to mid Block 5 -->
               <div class="stage-main-rect" id="stageMainRect">
-                <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE 54 ft × 22 ft</div>
+                <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE (Extended Span)</div>
                 <div class="stage-led-tag">LED WALL</div>
 
                 <div class="stage-receptions-row">
@@ -945,7 +947,7 @@
     <div class="info-card">
       <h3 class="serif-title" style="font-size:19px; margin-bottom:12px;">How distribution works</h3>
       <p style="font-size:14.5px; color:#3b4656; margin-bottom:10px;">
-        <strong>Two stations run together in parallel:</strong> Blocks 1–3 receive at <strong>Certificate Station 1</strong>, and Blocks 4–6 receive at <strong>Certificate Station 2</strong>. Changes made by faculty sync instantly via Firebase cloud.
+        <strong>Two stations run together in parallel:</strong> Blocks 1–3 receive at <strong>Certificate Station 1</strong>, and Blocks 4–6 receive at <strong>Certificate Station 2</strong>. PhD and PTDC are part of the EE Department group[span_11](start_span)[span_11](end_span).
       </p>
     </div>
   </main>
@@ -1088,9 +1090,11 @@
     let selectedDeptForExcel = "EE";
     let walkAnimFrame = null;
 
-    // PhD & PTDC merged under EE department
+    // PhD and PTDC shown separately but marked as part of EE department group
     const BRANCH_META = {
-      EE:   { name: "Electrical & Electronics Engineering (EE, PhD, PTDC)", color: "#2563eb" },
+      PhD:  { name: "Doctoral Programmes (PhD) — Part of EE Department", color: "#7c3aed" },
+      EE:   { name: "Electrical & Electronics Engineering (EE)", color: "#2563eb" },
+      PTDC: { name: "Part-Time B.Tech (PTDC) — Part of EE Department", color: "#0891b2" },
       CS:   { name: "Computer Science & Engineering (CS)", color: "#059669" },
       MCA:  { name: "Master of Computer Applications (MCA)", color: "#65a30d" },
       CE:   { name: "Civil Engineering (CE)", color: "#d97706" },
@@ -1111,7 +1115,9 @@
         { id: 6, rows: 25, cols: 8, facultySeats: 24 }
       ],
       allocations: [
-        { dept: "EE",   block: 1, count: 183 }, // Includes PhD (12), EE (139), PTDC (32)
+        { dept: "PhD",  block: 1, count: 12 },
+        { dept: "EE",   block: 1, count: 139 },
+        { dept: "PTDC", block: 1, count: 32 },
         { dept: "CS",   block: 2, count: 162 },
         { dept: "MCA",  block: 2, count: 35 },
         { dept: "CE",   block: 3, count: 201 },
@@ -1363,7 +1369,6 @@
         }
         el.textContent = seatObj.num;
 
-        // Rectangle occupancy status indicator at bottom of seat box
         const rectInd = document.createElement("span");
         rectInd.className = `occ-rect ${isFilled ? 'filled' : 'unoccupied'}`;
         el.appendChild(rectInd);
@@ -1488,7 +1493,7 @@
     }
 
     /********************************************************************
-     * 4. ANIMATION ENGINE (INDIVIDUAL STUDENT PATH & CONTINUOUS WAVES)
+     * 4. ANIMATION ENGINE (VERY LIGHT COLOR STEPS)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -1556,11 +1561,11 @@
         }
       }
 
-      const color = BRANCH_META[rowDept]?.color || "#1e64b4";
+      // Very light color for steps/animation
+      const color = "#94a3b8"; 
       return { d, color, studentCount: Math.max(1, studentCount), blockId, rowNum };
     }
 
-    // Animate only the selected individual student's path to stage
     function animateSingleStudentPath(blockId, rowNum, colNum, highlightCoordKey) {
       stopWalkAnimation();
       const canvas = document.getElementById("hallCanvas");
@@ -1570,20 +1575,19 @@
       const baseInfo = buildCleanRowPath(blockId, rowNum, cRect);
       if (!baseInfo) return;
 
-      // Draw single path for just 1 student
       const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
       pathEl.setAttribute("d", baseInfo.d);
       pathEl.setAttribute("fill", "none");
       pathEl.setAttribute("stroke", baseInfo.color);
-      pathEl.setAttribute("stroke-width", "2.8");
+      pathEl.setAttribute("stroke-width", "2.5");
       pathEl.setAttribute("stroke-dasharray", "6 4");
       svg.appendChild(pathEl);
 
       const totalLength = pathEl.getTotalLength();
       const dot = document.createElementNS("http://www.w3.org/2000/svg", "g");
       dot.innerHTML = `
-        <circle cx="0" cy="-3" r="3.8" fill="${baseInfo.color}" stroke="#fff" stroke-width="1.2"/>
-        <rect x="-4" y="0.5" width="8" height="5" rx="2" fill="${baseInfo.color}" stroke="#fff" stroke-width="1.2"/>
+        <circle cx="0" cy="-3" r="3.8" fill="#475569" stroke="#fff" stroke-width="1.2"/>
+        <rect x="-4" y="0.5" width="8" height="5" rx="2" fill="#475569" stroke="#fff" stroke-width="1.2"/>
       `;
       svg.appendChild(dot);
 
@@ -1592,11 +1596,11 @@
 
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      statusCard.style.borderColor = baseInfo.color;
-      document.getElementById("walkEyebrow").style.color = baseInfo.color;
+      statusCard.style.borderColor = "#94a3b8";
+      document.getElementById("walkEyebrow").style.color = "#475569";
       document.getElementById("walkEyebrow").textContent =
         `INDIVIDUAL PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW${rowNum}`} → STATION ${stationNum}`;
-      document.getElementById("walkStepTitle").textContent = "Walking along dedicated student circulation path to stage...";
+      document.getElementById("walkStepTitle").textContent = "Walking along path to stage using very light steps...";
       document.getElementById("walkSubtext").textContent = `Outer passage → Stage Reception ${stationNum} → Center return steps`;
 
       let dist = 0;
@@ -1612,7 +1616,6 @@
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    // Department Wave: Next row reaches stage as soon as previous row leaves stage
     function startDepartmentWave(deptCode, btnEl) {
       stopWalkAnimation();
       if (btnEl) btnEl.classList.add("active-wave");
@@ -1631,15 +1634,12 @@
 
       if (!pathConfigs.length) return;
 
-      const deptColor = BRANCH_META[deptCode]?.color || "#152542";
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      statusCard.style.borderColor = deptColor;
-      document.getElementById("walkEyebrow").style.color = deptColor;
-      document.getElementById("walkEyebrow").textContent =
-        `DEPARTMENT WAVE · ${BRANCH_META[deptCode]?.name || deptCode} (${pathConfigs.length} ROWS)`;
-      document.getElementById("walkSubtext").textContent =
-        `Next row reaches the stage immediately as the previous row leaves`;
+      statusCard.style.borderColor = "#94a3b8";
+      document.getElementById("walkEyebrow").style.color = "#475569";
+      document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode} (${pathConfigs.length} ROWS)`;
+      document.getElementById("walkSubtext").textContent = `Next row reaches the stage immediately as the previous row leaves`;
 
       runContinuousDepartmentWaveSVGAnimation(pathConfigs);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1657,14 +1657,13 @@
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", pCfg.color);
-        pathEl.setAttribute("stroke-width", "1.8");
+        pathEl.setAttribute("stroke", "#cbd5e1"); // Very light color for wave lines
+        pathEl.setAttribute("stroke-width", "1.6");
         pathEl.setAttribute("stroke-dasharray", "5 4");
-        pathEl.setAttribute("opacity", "0.6");
+        pathEl.setAttribute("opacity", "0.7");
         svg.appendChild(pathEl);
 
         const totalLength = pathEl.getTotalLength();
-        // Stage exit is at ~66% of the path. Next row starts exactly when previous row finishes clearing stage exit.
         const stageExitDist = totalLength * 0.68;
 
         const dots = [];
@@ -1672,8 +1671,8 @@
           const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
           g.style.opacity = "0";
           g.innerHTML = `
-            <circle cx="0" cy="-3" r="3" fill="${pCfg.color}" stroke="#fff" stroke-width="1"/>
-            <rect x="-3.2" y="0.5" width="6.4" height="4.2" rx="1.8" fill="${pCfg.color}" stroke="#fff" stroke-width="1"/>
+            <circle cx="0" cy="-3" r="3" fill="#475569" stroke="#fff" stroke-width="1"/>
+            <rect x="-3.2" y="0.5" width="6.4" height="4.2" rx="1.8" fill="#475569" stroke="#fff" stroke-width="1"/>
           `;
           svg.appendChild(g);
           dots.push(g);
@@ -1689,7 +1688,6 @@
           finishDist: cumulativeDelay + totalLength + pCfg.studentCount * spacing
         });
 
-        // Trigger next row as soon as previous row reaches/passes stage exit
         cumulativeDelay += stageExitDist;
       });
 
