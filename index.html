@@ -718,6 +718,22 @@
       align-items: center;
       gap: 8px;
     }
+    .btn-danger {
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      background: #dc2626;
+      color: #fff;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
 
     .walk-banner-card {
       border: 2px solid #94a3b8;
@@ -836,16 +852,16 @@
     <!-- Legend -->
     <div class="legend-card">
       <div class="legend-grid">
-        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (EE Dept)</div>
-        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (B.Tech)</div>
-        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (EE Dept)</div>
-        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS</div>
-        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA</div>
-        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE</div>
-        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch</div>
-        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA</div>
-        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC</div>
+        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (EE Dept)[span_0](start_span)[span_0](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (B.Tech)[span_1](start_span)[span_1](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (EE Dept)[span_2](start_span)[span_2](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS[span_3](start_span)[span_3](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA[span_4](start_span)[span_4](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE[span_5](start_span)[span_5](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME[span_6](start_span)[span_6](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch[span_7](start_span)[span_7](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA[span_8](start_span)[span_8](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC[span_9](start_span)[span_9](end_span)</div>
         <div class="legend-item"><span class="rect-indicator filled"></span> Seat Filled</div>
         <div class="legend-item"><span class="rect-indicator unoccupied"></span> Unoccupied</div>
         <div class="legend-item"><span class="dot dot-defective">✕</span> Defective</div>
@@ -899,7 +915,7 @@
         <svg id="walkOverlaySvg"></svg>
 
         <div class="hall-top-architecture">
-          <div class="entry-box">ENTRY (29 ft)</div>
+          <div class="entry-box">ENTRY (29 ft)[span_10](start_span)[span_10](end_span)</div>
 
           <div class="stage-cluster" id="stageCluster">
             <div class="stage-side-steps" id="leftStageSteps"></div>
@@ -928,10 +944,10 @@
             <div class="stage-side-steps" id="rightStageSteps"></div>
           </div>
 
-          <div class="entry-box">ENTRY (29 ft)</div>
+          <div class="entry-box">ENTRY (29 ft)[span_11](start_span)[span_11](end_span)</div>
         </div>
 
-        <div class="front-area-banner">FRONT AREA — 12 ft WIDE × 114 ft LONG · ROWS 3 ft WIDE</div>
+        <div class="front-area-banner">FRONT AREA — 12 ft WIDE × 114 ft LONG · ROWS 3 ft WIDE[span_12](start_span)[span_12](end_span)</div>
 
         <div class="blocks-wrapper" id="blocksWrapper"></div>
       </div>
@@ -957,7 +973,7 @@
       <div class="eyebrow">PROTECTED ACCESS</div>
       <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Faculty Sign-In</h2>
       <p style="font-size:14px; color:var(--text-muted); margin-bottom:18px;">
-        Enter the graduation password to sync department Excel sheets, mark seats defective/empty, or adjust block configurations globally.
+        Enter the graduation password to sync department Excel sheets, mark seats defective/empty, clear all student seats, or adjust block configurations.
       </p>
       <div class="form-group">
         <label>Password</label>
@@ -1019,8 +1035,19 @@
           </button>
         </div>
 
+        <!-- NEW: Clear All Students Option -->
+        <div class="info-card" style="margin-top:0;">
+          <h3 class="serif-title" style="font-size:19px; margin-bottom:8px; color:#dc2626;">3. Clear All Students</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px;">
+            Remove all assigned student names and registrations from every seat across the entire hall.
+          </p>
+          <button class="btn-danger" style="width:100%; justify-content:center; margin-top: 24px;" onclick="clearAllStudents()">
+            🗑 Clear All Students From Seats
+          </button>
+        </div>
+
         <div class="info-card" style="margin-top:0; grid-column: 1 / -1;">
-          <h3 class="serif-title" style="font-size:19px; margin-bottom:6px;">3. Customize Block Rows, Seats per Row &amp; Department Counts</h3>
+          <h3 class="serif-title" style="font-size:19px; margin-bottom:6px;">4. Customize Block Rows, Seats per Row &amp; Department Counts</h3>
           <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">
             All rows face the stage in the same direction.
           </p>
@@ -1491,7 +1518,7 @@
     }
 
     /********************************************************************
-     * 4. ANIMATION ENGINE (VERY LIGHT COLOR STEPS)
+     * 4. ANIMATION ENGINE
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -1559,7 +1586,7 @@
         }
       }
 
-      const color = "#cbd5e1"; // Very light color for steps/animation
+      const color = "#cbd5e1";
       return { d, color, studentCount: Math.max(1, studentCount), blockId, rowNum };
     }
 
@@ -1654,7 +1681,7 @@
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", "#cbd5e1"); // Very light color
+        pathEl.setAttribute("stroke", "#cbd5e1");
         pathEl.setAttribute("stroke-width", "1.6");
         pathEl.setAttribute("stroke-dasharray", "5 4");
         pathEl.setAttribute("opacity", "0.7");
@@ -1894,6 +1921,13 @@
         alert(`Successfully synced ${count} students to Firebase Cloud!`);
       };
       reader.readAsArrayBuffer(fileInput.files[0]);
+    }
+
+    function clearAllStudents() {
+      if (!confirm("Are you sure you want to clear all student assignments from all seats? This cannot be undone.")) return;
+      studentRoster = {};
+      saveAllCloudStorage();
+      alert("All students have been cleared from the seating arrangement.");
     }
 
     function applySeatStatusByInput() {
