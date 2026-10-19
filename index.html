@@ -304,7 +304,7 @@
       padding: 12px 28px 34px 28px;
     }
 
-    /* Architectural Stage & Entries (Extended from mid Block 2 to mid Block 5) */
+    /* Architectural Stage & Entries */
     .hall-top-architecture {
       display: flex;
       align-items: flex-start;
@@ -345,7 +345,7 @@
       align-items: center;
     }
     .stage-main-rect {
-      width: 720px; /* Extended longer across blocks 2 to 5 */
+      width: 720px;
       height: 132px;
       background: var(--navy-card);
       border: 1.5px solid #152542;
@@ -836,16 +836,16 @@
     <!-- Legend -->
     <div class="legend-card">
       <div class="legend-grid">
-        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (EE Dept)[span_1](start_span)[span_1](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (B.Tech)[span_2](start_span)[span_2](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (EE Dept)[span_3](start_span)[span_3](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS[span_4](start_span)[span_4](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA[span_5](start_span)[span_5](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE[span_6](start_span)[span_6](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME[span_7](start_span)[span_7](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch[span_8](start_span)[span_8](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA[span_9](start_span)[span_9](end_span)</div>
-        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC[span_10](start_span)[span_10](end_span)</div>
+        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (EE Dept)</div>
+        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (B.Tech)</div>
+        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (EE Dept)</div>
+        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS</div>
+        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA</div>
+        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE</div>
+        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch</div>
+        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA</div>
+        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC</div>
         <div class="legend-item"><span class="rect-indicator filled"></span> Seat Filled</div>
         <div class="legend-item"><span class="rect-indicator unoccupied"></span> Unoccupied</div>
         <div class="legend-item"><span class="dot dot-defective">✕</span> Defective</div>
@@ -905,9 +905,8 @@
             <div class="stage-side-steps" id="leftStageSteps"></div>
 
             <div class="stage-wrapper" id="stageWrapper">
-              <!-- Extended Stage spanning from mid Block 2 to mid Block 5 -->
               <div class="stage-main-rect" id="stageMainRect">
-                <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE (Extended Span)</div>
+                <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE</div>
                 <div class="stage-led-tag">LED WALL</div>
 
                 <div class="stage-receptions-row">
@@ -947,7 +946,7 @@
     <div class="info-card">
       <h3 class="serif-title" style="font-size:19px; margin-bottom:12px;">How distribution works</h3>
       <p style="font-size:14.5px; color:#3b4656; margin-bottom:10px;">
-        <strong>Two stations run together in parallel:</strong> Blocks 1–3 receive at <strong>Certificate Station 1</strong>, and Blocks 4–6 receive at <strong>Certificate Station 2</strong>. PhD and PTDC are part of the EE Department group[span_11](start_span)[span_11](end_span).
+        <strong>Two stations run together in parallel:</strong> Blocks 1–3 receive at <strong>Certificate Station 1</strong>, and Blocks 4–6 receive at <strong>Certificate Station 2</strong>. PhD and PTDC are part of the EE Department group.
       </p>
     </div>
   </main>
@@ -1090,11 +1089,10 @@
     let selectedDeptForExcel = "EE";
     let walkAnimFrame = null;
 
-    // PhD and PTDC shown separately but marked as part of EE department group
     const BRANCH_META = {
-      PhD:  { name: "Doctoral Programmes (PhD) — Part of EE Department", color: "#7c3aed" },
+      PhD:  { name: "Doctoral Programmes (PhD)", color: "#7c3aed" },
       EE:   { name: "Electrical & Electronics Engineering (EE)", color: "#2563eb" },
-      PTDC: { name: "Part-Time B.Tech (PTDC) — Part of EE Department", color: "#0891b2" },
+      PTDC: { name: "Part-Time B.Tech (PTDC)", color: "#0891b2" },
       CS:   { name: "Computer Science & Engineering (CS)", color: "#059669" },
       MCA:  { name: "Master of Computer Applications (MCA)", color: "#65a30d" },
       CE:   { name: "Civil Engineering (CE)", color: "#d97706" },
@@ -1561,8 +1559,7 @@
         }
       }
 
-      // Very light color for steps/animation
-      const color = "#94a3b8"; 
+      const color = "#cbd5e1"; // Very light color for steps/animation
       return { d, color, studentCount: Math.max(1, studentCount), blockId, rowNum };
     }
 
@@ -1586,8 +1583,8 @@
       const totalLength = pathEl.getTotalLength();
       const dot = document.createElementNS("http://www.w3.org/2000/svg", "g");
       dot.innerHTML = `
-        <circle cx="0" cy="-3" r="3.8" fill="#475569" stroke="#fff" stroke-width="1.2"/>
-        <rect x="-4" y="0.5" width="8" height="5" rx="2" fill="#475569" stroke="#fff" stroke-width="1.2"/>
+        <circle cx="0" cy="-3" r="3.8" fill="#64748b" stroke="#fff" stroke-width="1.2"/>
+        <rect x="-4" y="0.5" width="8" height="5" rx="2" fill="#64748b" stroke="#fff" stroke-width="1.2"/>
       `;
       svg.appendChild(dot);
 
@@ -1596,8 +1593,8 @@
 
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      statusCard.style.borderColor = "#94a3b8";
-      document.getElementById("walkEyebrow").style.color = "#475569";
+      statusCard.style.borderColor = "#cbd5e1";
+      document.getElementById("walkEyebrow").style.color = "#64748b";
       document.getElementById("walkEyebrow").textContent =
         `INDIVIDUAL PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW${rowNum}`} → STATION ${stationNum}`;
       document.getElementById("walkStepTitle").textContent = "Walking along path to stage using very light steps...";
@@ -1636,8 +1633,8 @@
 
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      statusCard.style.borderColor = "#94a3b8";
-      document.getElementById("walkEyebrow").style.color = "#475569";
+      statusCard.style.borderColor = "#cbd5e1";
+      document.getElementById("walkEyebrow").style.color = "#64748b";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode} (${pathConfigs.length} ROWS)`;
       document.getElementById("walkSubtext").textContent = `Next row reaches the stage immediately as the previous row leaves`;
 
@@ -1657,7 +1654,7 @@
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", "#cbd5e1"); // Very light color for wave lines
+        pathEl.setAttribute("stroke", "#cbd5e1"); // Very light color
         pathEl.setAttribute("stroke-width", "1.6");
         pathEl.setAttribute("stroke-dasharray", "5 4");
         pathEl.setAttribute("opacity", "0.7");
@@ -1671,8 +1668,8 @@
           const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
           g.style.opacity = "0";
           g.innerHTML = `
-            <circle cx="0" cy="-3" r="3" fill="#475569" stroke="#fff" stroke-width="1"/>
-            <rect x="-3.2" y="0.5" width="6.4" height="4.2" rx="1.8" fill="#475569" stroke="#fff" stroke-width="1"/>
+            <circle cx="0" cy="-3" r="3" fill="#64748b" stroke="#fff" stroke-width="1"/>
+            <rect x="-3.2" y="0.5" width="6.4" height="4.2" rx="1.8" fill="#64748b" stroke="#fff" stroke-width="1"/>
           `;
           svg.appendChild(g);
           dots.push(g);
