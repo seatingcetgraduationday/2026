@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CET Graduation Day 2026 - Seating Arrangement</title>
+  <!-- Tailwind CSS & SheetJS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    .seat {
+      width: 32px;
+      height: 32px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .seat:hover {
+      transform: scale(1.15);
+      z-index: 10;
+    }
+    .seat-vacant { background-color: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+    .seat-occupied { background-color: #3b82f6; color: #ffffff; }
+    .seat-defective { background-color: #ef4444; color: #ffffff; }
+    .seat-faculty { background-color: #8b5cf6; color: #ffffff; }
+    .seat-highlighted { 
+      box-shadow: 0 0 0 4px #facc15, 0 0 15px #eab308;
+      animation: pulse 1.5s infinite;
+      z-index: 20;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1.1); }
+      50% { transform: scale(1.25); }
+    }
+    /* Movement Animation Indicator */
+    .walking-dot {
+      width: 14px;
+      height: 14px;
+      background: #10b981;
+      border: 2px solid white;
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: 0 0 10px #10b981;
+      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 50;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Header -->
+  <header class="bg-indigo-900 text-white shadow-md py-4 px-6 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-graduation-cap text-3xl text-amber-400"></i>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">CET Graduation Day 2026</h1>
+          <p class="text-xs text-indigo-200">Interactive Seating Layout & Stage Flow</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openFacultyModal()" class="bg-indigo-700 hover:bg-indigo-600 border border-indigo-400 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 transition">
+          <i class="fa-solid fa-lock"></i> Faculty Admin
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex-1 flex flex-col gap-6">
+
+    <!-- Top Guidance & Search Bar -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <!-- Search Input -->
+      <div class="w-full md:w-1/2 flex items-center gap-2">
+        <div class="relative w-full">
+          <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400"></i>
+          <input id="searchInput" type="text" placeholder="Search student by Name or Roll No..." 
+            class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onkeydown="if(event.key === 'Enter') searchStudent()" />
+        </div>
+        <button onclick="searchStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+          Search
+        </button>
+        <button onclick="resetSearch()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition">
+          Clear
+        </button>
+      </div>
+
+      <!-- Movement Rule Banner -->
+      <div class="w-full md:w-1/2 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg text-xs text-amber-900 leading-relaxed">
+        <strong><i class="fa-solid fa-circle-info"></i> Stage Movement Protocol:</strong> Outer blocks proceed first, followed by inner blocks. Front rows move first. Two certificate points operate simultaneously (Left Stage Point 1, Right Stage Point 2).
+      </div>
+    </div>
+
+    <!-- Stage and Certificate Distribution Hub -->
+    <div class="relative bg-gradient-to-b from-indigo-950 to-slate-900 text-white rounded-xl p-5 shadow-lg border border-slate-800 text-center">
+      <div class="text-xs tracking-widest uppercase font-semibold text-indigo-300 mb-2">Stage Area</div>
+      
+      <!-- Stage Podium Points -->
+      <div class="flex justify-around items-center pt-2 pb-1">
+        <div id="stage-point-1" class="border-2 border-emerald-400 bg-emerald-950/80 px-4 py-2 rounded-lg text-center shadow-md">
+          <span class="block text-xs uppercase tracking-wider text-emerald-300 font-bold">Distribution Point 1</span>
+          <span class="text-sm font-bold text-white"><i class="fa-solid fa-award text-yellow-400 mr-1"></i> Left Wing Stage</span>
+        </div>
+        <div class="h-8 w-px bg-slate-700 hidden sm:block"></div>
+        <div id="stage-point-2" class="border-2 border-sky-400 bg-sky-950/80 px-4 py-2 rounded-lg text-center shadow-md">
+          <span class="block text-xs uppercase tracking-wider text-sky-300 font-bold">Distribution Point 2</span>
+          <span class="text-sm font-bold text-white"><i class="fa-solid fa-award text-yellow-400 mr-1"></i> Right Wing Stage</span>
+        </div>
+      </div>
+      <div class="mt-2 text-[11px] text-slate-400 italic">Faculty members remain seated during student stage procession.</div>
+    </div>
+
+    <!-- Seating Layout Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 overflow-x-auto relative" id="hallContainer">
+      <!-- Movement Simulation Marker -->
+      <div id="walkingDot" class="walking-dot hidden"></div>
+
+      <!-- Legends -->
+      <div class="flex flex-wrap items-center justify-center gap-6 mb-6 text-xs text-slate-600">
+        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-vacant"></span> Available</div>
+        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-occupied"></span> Allocated</div>
+        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-defective"></span> Defective / Empty</div>
+        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-faculty"></span> Faculty / VIP</div>
+        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded border-2 border-yellow-400 bg-yellow-200"></span> Selected / Target</div>
+      </div>
+
+      <!-- Blocks Grid -->
+      <div id="seatingGrid" class="flex flex-col gap-8 min-w-[750px] items-center">
+        <!-- Generated Dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Seat Info / Action Modal -->
+  <div id="seatModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl relative border border-slate-200">
+      <button onclick="closeModal('seatModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2" id="modalSeatTitle">Seat Details</h3>
+      <div class="mt-4 space-y-2 text-sm text-slate-600" id="modalSeatBody">
+        <!-- Content inserted dynamically -->
+      </div>
+      <div class="mt-6 flex flex-col gap-2" id="modalActions">
+        <!-- Action Buttons -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Faculty Admin Modal (Password Protected) -->
+  <div id="facultyAuthModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl relative border border-slate-200">
+      <button onclick="closeModal('facultyAuthModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-shield-halved text-indigo-600 mr-2"></i>Faculty Authentication</h3>
+      <p class="text-xs text-slate-500 mt-1">Enter password to edit seating, upload spreadsheets, or change grid dimensions.</p>
+      <div class="mt-4">
+        <input id="adminPassword" type="password" placeholder="Enter Admin Password" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <button onclick="verifyPassword()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition">
+        Verify & Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- Faculty Management Panel Modal -->
+  <div id="facultyPanelModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 my-8 shadow-2xl relative border border-slate-200">
+      <button onclick="closeModal('facultyPanelModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <h2 class="text-xl font-bold text-slate-800 border-b pb-3 flex items-center gap-2">
+        <i class="fa-solid fa-sliders text-indigo-600"></i> Faculty Seating Management Console
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <!-- Section 1: Template & Excel Data -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <h4 class="font-semibold text-sm text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-file-excel text-emerald-600"></i> Department Excel Manager
+            </h4>
+            <p class="text-xs text-slate-500 mb-3">
+              Generate an Excel file for your department, fill in student names & roll numbers, and re-upload.
+            </p>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Department:</label>
+            <select id="deptSelect" class="w-full p-2 border rounded-lg text-sm bg-white mb-4">
+              <option value="Computer Science">Computer Science & Engineering</option>
+              <option value="Electronics">Electronics & Communication</option>
+              <option value="Electrical">Electrical & Electronics</option>
+              <option value="Mechanical">Mechanical Engineering</option>
+              <option value="Civil">Civil Engineering</option>
+            </select>
+            <button onclick="downloadExcelTemplate()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition mb-4">
+              <i class="fa-solid fa-download"></i> Download Excel Template
+            </button>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Populated Sheet:</label>
+            <input type="file" id="excelUpload" accept=".xlsx, .xls" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+          </div>
+          <button onclick="processExcelUpload()" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-xs font-semibold transition">
+            Import & Assign Seats
+          </button>
+        </div>
+
+        <!-- Section 2: Layout & Seat Dimensions Customizer -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <h4 class="font-semibold text-sm text-slate-800 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-table-cells text-indigo-600"></i> Block Dimension Customizer
+          </h4>
+          <p class="text-xs text-slate-500 mb-3">Adjust the number of rows and columns per block according to venue availability.</p>
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-700">Left Outer Block (Rows × Seats):</label>
+              <div class="flex gap-2 mt-1">
+                <input type="number" id="dim-lo-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
+                <input type="number" id="dim-lo-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
+              </div>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700">Left Inner Block (Rows × Seats):</label>
+              <div class="flex gap-2 mt-1">
+                <input type="number" id="dim-li-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
+                <input type="number" id="dim-li-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
+              </div>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700">Right Inner Block (Rows × Seats):</label>
+              <div class="flex gap-2 mt-1">
+                <input type="number" id="dim-ri-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
+                <input type="number" id="dim-ri-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
+              </div>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700">Right Outer Block (Rows × Seats):</label>
+              <div class="flex gap-2 mt-1">
+                <input type="number" id="dim-ro-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
+                <input type="number" id="dim-ro-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
+              </div>
+            </div>
+            <button onclick="saveDimensions()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-lg text-xs font-semibold transition mt-2">
+              Apply Layout Changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t flex justify-end">
+        <button onclick="closeModal('facultyPanelModal')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg text-sm font-semibold transition">
+          Close Panel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System State & Initial Configurations
+    const ADMIN_PW = "CET_Graduation@2026";
+
+    let layoutConfig = {
+      faculty: { rows: 1, cols: 16, name: "Faculty / VIP Row" },
+      leftOuter: { rows: 6, cols: 6, name: "Block A (Left Outer)" },
+      leftInner: { rows: 6, cols: 6, name: "Block B (Left Inner)" },
+      rightInner: { rows: 6, cols: 6, name: "Block C (Right Inner)" },
+      rightOuter: { rows: 6, cols: 6, name: "Block D (Right Outer)" }
+    };
+
+    // Stored seats map: key = seatId (e.g. "LO-R1-S1"), value = { seatId, blockKey, row, col, status: 'vacant'|'occupied'|'defective'|'faculty', studentName, rollNo, dept }
+    let seatsData = {};
+    let activeHighlightedSeatId = null;
+
+    // Initialize application
+    window.addEventListener("DOMContentLoaded", () => {
+      loadSavedState();
+      populateDimInputs();
+      renderLayout();
+    });
+
+    function loadSavedState() {
+      const savedConfig = localStorage.getItem("cet_layout_config");
+      if (savedConfig) {
+        try { layoutConfig = JSON.parse(savedConfig); } catch (e) {}
+      }
+      const savedSeats = localStorage.getItem("cet_seats_data");
+      if (savedSeats) {
+        try { seatsData = JSON.parse(savedSeats); } catch (e) {}
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("cet_layout_config", JSON.stringify(layoutConfig));
+      localStorage.setItem("cet_seats_data", JSON.stringify(seatsData));
+    }
+
+    function populateDimInputs() {
+      document.getElementById("dim-lo-rows").value = layoutConfig.leftOuter.rows;
+      document.getElementById("dim-lo-cols").value = layoutConfig.leftOuter.cols;
+      document.getElementById("dim-li-rows").value = layoutConfig.leftInner.rows;
+      document.getElementById("dim-li-cols").value = layoutConfig.leftInner.cols;
+      document.getElementById("dim-ri-rows").value = layoutConfig.rightInner.rows;
+      document.getElementById("dim-ri-cols").value = layoutConfig.rightInner.cols;
+      document.getElementById("dim-ro-rows").value = layoutConfig.rightOuter.rows;
+      document.getElementById("dim-ro-cols").value = layoutConfig.rightOuter.cols;
+    }
+
+    function saveDimensions() {
+      layoutConfig.leftOuter.rows = parseInt(document.getElementById("dim-lo-rows").value) || 6;
+      layoutConfig.leftOuter.cols = parseInt(document.getElementById("dim-lo-cols").value) || 6;
+      layoutConfig.leftInner.rows = parseInt(document.getElementById("dim-li-rows").value) || 6;
+      layoutConfig.leftInner.cols = parseInt(document.getElementById("dim-li-cols").value) || 6;
+      layoutConfig.rightInner.rows = parseInt(document.getElementById("dim-ri-rows").value) || 6;
+      layoutConfig.rightInner.cols = parseInt(document.getElementById("dim-ri-cols").value) || 6;
+      layoutConfig.rightOuter.rows = parseInt(document.getElementById("dim-ro-rows").value) || 6;
+      layoutConfig.rightOuter.cols = parseInt(document.getElementById("dim-ro-cols").value) || 6;
+
+      saveState();
+      renderLayout();
+      alert("Layout updated successfully!");
+    }
+
+    // Render Full Hall Seating
+    function renderLayout() {
+      const container = document.getElementById("seatingGrid");
+      container.innerHTML = "";
+
+      // 1. Faculty Row
+      const facSection = document.createElement("div");
+      facSection.className = "w-full max-w-4xl bg-slate-50 border border-slate-300 rounded-lg p-3 flex flex-col items-center";
+      facSection.innerHTML = `<span class="text-xs font-bold text-indigo-900 mb-2 tracking-wide uppercase"><i class="fa-solid fa-user-tie mr-1"></i> ${layoutConfig.faculty.name}</span>`;
+      const facRow = document.createElement("div");
+      facRow.className = "flex gap-2 flex-wrap justify-center";
+      for (let c = 1; c <= layoutConfig.faculty.cols; c++) {
+        const seatId = `FAC-1-${c}`;
+        if (!seatsData[seatId]) {
+          seatsData[seatId] = { seatId, blockKey: 'faculty', row: 1, col: c, status: 'faculty', studentName: `Faculty Member ${c}`, rollNo: '', dept: 'Faculty' };
+        }
+        facRow.appendChild(createSeatElement(seatId));
+      }
+      facSection.appendChild(facRow);
+      container.appendChild(facSection);
+
+      // 2. Student Blocks (Two halves: Left [Outer, Inner] & Right [Inner, Outer])
+      const blocksWrapper = document.createElement("div");
+      blocksWrapper.className = "grid grid-cols-1 md:grid-cols-2 gap-8 w-full";
+
+      // Left Wing (Point 1 destination)
+      const leftWing = document.createElement("div");
+      leftWing.className = "border border-emerald-200 bg-emerald-50/30 rounded-xl p-4 flex flex-col gap-4";
+      leftWing.innerHTML = `<div class="text-center font-bold text-xs text-emerald-800 uppercase tracking-wider flex items-center justify-center gap-2">
+        <i class="fa-solid fa-arrow-up text-emerald-600"></i> Left Wing &rarr; Assigned to Point 1
+      </div>`;
+      const leftBlocks = document.createElement("div");
+      leftBlocks.className = "flex gap-4 justify-around";
+      leftBlocks.appendChild(createBlockDOM('leftOuter', layoutConfig.leftOuter));
+      leftBlocks.appendChild(createBlockDOM('leftInner', layoutConfig.leftInner));
+      leftWing.appendChild(leftBlocks);
+
+      // Right Wing (Point 2 destination)
+      const rightWing = document.createElement("div");
+      rightWing.className = "border border-sky-200 bg-sky-50/30 rounded-xl p-4 flex flex-col gap-4";
+      rightWing.innerHTML = `<div class="text-center font-bold text-xs text-sky-800 uppercase tracking-wider flex items-center justify-center gap-2">
+        <i class="fa-solid fa-arrow-up text-sky-600"></i> Right Wing &rarr; Assigned to Point 2
+      </div>`;
+      const rightBlocks = document.createElement("div");
+      rightBlocks.className = "flex gap-4 justify-around";
+      rightBlocks.appendChild(createBlockDOM('rightInner', layoutConfig.rightInner));
+      rightBlocks.appendChild(createBlockDOM('rightOuter', layoutConfig.rightOuter));
+      rightWing.appendChild(rightBlocks);
+
+      blocksWrapper.appendChild(leftWing);
+      blocksWrapper.appendChild(rightWing);
+      container.appendChild(blocksWrapper);
+    }
+
+    function createBlockDOM(blockKey, conf) {
+      const blockDiv = document.createElement("div");
+      blockDiv.className = "flex flex-col items-center bg-white p-3 rounded-lg border border-slate-200 shadow-xs";
+      blockDiv.innerHTML = `<span class="text-[11px] font-bold text-slate-700 mb-2 text-center">${conf.name}</span>`;
+
+      const rowsContainer = document.createElement("div");
+      rowsContainer.className = "flex flex-col gap-1.5";
+
+      for (let r = 1; r <= conf.rows; r++) {
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "flex gap-1.5 items-center";
+        
+        // Row label
+        const rLabel = document.createElement("span");
+        rLabel.className = "text-[9px] w-4 font-bold text-slate-400 text-right mr-0.5";
+        rLabel.innerText = `R${r}`;
+        rowDiv.appendChild(rLabel);
+
+        for (let c = 1; c <= conf.cols; c++) {
+          const seatId = `${blockKey.toUpperCase()}-R${r}-S${c}`;
+          if (!seatsData[seatId]) {
+            seatsData[seatId] = { seatId, blockKey, row: r, col: c, status: 'vacant', studentName: '', rollNo: '', dept: '' };
+          }
+          rowDiv.appendChild(createSeatElement(seatId));
+        }
+        rowsContainer.appendChild(rowDiv);
+      }
+      blockDiv.appendChild(rowsContainer);
+      return blockDiv;
+    }
+
+    function createSeatElement(seatId) {
+      const data = seatsData[seatId];
+      const el = document.createElement("div");
+      el.id = `seat-${seatId}`;
+      el.className = `seat seat-${data.status}`;
+      if (activeHighlightedSeatId === seatId) {
+        el.classList.add("seat-highlighted");
+      }
+      el.title = `${seatId}: ${data.studentName || 'Unassigned'}`;
+      el.innerText = `S${data.col}`;
+      el.onclick = () => showSeatDetails(seatId);
+      return el;
+    }
+
+    // Modal Details & Interactive Action
+    function showSeatDetails(seatId) {
+      const data = seatsData[seatId];
+      if (!data) return;
+
+      document.getElementById("modalSeatTitle").innerText = `Seat: ${seatId}`;
+      let content = `
+        <div class="border-b pb-2">
+          <span class="block text-xs text-slate-400 font-semibold uppercase">Status</span>
+          <span class="font-medium text-slate-800 capitalize">${data.status}</span>
+        </div>
+        <div class="border-b pb-2">
+          <span class="block text-xs text-slate-400 font-semibold uppercase">Assigned Student</span>
+          <span class="font-bold text-slate-900">${data.studentName || '<span class="text-slate-400 italic">None</span>'}</span>
+        </div>
+        <div class="border-b pb-2">
+          <span class="block text-xs text-slate-400 font-semibold uppercase">Roll / Register No</span>
+          <span class="font-medium text-slate-800">${data.rollNo || 'N/A'}</span>
+        </div>
+        <div>
+          <span class="block text-xs text-slate-400 font-semibold uppercase">Department</span>
+          <span class="font-medium text-slate-800">${data.dept || 'N/A'}</span>
+        </div>
+      `;
+      document.getElementById("modalSeatBody").innerHTML = content;
+
+      let actions = "";
+      if (data.status !== 'faculty') {
+        actions += `
+          <button onclick="toggleDefective('${seatId}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded-lg font-semibold border transition">
+            <i class="fa-solid fa-wrench mr-1"></i> Toggle Defective / Empty
+          </button>
+          <button onclick="triggerWalkAnimation('${seatId}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 rounded-lg font-semibold transition">
+            <i class="fa-solid fa-person-walking mr-1"></i> Show Movement Path to Stage
+          </button>
+        `;
+      } else {
+        actions += `
+          <div class="p-2 bg-purple-50 rounded text-center text-xs text-purple-700 font-medium">
+            Faculty member seat. No stage movement simulation.
+          </div>
+        `;
+      }
+      document.getElementById("modalActions").innerHTML = actions;
+      openModal("seatModal");
+    }
+
+    function toggleDefective(seatId) {
+      const data = seatsData[seatId];
+      if (!data) return;
+      if (data.status === 'defective') {
+        data.status = data.studentName ? 'occupied' : 'vacant';
+      } else {
+        data.status = 'defective';
+      }
+      saveState();
+      renderLayout();
+      closeModal("seatModal");
+    }
+
+    // Search Logic
+    function searchStudent() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      if (!query) return;
+
+      let foundSeatId = null;
+      for (const [id, s] of Object.entries(seatsData)) {
+        if (
+          (s.studentName && s.studentName.toLowerCase().includes(query)) ||
+          (s.rollNo && s.rollNo.toLowerCase().includes(query))
+        ) {
+          foundSeatId = id;
+          break;
+        }
+      }
+
+      if (foundSeatId) {
+        highlightSeat(foundSeatId);
+        triggerWalkAnimation(foundSeatId);
+      } else {
+        alert("No student found matching the search criteria.");
+      }
+    }
+
+    function highlightSeat(seatId) {
+      activeHighlightedSeatId = seatId;
+      renderLayout();
+      const seatEl = document.getElementById(`seat-${seatId}`);
+      if (seatEl) {
+        seatEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function resetSearch() {
+      document.getElementById("searchInput").value = "";
+      activeHighlightedSeatId = null;
+      renderLayout();
+      document.getElementById("walkingDot").classList.add("hidden");
+    }
+
+    // Stage Movement Animation
+    function triggerWalkAnimation(seatId) {
+      closeModal("seatModal");
+      const seatData = seatsData[seatId];
+      if (!seatData) return;
+
+      // Rule: Do not show movement for Faculty
+      if (seatData.blockKey === 'faculty') {
+        alert("Faculty members do not walk to stage points.");
+        return;
+      }
+
+      const seatEl = document.getElementById(`seat-${seatId}`);
+      if (!seatEl) return;
+
+      // Determine Target Point: Left blocks -> Point 1, Right blocks -> Point 2
+      const isLeft = seatData.blockKey.toLowerCase().includes("left");
+      const targetPoint = document.getElementById(isLeft ? "stage-point-1" : "stage-point-2");
+      const hall = document.getElementById("hallContainer");
+      const dot = document.getElementById("walkingDot");
+
+      const hallRect = hall.getBoundingClientRect();
+      const seatRect = seatEl.getBoundingClientRect();
+      const targetRect = targetPoint.getBoundingClientRect();
+
+      // Start position (relative to hall container)
+      const startX = seatRect.left - hallRect.left + (seatRect.width / 2) - 7;
+      const startY = seatRect.top - hallRect.top + (seatRect.height / 2) - 7;
+
+      // Stage Target position
+      const endX = targetRect.left - hallRect.left + (targetRect.width / 2) - 7;
+      const endY = targetRect.top - hallRect.top + targetRect.height + 15;
+
+      dot.classList.remove("hidden");
+      dot.style.transform = `translate(${startX}px, ${startY}px)`;
+
+      // Step 1: Walk into aisle
+      setTimeout(() => {
+        const aisleX = isLeft ? startX + 40 : startX - 40;
+        dot.style.transform = `translate(${aisleX}px, ${startY}px)`;
+      }, 200);
+
+      // Step 2: Proceed towards Stage Front
+      setTimeout(() => {
+        const aisleX = isLeft ? startX + 40 : startX - 40;
+        dot.style.transform = `translate(${aisleX}px, ${endY + 20}px)`;
+      }, 900);
+
+      // Step 3: Arrive at Point 1 or Point 2 Podium
+      setTimeout(() => {
+        dot.style.transform = `translate(${endX}px, ${endY}px)`;
+      }, 1600);
+    }
+
+    // Faculty Authentication
+    function openFacultyModal() {
+      document.getElementById("adminPassword").value = "";
+      openModal("facultyAuthModal");
+    }
+
+    function verifyPassword() {
+      const pwd = document.getElementById("adminPassword").value;
+      if (pwd === ADMIN_PW) {
+        closeModal("facultyAuthModal");
+        openModal("facultyPanelModal");
+      } else {
+        alert("Incorrect password. Access denied.");
+      }
+    }
+
+    // Excel Export & Import
+    function downloadExcelTemplate() {
+      const dept = document.getElementById("deptSelect").value;
+      const rows = [
+        ["Seat_ID", "Student_Name", "Roll_No", "Department", "Status"]
+      ];
+
+      // Offer unassigned or relevant seats in template
+      for (const [id, s] of Object.entries(seatsData)) {
+        if (s.blockKey !== 'faculty') {
+          rows.push([id, s.studentName || "", s.rollNo || "", dept, s.status]);
+        }
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Seating_Allocation");
+      XLSX.writeFile(wb, `CET_${dept.replace(/\s+/g, '_')}_Seating.xlsx`);
+    }
+
+    function processExcelUpload() {
+      const fileInput = document.getElementById("excelUpload");
+      if (!fileInput.files.length) {
+        alert("Please select an Excel file to upload.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+        let updatedCount = 0;
+        jsonData.forEach(row => {
+          const seatId = row.Seat_ID || row.seat_id;
+          if (seatId && seatsData[seatId]) {
+            seatsData[seatId].studentName = row.Student_Name || row.student_name || "";
+            seatsData[seatId].rollNo = row.Roll_No || row.roll_no || "";
+            seatsData[seatId].dept = row.Department || row.department || "";
+            if (row.Status) {
+              seatsData[seatId].status = row.Status.toLowerCase();
+            } else {
+              seatsData[seatId].status = seatsData[seatId].studentName ? 'occupied' : 'vacant';
+            }
+            updatedCount++;
+          }
+        });
+
+        saveState();
+        renderLayout();
+        alert(`Successfully imported and updated ${updatedCount} seats!`);
+        closeModal("facultyPanelModal");
+      };
+      reader.readAsArrayBuffer(fileInput.files[0]);
+    }
+
+    // Modal Helpers
+    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
+    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+  </script>
+</body>
+</html>
