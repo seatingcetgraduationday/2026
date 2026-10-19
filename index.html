@@ -3,661 +3,1770 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CET Graduation Day 2026 - Seating Arrangement</title>
-  <!-- Tailwind CSS & SheetJS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>CET Graduation Day 2026 — Seating Arrangement</title>
+  <!-- Google Fonts: Fraunces (Serif) & Plus Jakarta Sans (Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- SheetJS for Excel Export/Import -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
-    .seat {
-      width: 32px;
-      height: 32px;
-      font-size: 10px;
+    :root {
+      --bg-cream: #f8f6f0;
+      --navy-dark: #152542;
+      --navy-card: #192a48;
+      --gold: #e6b333;
+      --text-main: #182232;
+      --text-muted: #5e6b7c;
+      --border-light: #e6e2d8;
+      --card-bg: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    h1, h2, h3, .serif-title {
+      font-family: 'Fraunces', Georgia, serif;
+    }
+
+    /* Top Navigation Bar */
+    .navbar {
+      background-color: var(--navy-dark);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--gold);
+      color: var(--navy-dark);
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: #b0bfd8;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .nav-tab {
+      background: transparent;
+      color: #d1dbed;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .nav-tab.active {
+      background-color: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+    }
+
+    /* Main Content Wrapper */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    /* Hero Section */
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .hero-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .hero-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin-bottom: 20px;
+    }
+
+    /* Search Input */
+    .search-box {
+      position: relative;
+      max-width: 680px;
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 15px 44px 15px 44px;
+      border-radius: 999px;
+      border: 1px solid #dcd7cc;
+      background: #ffffff;
+      font-size: 15px;
+      color: var(--text-main);
+      outline: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-box input:focus {
+      border-color: var(--navy-dark);
+      box-shadow: 0 0 0 3px rgba(21, 37, 66, 0.1);
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7c8898;
+      pointer-events: none;
+    }
+    .clear-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #eeeae0;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 12px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+    }
+
+    /* Legend & Toolbar */
+    .legend-card {
+      background: #fdfcf9;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      padding: 14px 0;
+      margin-bottom: 16px;
+    }
+    .legend-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-defective {
+      background: #374151;
+      color: #fff;
+      font-size: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dot-empty {
+      border: 1.5px dashed #6b7280;
+      background: transparent;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 14px 0;
+    }
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .zoom-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #dcd7cc;
+      background: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+    }
+    .zoom-label {
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 44px;
+      text-align: center;
+    }
+    .seated-counter {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Map Viewport Card */
+    .hall-viewport {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      overflow: auto;
+      padding: 20px;
+      position: relative;
+      max-height: 78vh;
+    }
+    .hall-canvas {
+      position: relative;
+      transform-origin: top left;
+      transition: transform 0.15s ease-out;
+      display: inline-block;
+      min-width: 1180px;
+      padding: 10px 20px 24px 20px;
+    }
+
+    /* Top Architectural Features (Entry & Stage) */
+    .hall-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      position: relative;
+      height: 155px;
+    }
+    .entry-banner {
+      background: #e9f2ec;
+      color: #3b624b;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 6px 80px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .stage-container {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 12px;
+      display: flex;
+      align-items: center;
+    }
+    .stage-steps {
+      width: 24px;
+      height: 36px;
+      background: repeating-linear-gradient(90deg, #dcd4c4, #dcd4c4 4px, #c4baa6 4px, #c4baa6 8px);
+      border: 1px solid #b8ae99;
+    }
+    .stage-box {
+      background: var(--navy-card);
+      color: #fff;
+      width: 500px;
+      height: 130px;
+      border-radius: 8px;
+      padding: 12px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(21,37,66,0.2);
+    }
+    .stage-title-pill {
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 4px 28px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .stage-led {
+      font-size: 9px;
+      color: #9ab0d4;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: -6px;
+    }
+    .stations-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      margin-bottom: 6px;
+    }
+    .station-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .station-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .station-label {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: #cedbf0;
+      text-transform: uppercase;
+    }
+    .return-steps {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38px;
+      height: 14px;
+      background: repeating-linear-gradient(0deg, #dcd4c4, #dcd4c4 3px, #c4baa6 3px, #c4baa6 6px);
+      border: 1px solid #b8ae99;
+    }
+
+    /* Blocks Row */
+    .blocks-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      position: relative;
+      padding-left: 24px;
+    }
+    .row-numbers-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding-top: 22px;
+      margin-right: 4px;
+    }
+    .row-num-label {
+      height: 19px;
+      font-size: 9px;
+      color: #8c96a5;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 4px;
+    }
+
+    .seating-block {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .block-header {
+      text-align: center;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: #6c7788;
+      font-weight: 700;
+      margin-bottom: 6px;
+      height: 16px;
+      text-transform: uppercase;
+    }
+    .block-dimension-note {
+      position: absolute;
+      top: -14px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9px;
+      color: #8c96a5;
+    }
+    .block-body {
+      display: flex;
+      position: relative;
+    }
+
+    /* Side Branch Bars */
+    .branch-bars-col {
+      width: 16px;
+      position: relative;
+      margin-right: 3px;
+    }
+    .branch-bar {
+      position: absolute;
+      left: 10px;
+      width: 3px;
+      border-radius: 2px;
+    }
+    .branch-bar-label {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      transform-origin: center;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .rows-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .seat-row {
+      display: flex;
+      gap: 3px;
+      height: 19px;
+    }
+
+    /* Individual Seat Box */
+    .seat-box {
+      width: 19px;
+      height: 19px;
+      border-radius: 4px;
+      font-size: 7.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       user-select: none;
-      transition: all 0.2s ease;
+      transition: transform 0.12s, box-shadow 0.12s;
+      position: relative;
+      border: 1px solid transparent;
+    }
+    .seat-box:hover {
+      transform: scale(1.25);
+      z-index: 15;
+    }
+    .seat-selected {
+      outline: 2.5px solid #152542 !important;
+      outline-offset: 1px;
+      box-shadow: 0 0 0 4px rgba(230, 179, 51, 0.55);
+      z-index: 20;
+      transform: scale(1.18);
+    }
+
+    /* Branch Color Palettes */
+    .seat-FAC { background: #7c8594; color: #fff; }
+    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; }
+    .seat-EE  { background: #dceaff; color: #1e40af; border-color: #93c5fd; }
+    .seat-PTDC{ background: #d5f3f7; color: #0e7490; border-color: #67e8f9; }
+    .seat-CS  { background: #d6f5e3; color: #065f46; border-color: #6ee7b7; }
+    .seat-MCA { background: #e4f8cc; color: #3f6212; border-color: #bef264; }
+    .seat-CE  { background: #fef0c7; color: #92400e; border-color: #fcd34d; }
+    .seat-ME  { background: #ffedd5; color: #9a3412; border-color: #fdba74; }
+    .seat-Arch{ background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    .seat-MBA { background: #fae8ff; color: #86198f; border-color: #f0abfc; }
+    .seat-EC  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+
+    .seat-assigned {
+      filter: saturate(1.4) contrast(1.08);
+      font-weight: 800;
+    }
+    .seat-empty-slot {
+      background: transparent !important;
+      border: 1px dashed #cbd5e1 !important;
+      color: transparent !important;
+    }
+    .seat-defective-slot {
+      background: #374151 !important;
+      border-color: #1f2937 !important;
+      color: #ffffff !important;
+    }
+
+    /* Passageway Spacer */
+    .passage-col {
+      width: 14px;
+      background: #f5f2e9;
+      align-self: stretch;
+      border-radius: 3px;
+      position: relative;
+      margin-top: 22px;
+    }
+    .passage-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      color: #8c96a5;
+      white-space: nowrap;
+    }
+
+    /* SVG Walking Path Overlay */
+    #walkOverlaySvg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    /* Bottom Info Cards */
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    }
+    .info-card-empty {
+      text-align: center;
+      padding: 32px 20px;
+    }
+    .info-card-empty h3 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+    .info-card-empty p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Selected Seat Details Card */
+    .seat-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .seat-badge-lg {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .assigned-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
       font-weight: 600;
     }
-    .seat:hover {
-      transform: scale(1.15);
-      z-index: 10;
+    .assigned-name {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
     }
-    .seat-vacant { background-color: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
-    .seat-occupied { background-color: #3b82f6; color: #ffffff; }
-    .seat-defective { background-color: #ef4444; color: #ffffff; }
-    .seat-faculty { background-color: #8b5cf6; color: #ffffff; }
-    .seat-highlighted { 
-      box-shadow: 0 0 0 4px #facc15, 0 0 15px #eab308;
-      animation: pulse 1.5s infinite;
-      z-index: 20;
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
     }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1.1); }
-      50% { transform: scale(1.25); }
+    .meta-item-label {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 3px;
     }
-    /* Movement Animation Indicator */
-    .walking-dot {
-      width: 14px;
-      height: 14px;
-      background: #10b981;
-      border: 2px solid white;
-      border-radius: 50%;
-      position: absolute;
-      box-shadow: 0 0 10px #10b981;
-      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 50;
+    .meta-item-val {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .meta-item-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .btn-outline {
+      padding: 11px 20px;
+      border-radius: 12px;
+      border: 1px solid #d5cfc2;
+      background: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+    .btn-primary {
+      padding: 11px 22px;
+      border-radius: 12px;
+      border: none;
+      background: var(--navy-dark);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover {
+      background: #1f355c;
+    }
+
+    /* Walk Animation Banner Card */
+    .walk-banner-card {
+      border: 2px solid #2563eb;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-top: 20px;
+      display: none;
+    }
+    .walk-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* Distribution Instructions Card */
+    .rules-card h3 {
+      font-size: 19px;
+      margin-bottom: 14px;
+    }
+    .rules-card p {
+      font-size: 14.5px;
+      color: #3b4656;
+      margin-bottom: 12px;
+    }
+    .rules-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Faculty Section */
+    #facultyView {
+      display: none;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #d5cfc2;
+      font-size: 14px;
+      background: #fff;
+    }
+    .dept-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .dept-pill-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #d5cfc2;
+      background: #f9f7f2;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .dept-pill-btn.active {
+      background: var(--navy-dark);
+      color: #fff;
+      border-color: var(--navy-dark);
+    }
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .config-table th, .config-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border-light);
+      text-align: left;
+    }
+    .config-table input {
+      width: 64px;
+      padding: 5px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans">
+<body>
 
-  <!-- Header -->
-  <header class="bg-indigo-900 text-white shadow-md py-4 px-6 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-      <div class="flex items-center gap-3">
-        <i class="fa-solid fa-graduation-cap text-3xl text-amber-400"></i>
-        <div>
-          <h1 class="text-xl font-bold tracking-tight">CET Graduation Day 2026</h1>
-          <p class="text-xs text-indigo-200">Interactive Seating Layout & Stage Flow</p>
-        </div>
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <div class="brand-title">CET Graduation Day 2026</div>
+        <div class="brand-sub">Seating arrangement</div>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="openFacultyModal()" class="bg-indigo-700 hover:bg-indigo-600 border border-indigo-400 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 transition">
-          <i class="fa-solid fa-lock"></i> Faculty Admin
-        </button>
-      </div>
+    </div>
+    <div class="nav-tabs">
+      <button id="tabSeatBtn" class="nav-tab active" onclick="switchView('seat')">Find my<br>seat</button>
+      <button id="tabFacultyBtn" class="nav-tab" onclick="switchView('faculty')">Faculty</button>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex-1 flex flex-col gap-6">
+  <!-- STUDENT SEATING VIEW -->
+  <main id="seatView" class="container">
+    <div class="eyebrow">CERTIFICATE DISTRIBUTION · TWO STATIONS IN PARALLEL</div>
+    <h1 class="hero-title">Find your seat for Graduation Day</h1>
+    <p class="hero-desc">
+      Search your name or seat number to light up your chair on the hall map. Tap any seat to see who sits there, then watch how your row walks to the stage and back.
+    </p>
 
-    <!-- Top Guidance & Search Bar -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row gap-4 justify-between items-center">
-      <!-- Search Input -->
-      <div class="w-full md:w-1/2 flex items-center gap-2">
-        <div class="relative w-full">
-          <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400"></i>
-          <input id="searchInput" type="text" placeholder="Search student by Name or Roll No..." 
-            class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            onkeydown="if(event.key === 'Enter') searchStudent()" />
-        </div>
-        <button onclick="searchStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-          Search
-        </button>
-        <button onclick="resetSearch()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition">
-          Clear
-        </button>
-      </div>
+    <!-- Search Bar -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input id="searchInput" type="text" placeholder="Your name, register no. or seat (CS 45)" oninput="handleSearch(this.value)" />
+      <button id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✕</button>
+    </div>
 
-      <!-- Movement Rule Banner -->
-      <div class="w-full md:w-1/2 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg text-xs text-amber-900 leading-relaxed">
-        <strong><i class="fa-solid fa-circle-info"></i> Stage Movement Protocol:</strong> Outer blocks proceed first, followed by inner blocks. Front rows move first. Two certificate points operate simultaneously (Left Stage Point 1, Right Stage Point 2).
+    <!-- Legend -->
+    <div class="legend-card">
+      <div class="legend-grid">
+        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD</div>
+        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE</div>
+        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC</div>
+        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS</div>
+        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA</div>
+        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE</div>
+        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch</div>
+        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA</div>
+        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC</div>
+        <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty</div>
+        <div class="legend-item"><span class="dot" style="background:#a7f3d0"></span> Not yet assigned</div>
+        <div class="legend-item"><span class="dot dot-defective">✕</span> Defective</div>
+        <div class="legend-item"><span class="dot dot-empty"></span> Kept empty</div>
       </div>
     </div>
 
-    <!-- Stage and Certificate Distribution Hub -->
-    <div class="relative bg-gradient-to-b from-indigo-950 to-slate-900 text-white rounded-xl p-5 shadow-lg border border-slate-800 text-center">
-      <div class="text-xs tracking-widest uppercase font-semibold text-indigo-300 mb-2">Stage Area</div>
-      
-      <!-- Stage Podium Points -->
-      <div class="flex justify-around items-center pt-2 pb-1">
-        <div id="stage-point-1" class="border-2 border-emerald-400 bg-emerald-950/80 px-4 py-2 rounded-lg text-center shadow-md">
-          <span class="block text-xs uppercase tracking-wider text-emerald-300 font-bold">Distribution Point 1</span>
-          <span class="text-sm font-bold text-white"><i class="fa-solid fa-award text-yellow-400 mr-1"></i> Left Wing Stage</span>
-        </div>
-        <div class="h-8 w-px bg-slate-700 hidden sm:block"></div>
-        <div id="stage-point-2" class="border-2 border-sky-400 bg-sky-950/80 px-4 py-2 rounded-lg text-center shadow-md">
-          <span class="block text-xs uppercase tracking-wider text-sky-300 font-bold">Distribution Point 2</span>
-          <span class="text-sm font-bold text-white"><i class="fa-solid fa-award text-yellow-400 mr-1"></i> Right Wing Stage</span>
-        </div>
+    <!-- Zoom & Counter Toolbar -->
+    <div class="toolbar">
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="adjustZoom(-0.15)">−</button>
+        <span id="zoomLabel" class="zoom-label">100%</span>
+        <button class="zoom-btn" onclick="adjustZoom(0.15)">+</button>
       </div>
-      <div class="mt-2 text-[11px] text-slate-400 italic">Faculty members remain seated during student stage procession.</div>
+      <div id="seatedCounter" class="seated-counter">0 students seated</div>
     </div>
 
-    <!-- Seating Layout Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 overflow-x-auto relative" id="hallContainer">
-      <!-- Movement Simulation Marker -->
-      <div id="walkingDot" class="walking-dot hidden"></div>
+    <!-- Hall Map Viewport -->
+    <div class="hall-viewport" id="hallViewport">
+      <div class="hall-canvas" id="hallCanvas">
+        <!-- SVG Overlay for Walk Animation -->
+        <svg id="walkOverlaySvg"></svg>
 
-      <!-- Legends -->
-      <div class="flex flex-wrap items-center justify-center gap-6 mb-6 text-xs text-slate-600">
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-vacant"></span> Available</div>
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-occupied"></span> Allocated</div>
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-defective"></span> Defective / Empty</div>
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded seat-faculty"></span> Faculty / VIP</div>
-        <div class="flex items-center gap-2"><span class="w-4 h-4 rounded border-2 border-yellow-400 bg-yellow-200"></span> Selected / Target</div>
-      </div>
+        <!-- Stage & Entry Header -->
+        <div class="hall-top-row">
+          <div class="entry-banner">ENTRY · 29 ft</div>
 
-      <!-- Blocks Grid -->
-      <div id="seatingGrid" class="flex flex-col gap-8 min-w-[750px] items-center">
-        <!-- Generated Dynamically -->
+          <div class="stage-container" id="stageContainer">
+            <div class="stage-steps" id="leftStageSteps"></div>
+            <div class="stage-box">
+              <div class="stage-title-pill">GRADUATION STAGE · 40 ft</div>
+              <div class="stage-led">LED WALL</div>
+              <div class="stations-row">
+                <div class="station-marker" id="station1Marker">
+                  <div class="station-circle">1</div>
+                  <div class="station-label">CERTIFICATE STATION 1</div>
+                </div>
+                <div class="station-marker" id="station2Marker">
+                  <div class="station-circle">2</div>
+                  <div class="station-label">CERTIFICATE STATION 2</div>
+                </div>
+              </div>
+              <div class="return-steps" id="centerReturnSteps"></div>
+            </div>
+            <div class="stage-steps" id="rightStageSteps"></div>
+          </div>
+        </div>
+
+        <!-- 6 Blocks Container -->
+        <div class="blocks-wrapper" id="blocksWrapper">
+          <!-- Dynamically populated by JS -->
+        </div>
       </div>
+    </div>
+
+    <!-- Active Walk Simulation Status Banner -->
+    <div id="walkStatusCard" class="walk-banner-card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div id="walkEyebrow" class="walk-eyebrow">WALK TO STAGE · EE 92</div>
+          <div id="walkSubtext" style="font-size:14px; color:var(--text-muted); margin-bottom:10px;">
+            Block 1, row 15 &rarr; Station 1, alongside block 6 at Station 2
+          </div>
+          <div id="walkStepTitle" class="serif-title" style="font-size:18px; font-weight:700;">
+            Stepping out to the outer passage, up the side steps to receive certificate...
+          </div>
+        </div>
+        <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
+      </div>
+    </div>
+
+    <!-- Selected Seat Details Card -->
+    <div id="seatInfoCard" class="info-card info-card-empty">
+      <h3 class="serif-title">Tap any seat</h3>
+      <p>See the student's name, branch and seat number, or search for yourself above.</p>
+    </div>
+
+    <!-- How Distribution Works Card (With Requested Note Additions) -->
+    <div class="info-card rules-card">
+      <h3 class="serif-title">How distribution works</h3>
+      <p>
+        <strong>Two stations run together.</strong> Blocks 1–3 receive at Station 1, blocks 4–6 at Station 2.
+      </p>
+      <p>
+        <strong>Order of movement (Outer blocks first, followed by inner):</strong> Outer blocks (Blocks 1 &amp; 6, <span style="color:#1d4ed8;font-weight:600;">blue</span>) proceed first, followed by middle blocks (Blocks 2 &amp; 5, <span style="color:#15803d;font-weight:600;">green</span>), and finally inner centre blocks (Blocks 3 &amp; 4, <span style="color:#b91c1c;font-weight:600;">red</span>). Within each block, the <strong>first row goes first</strong>, followed sequentially by the next rows. <em>(Note: Faculty members remain seated and do not have stage movement.)</em>
+      </p>
+      <p>
+        <strong>Out by the outer passage,</strong> up the side steps, receive your certificate, come down the centre return steps and back by the inner passage.
+      </p>
     </div>
   </main>
 
-  <!-- Seat Info / Action Modal -->
-  <div id="seatModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl relative border border-slate-200">
-      <button onclick="closeModal('seatModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2" id="modalSeatTitle">Seat Details</h3>
-      <div class="mt-4 space-y-2 text-sm text-slate-600" id="modalSeatBody">
-        <!-- Content inserted dynamically -->
+  <!-- FACULTY ADMIN VIEW -->
+  <section id="facultyView" class="container">
+    <!-- Password Gate Card -->
+    <div id="facultyGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
+      <div class="eyebrow">PROTECTED ACCESS</div>
+      <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Faculty Sign-In</h2>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:18px;">
+        Enter the graduation committee password to upload department Excel sheets, mark defective/empty chairs, or reconfigure block rows and columns.
+      </p>
+      <div class="form-group">
+        <label>Password</label>
+        <input id="facultyPassInput" type="password" class="form-control" placeholder="Enter password..." onkeydown="if(event.key==='Enter') unlockFaculty()" />
       </div>
-      <div class="mt-6 flex flex-col gap-2" id="modalActions">
-        <!-- Action Buttons -->
-      </div>
+      <button class="btn-primary" style="width:100%; justify-content:center;" onclick="unlockFaculty()">Unlock Faculty Console</button>
     </div>
-  </div>
 
-  <!-- Faculty Admin Modal (Password Protected) -->
-  <div id="facultyAuthModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl relative border border-slate-200">
-      <button onclick="closeModal('facultyAuthModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-shield-halved text-indigo-600 mr-2"></i>Faculty Authentication</h3>
-      <p class="text-xs text-slate-500 mt-1">Enter password to edit seating, upload spreadsheets, or change grid dimensions.</p>
-      <div class="mt-4">
-        <input id="adminPassword" type="password" placeholder="Enter Admin Password" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" />
+    <!-- Unlocked Faculty Console -->
+    <div id="facultyConsole" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <div class="eyebrow">FACULTY MANAGEMENT</div>
+          <h2 class="serif-title" style="font-size:28px;">Seating &amp; Block Administration</h2>
+        </div>
+        <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
       </div>
-      <button onclick="verifyPassword()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition">
-        Verify & Continue
-      </button>
-    </div>
-  </div>
 
-  <!-- Faculty Management Panel Modal -->
-  <div id="facultyPanelModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 my-8 shadow-2xl relative border border-slate-200">
-      <button onclick="closeModal('facultyPanelModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <h2 class="text-xl font-bold text-slate-800 border-b pb-3 flex items-center gap-2">
-        <i class="fa-solid fa-sliders text-indigo-600"></i> Faculty Seating Management Console
-      </h2>
+      <div class="admin-grid">
+        <!-- Card 1: Department Excel Template & Upload -->
+        <div class="info-card" style="margin-top:0;">
+          <h3 class="serif-title" style="font-size:19px; margin-bottom:8px;">1. Department Excel Upload</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px;">
+            Select a department button to generate its pre-numbered Excel sheet. Fill in student names &amp; register numbers, then upload it back.
+          </p>
+          <label style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">Select Department</label>
+          <div class="dept-pills" id="deptButtonsContainer"></div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <!-- Section 1: Template & Excel Data -->
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
-          <div>
-            <h4 class="font-semibold text-sm text-slate-800 mb-2 flex items-center gap-2">
-              <i class="fa-solid fa-file-excel text-emerald-600"></i> Department Excel Manager
-            </h4>
-            <p class="text-xs text-slate-500 mb-3">
-              Generate an Excel file for your department, fill in student names & roll numbers, and re-upload.
-            </p>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Department:</label>
-            <select id="deptSelect" class="w-full p-2 border rounded-lg text-sm bg-white mb-4">
-              <option value="Computer Science">Computer Science & Engineering</option>
-              <option value="Electronics">Electronics & Communication</option>
-              <option value="Electrical">Electrical & Electronics</option>
-              <option value="Mechanical">Mechanical Engineering</option>
-              <option value="Civil">Civil Engineering</option>
-            </select>
-            <button onclick="downloadExcelTemplate()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition mb-4">
-              <i class="fa-solid fa-download"></i> Download Excel Template
-            </button>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Populated Sheet:</label>
-            <input type="file" id="excelUpload" accept=".xlsx, .xls" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+          <button class="btn-outline" style="width:100%; margin-bottom:18px;" onclick="downloadBranchExcel()">
+            ⬇ Download Selected Department Excel Template
+          </button>
+
+          <div class="form-group">
+            <label>Upload Completed Excel (.xlsx / .xls)</label>
+            <input type="file" id="excelFileInput" accept=".xlsx,.xls" class="form-control" />
           </div>
-          <button onclick="processExcelUpload()" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-xs font-semibold transition">
-            Import & Assign Seats
+          <button class="btn-primary" style="width:100%; justify-content:center;" onclick="uploadBranchExcel()">
+            Upload &amp; Assign Students
           </button>
         </div>
 
-        <!-- Section 2: Layout & Seat Dimensions Customizer -->
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-          <h4 class="font-semibold text-sm text-slate-800 mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-table-cells text-indigo-600"></i> Block Dimension Customizer
-          </h4>
-          <p class="text-xs text-slate-500 mb-3">Adjust the number of rows and columns per block according to venue availability.</p>
-          <div class="space-y-3 text-xs">
+        <!-- Card 2: Mark Seat Defective or Empty -->
+        <div class="info-card" style="margin-top:0;">
+          <h3 class="serif-title" style="font-size:19px; margin-bottom:8px;">2. Mark Seat Defective / Kept Empty</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px;">
+            Toggle any chair status by entering its Seat Code (e.g., <code>EE 12</code>, <code>CS 45</code>) or Block-Row-Col coordinate (e.g., <code>B1-R3-C5</code>), or directly from the seat card on the map.
+          </p>
+          <div class="form-group">
+            <label>Seat Code or Coordinate</label>
+            <input id="statusSeatInput" type="text" class="form-control" placeholder="e.g. EE 12 or B1-R2-C4" />
+          </div>
+          <div class="form-group">
+            <label>Set Status</label>
+            <select id="statusTypeSelect" class="form-control">
+              <option value="normal">Normal (Available / Assigned)</option>
+              <option value="defective">✕ Defective Chair</option>
+              <option value="empty">◌ Kept Empty</option>
+            </select>
+          </div>
+          <button class="btn-primary" style="width:100%; justify-content:center;" onclick="applySeatStatusByInput()">
+            Update Seat Status
+          </button>
+        </div>
+
+        <!-- Card 3: Dynamic Rows, Columns & Block Seat Count Customizer -->
+        <div class="info-card" style="margin-top:0; grid-column: 1 / -1;">
+          <h3 class="serif-title" style="font-size:19px; margin-bottom:6px;">3. Change Block Rows, Seats per Row &amp; Department Seat Counts</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">
+            Adjust the number of rows, seats per row (columns), and faculty rows for each block, or modify total seats allocated per department.
+          </p>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
             <div>
-              <label class="block font-medium text-slate-700">Left Outer Block (Rows × Seats):</label>
-              <div class="flex gap-2 mt-1">
-                <input type="number" id="dim-lo-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
-                <input type="number" id="dim-lo-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
-              </div>
+              <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Block Dimensions (Rows &amp; Seats per Row)</h4>
+              <table class="config-table" id="blockConfigTable">
+                <thead>
+                  <tr>
+                    <th>Block</th>
+                    <th>Rows</th>
+                    <th>Seats / Row</th>
+                    <th>Front Fac. Rows</th>
+                    <th>Back Fac. Rows</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
             </div>
+
             <div>
-              <label class="block font-medium text-slate-700">Left Inner Block (Rows × Seats):</label>
-              <div class="flex gap-2 mt-1">
-                <input type="number" id="dim-li-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
-                <input type="number" id="dim-li-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
-              </div>
+              <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Department Seat Allocations per Block</h4>
+              <table class="config-table" id="deptConfigTable">
+                <thead>
+                  <tr>
+                    <th>Dept</th>
+                    <th>Block</th>
+                    <th>Total Seats</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
             </div>
-            <div>
-              <label class="block font-medium text-slate-700">Right Inner Block (Rows × Seats):</label>
-              <div class="flex gap-2 mt-1">
-                <input type="number" id="dim-ri-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
-                <input type="number" id="dim-ri-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
-              </div>
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700">Right Outer Block (Rows × Seats):</label>
-              <div class="flex gap-2 mt-1">
-                <input type="number" id="dim-ro-rows" min="1" max="25" class="w-1/2 p-1.5 border rounded" placeholder="Rows">
-                <input type="number" id="dim-ro-cols" min="1" max="15" class="w-1/2 p-1.5 border rounded" placeholder="Cols">
-              </div>
-            </div>
-            <button onclick="saveDimensions()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-lg text-xs font-semibold transition mt-2">
-              Apply Layout Changes
-            </button>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:12px;">
+            <button class="btn-primary" onclick="saveCustomLayoutConfig()">Apply &amp; Rebuild Hall Map</button>
+            <button class="btn-outline" onclick="resetDefaultLayoutConfig()">Reset to Default CET Layout</button>
           </div>
         </div>
       </div>
-
-      <div class="mt-6 pt-4 border-t flex justify-end">
-        <button onclick="closeModal('facultyPanelModal')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg text-sm font-semibold transition">
-          Close Panel
-        </button>
-      </div>
     </div>
-  </div>
+  </section>
 
   <script>
-    // System State & Initial Configurations
-    const ADMIN_PW = "CET_Graduation@2026";
+    /********************************************************************
+     * 1. STATE & DEFAULT CONFIGURATION (MATCHING SCREENSHOTS EXACTLY)
+     ********************************************************************/
+    const FACULTY_PASSWORD = "CET_Graduation@2026";
+    let isFacultyUnlocked = false;
+    let currentZoom = 1;
+    let selectedSeatKey = null;
+    let selectedDeptForExcel = "CS";
+    let walkAnimTimer = null;
 
-    let layoutConfig = {
-      faculty: { rows: 1, cols: 16, name: "Faculty / VIP Row" },
-      leftOuter: { rows: 6, cols: 6, name: "Block A (Left Outer)" },
-      leftInner: { rows: 6, cols: 6, name: "Block B (Left Inner)" },
-      rightInner: { rows: 6, cols: 6, name: "Block C (Right Inner)" },
-      rightOuter: { rows: 6, cols: 6, name: "Block D (Right Outer)" }
+    const BRANCH_META = {
+      PhD:  { name: "Doctoral Programmes (PhD)", color: "#7c3aed" },
+      EE:   { name: "Electrical & Electronics Engineering (EE)", color: "#2563eb" },
+      PTDC: { name: "Part-Time Degree Course (PTDC)", color: "#0891b2" },
+      CS:   { name: "Computer Science & Engineering (CS)", color: "#059669" },
+      MCA:  { name: "Master of Computer Applications (MCA)", color: "#65a30d" },
+      CE:   { name: "Civil Engineering (CE)", color: "#d97706" },
+      ME:   { name: "Mechanical Engineering (ME)", color: "#ea580c" },
+      Arch: { name: "Architecture (Arch)", color: "#dc2626" },
+      MBA:  { name: "Master of Business Administration (MBA)", color: "#c026d3" },
+      EC:   { name: "Electronics & Communication Engineering (EC)", color: "#4f46e5" },
+      FAC:  { name: "Faculty Member", color: "#64748b" }
     };
 
-    // Stored seats map: key = seatId (e.g. "LO-R1-S1"), value = { seatId, blockKey, row, col, status: 'vacant'|'occupied'|'defective'|'faculty', studentName, rollNo, dept }
-    let seatsData = {};
-    let activeHighlightedSeatId = null;
+    const DEFAULT_LAYOUT = {
+      blocks: [
+        { id: 1, rows: 25, cols: 8, frontFacultyRows: 1, backFacultyRows: 0 },
+        { id: 2, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 2 },
+        { id: 3, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 1 },
+        { id: 4, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 1 },
+        { id: 5, rows: 25, cols: 9, frontFacultyRows: 1, backFacultyRows: 2 },
+        { id: 6, rows: 25, cols: 8, frontFacultyRows: 1, backFacultyRows: 0 }
+      ],
+      allocations: [
+        { dept: "PhD",  block: 1, count: 12 },
+        { dept: "EE",   block: 1, count: 139 },
+        { dept: "PTDC", block: 1, count: 32 },
+        { dept: "CS",   block: 2, count: 162 },
+        { dept: "MCA",  block: 2, count: 35 },
+        { dept: "CE",   block: 3, count: 201 },
+        { dept: "ME",   block: 4, count: 198 },
+        { dept: "Arch", block: 5, count: 81 },
+        { dept: "MBA",  block: 5, count: 108 },
+        { dept: "EC",   block: 6, count: 184 }
+      ]
+    };
 
-    // Initialize application
-    window.addEventListener("DOMContentLoaded", () => {
-      loadSavedState();
-      populateDimInputs();
-      renderLayout();
-    });
+    let layoutConfig = JSON.parse(localStorage.getItem("cet2026_layout_v2")) || JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
+    // Assigned students dictionary: key = "EE 92", value = { name: "...", regNo: "..." }
+    let studentRoster = JSON.parse(localStorage.getItem("cet2026_roster_v2")) || {};
+    // Seat status overrides: key = coordKey ("B1-R2-C1") or seatLabel ("EE 92"), value = "defective" | "empty"
+    let seatOverrides = JSON.parse(localStorage.getItem("cet2026_overrides_v2")) || {};
 
-    function loadSavedState() {
-      const savedConfig = localStorage.getItem("cet_layout_config");
-      if (savedConfig) {
-        try { layoutConfig = JSON.parse(savedConfig); } catch (e) {}
+    // Computed full map dictionary: coordKey -> seatObj
+    let seatsByCoord = {};
+    let seatsByCode = {};
+
+    function saveAllStorage() {
+      localStorage.setItem("cet2026_layout_v2", JSON.stringify(layoutConfig));
+      localStorage.setItem("cet2026_roster_v2", JSON.stringify(studentRoster));
+      localStorage.setItem("cet2026_overrides_v2", JSON.stringify(seatOverrides));
+    }
+
+    /********************************************************************
+     * 2. BUILD SEATING MATRIX & RENDER HALL MAP
+     ********************************************************************/
+    function buildAndRenderMap() {
+      seatsByCoord = {};
+      seatsByCode = {};
+      const wrapper = document.getElementById("blocksWrapper");
+      wrapper.innerHTML = "";
+
+      const maxRows = Math.max(...layoutConfig.blocks.map(b => b.rows));
+
+      // Left Row Index Column
+      const rowNumCol = document.createElement("div");
+      rowNumCol.className = "row-numbers-col";
+      for (let r = 1; r <= maxRows; r++) {
+        const lbl = document.createElement("div");
+        lbl.className = "row-num-label";
+        lbl.textContent = r;
+        rowNumCol.appendChild(lbl);
       }
-      const savedSeats = localStorage.getItem("cet_seats_data");
-      if (savedSeats) {
-        try { seatsData = JSON.parse(savedSeats); } catch (e) {}
-      }
-    }
+      wrapper.appendChild(rowNumCol);
 
-    function saveState() {
-      localStorage.setItem("cet_layout_config", JSON.stringify(layoutConfig));
-      localStorage.setItem("cet_seats_data", JSON.stringify(seatsData));
-    }
+      // Iterate through each Block
+      layoutConfig.blocks.forEach((blk, idx) => {
+        const blockEl = document.createElement("div");
+        blockEl.className = "seating-block";
+        blockEl.id = `block-el-${blk.id}`;
 
-    function populateDimInputs() {
-      document.getElementById("dim-lo-rows").value = layoutConfig.leftOuter.rows;
-      document.getElementById("dim-lo-cols").value = layoutConfig.leftOuter.cols;
-      document.getElementById("dim-li-rows").value = layoutConfig.leftInner.rows;
-      document.getElementById("dim-li-cols").value = layoutConfig.leftInner.cols;
-      document.getElementById("dim-ri-rows").value = layoutConfig.rightInner.rows;
-      document.getElementById("dim-ri-cols").value = layoutConfig.rightInner.cols;
-      document.getElementById("dim-ro-rows").value = layoutConfig.rightOuter.rows;
-      document.getElementById("dim-ro-cols").value = layoutConfig.rightOuter.cols;
-    }
-
-    function saveDimensions() {
-      layoutConfig.leftOuter.rows = parseInt(document.getElementById("dim-lo-rows").value) || 6;
-      layoutConfig.leftOuter.cols = parseInt(document.getElementById("dim-lo-cols").value) || 6;
-      layoutConfig.leftInner.rows = parseInt(document.getElementById("dim-li-rows").value) || 6;
-      layoutConfig.leftInner.cols = parseInt(document.getElementById("dim-li-cols").value) || 6;
-      layoutConfig.rightInner.rows = parseInt(document.getElementById("dim-ri-rows").value) || 6;
-      layoutConfig.rightInner.cols = parseInt(document.getElementById("dim-ri-cols").value) || 6;
-      layoutConfig.rightOuter.rows = parseInt(document.getElementById("dim-ro-rows").value) || 6;
-      layoutConfig.rightOuter.cols = parseInt(document.getElementById("dim-ro-cols").value) || 6;
-
-      saveState();
-      renderLayout();
-      alert("Layout updated successfully!");
-    }
-
-    // Render Full Hall Seating
-    function renderLayout() {
-      const container = document.getElementById("seatingGrid");
-      container.innerHTML = "";
-
-      // 1. Faculty Row
-      const facSection = document.createElement("div");
-      facSection.className = "w-full max-w-4xl bg-slate-50 border border-slate-300 rounded-lg p-3 flex flex-col items-center";
-      facSection.innerHTML = `<span class="text-xs font-bold text-indigo-900 mb-2 tracking-wide uppercase"><i class="fa-solid fa-user-tie mr-1"></i> ${layoutConfig.faculty.name}</span>`;
-      const facRow = document.createElement("div");
-      facRow.className = "flex gap-2 flex-wrap justify-center";
-      for (let c = 1; c <= layoutConfig.faculty.cols; c++) {
-        const seatId = `FAC-1-${c}`;
-        if (!seatsData[seatId]) {
-          seatsData[seatId] = { seatId, blockKey: 'faculty', row: 1, col: c, status: 'faculty', studentName: `Faculty Member ${c}`, rollNo: '', dept: 'Faculty' };
+        if (blk.id === 1) {
+          const dimNote = document.createElement("div");
+          dimNote.className = "block-dimension-note";
+          dimNote.textContent = "FRONT AREA · 12 ft × 114 ft";
+          blockEl.appendChild(dimNote);
         }
-        facRow.appendChild(createSeatElement(seatId));
-      }
-      facSection.appendChild(facRow);
-      container.appendChild(facSection);
 
-      // 2. Student Blocks (Two halves: Left [Outer, Inner] & Right [Inner, Outer])
-      const blocksWrapper = document.createElement("div");
-      blocksWrapper.className = "grid grid-cols-1 md:grid-cols-2 gap-8 w-full";
+        const header = document.createElement("div");
+        header.className = "block-header";
+        header.textContent = `BLOCK ${blk.id}`;
+        blockEl.appendChild(header);
 
-      // Left Wing (Point 1 destination)
-      const leftWing = document.createElement("div");
-      leftWing.className = "border border-emerald-200 bg-emerald-50/30 rounded-xl p-4 flex flex-col gap-4";
-      leftWing.innerHTML = `<div class="text-center font-bold text-xs text-emerald-800 uppercase tracking-wider flex items-center justify-center gap-2">
-        <i class="fa-solid fa-arrow-up text-emerald-600"></i> Left Wing &rarr; Assigned to Point 1
-      </div>`;
-      const leftBlocks = document.createElement("div");
-      leftBlocks.className = "flex gap-4 justify-around";
-      leftBlocks.appendChild(createBlockDOM('leftOuter', layoutConfig.leftOuter));
-      leftBlocks.appendChild(createBlockDOM('leftInner', layoutConfig.leftInner));
-      leftWing.appendChild(leftBlocks);
+        const body = document.createElement("div");
+        body.className = "block-body";
 
-      // Right Wing (Point 2 destination)
-      const rightWing = document.createElement("div");
-      rightWing.className = "border border-sky-200 bg-sky-50/30 rounded-xl p-4 flex flex-col gap-4";
-      rightWing.innerHTML = `<div class="text-center font-bold text-xs text-sky-800 uppercase tracking-wider flex items-center justify-center gap-2">
-        <i class="fa-solid fa-arrow-up text-sky-600"></i> Right Wing &rarr; Assigned to Point 2
-      </div>`;
-      const rightBlocks = document.createElement("div");
-      rightBlocks.className = "flex gap-4 justify-around";
-      rightBlocks.appendChild(createBlockDOM('rightInner', layoutConfig.rightInner));
-      rightBlocks.appendChild(createBlockDOM('rightOuter', layoutConfig.rightOuter));
-      rightWing.appendChild(rightBlocks);
+        const barsCol = document.createElement("div");
+        barsCol.className = "branch-bars-col";
 
-      blocksWrapper.appendChild(leftWing);
-      blocksWrapper.appendChild(rightWing);
-      container.appendChild(blocksWrapper);
-    }
+        const rowsStack = document.createElement("div");
+        rowsStack.className = "rows-stack";
 
-    function createBlockDOM(blockKey, conf) {
-      const blockDiv = document.createElement("div");
-      blockDiv.className = "flex flex-col items-center bg-white p-3 rounded-lg border border-slate-200 shadow-xs";
-      blockDiv.innerHTML = `<span class="text-[11px] font-bold text-slate-700 mb-2 text-center">${conf.name}</span>`;
+        // Build queue of department seats for this block
+        const blockAllocs = layoutConfig.allocations.filter(a => Number(a.block) === blk.id);
+        // Track row ranges per department for vertical label bar
+        const deptRowSpans = {};
 
-      const rowsContainer = document.createElement("div");
-      rowsContainer.className = "flex flex-col gap-1.5";
+        let currentAllocIdx = 0;
+        let currentDeptCounter = 1;
 
-      for (let r = 1; r <= conf.rows; r++) {
-        const rowDiv = document.createElement("div");
-        rowDiv.className = "flex gap-1.5 items-center";
-        
-        // Row label
-        const rLabel = document.createElement("span");
-        rLabel.className = "text-[9px] w-4 font-bold text-slate-400 text-right mr-0.5";
-        rLabel.innerText = `R${r}`;
-        rowDiv.appendChild(rLabel);
+        for (let r = 1; r <= blk.rows; r++) {
+          const rowEl = document.createElement("div");
+          rowEl.className = "seat-row";
 
-        for (let c = 1; c <= conf.cols; c++) {
-          const seatId = `${blockKey.toUpperCase()}-R${r}-S${c}`;
-          if (!seatsData[seatId]) {
-            seatsData[seatId] = { seatId, blockKey, row: r, col: c, status: 'vacant', studentName: '', rollNo: '', dept: '' };
+          const isFrontFaculty = r <= blk.frontFacultyRows;
+          const isBackFaculty = r > (blk.rows - blk.backFacultyRows);
+
+          // Check if current department finished in previous row
+          const activeAlloc = blockAllocs[currentAllocIdx];
+
+          for (let c = 1; c <= blk.cols; c++) {
+            const coordKey = `B${blk.id}-R${r}-C${c}`;
+            let seatObj = {
+              coordKey,
+              block: blk.id,
+              row: r,
+              col: c,
+              type: "empty",
+              dept: null,
+              num: null,
+              code: null
+            };
+
+            if (isFrontFaculty || isBackFaculty) {
+              seatObj.type = "faculty";
+              seatObj.dept = "FAC";
+              seatObj.num = "F";
+              seatObj.code = `FAC B${blk.id}-R${r}-C${c}`;
+            } else if (activeAlloc) {
+              if (currentDeptCounter <= activeAlloc.count) {
+                seatObj.type = "student";
+                seatObj.dept = activeAlloc.dept;
+                seatObj.num = currentDeptCounter;
+                seatObj.code = `${activeAlloc.dept} ${currentDeptCounter}`;
+
+                if (!deptRowSpans[activeAlloc.dept]) {
+                  deptRowSpans[activeAlloc.dept] = { startRow: r, endRow: r };
+                } else {
+                  deptRowSpans[activeAlloc.dept].endRow = r;
+                }
+                currentDeptCounter++;
+              } else {
+                // Rest of the row after a department's allocation ends is kept empty
+                seatObj.type = "empty";
+              }
+            }
+
+            // Apply manual faculty overrides (defective / empty)
+            const override = seatOverrides[coordKey] || (seatObj.code && seatOverrides[seatObj.code.toUpperCase()]);
+            if (override === "defective") seatObj.statusOverride = "defective";
+            if (override === "empty") seatObj.statusOverride = "empty";
+
+            seatsByCoord[coordKey] = seatObj;
+            if (seatObj.code) seatsByCode[seatObj.code.toUpperCase()] = seatObj;
+
+            const box = createSeatDOM(seatObj);
+            rowEl.appendChild(box);
           }
-          rowDiv.appendChild(createSeatElement(seatId));
+
+          // If an allocation just finished on this row, advance to next department on the next row
+          if (!isFrontFaculty && !isBackFaculty && activeAlloc && currentDeptCounter > activeAlloc.count) {
+            currentAllocIdx++;
+            currentDeptCounter = 1;
+          }
+
+          rowsStack.appendChild(rowEl);
         }
-        rowsContainer.appendChild(rowDiv);
+
+        // Render vertical color bars on left of block
+        Object.entries(deptRowSpans).forEach(([dept, span]) => {
+          const topPx = (span.startRow - 1) * 22;
+          const heightPx = (span.endRow - span.startRow + 1) * 22 - 3;
+          const bar = document.createElement("div");
+          bar.className = "branch-bar";
+          bar.style.top = `${topPx}px`;
+          bar.style.height = `${heightPx}px`;
+          bar.style.backgroundColor = BRANCH_META[dept]?.color || "#333";
+
+          const barLbl = document.createElement("div");
+          barLbl.className = "branch-bar-label";
+          barLbl.style.color = BRANCH_META[dept]?.color || "#333";
+          barLbl.textContent = dept;
+          bar.appendChild(barLbl);
+          barsCol.appendChild(bar);
+        });
+
+        body.appendChild(barsCol);
+        body.appendChild(rowsStack);
+        blockEl.appendChild(body);
+        wrapper.appendChild(blockEl);
+
+        // Add 5ft passage column between blocks
+        if (idx < layoutConfig.blocks.length - 1) {
+          const passage = document.createElement("div");
+          passage.className = "passage-col";
+          const pLbl = document.createElement("div");
+          pLbl.className = "passage-label";
+          pLbl.textContent = "5 ft";
+          passage.appendChild(pLbl);
+          wrapper.appendChild(passage);
+        }
+      });
+
+      updateSeatedCount();
+      if (selectedSeatKey && seatsByCoord[selectedSeatKey]) {
+        renderSeatDetailCard(seatsByCoord[selectedSeatKey]);
       }
-      blockDiv.appendChild(rowsContainer);
-      return blockDiv;
     }
 
-    function createSeatElement(seatId) {
-      const data = seatsData[seatId];
+    function createSeatDOM(seatObj) {
       const el = document.createElement("div");
-      el.id = `seat-${seatId}`;
-      el.className = `seat seat-${data.status}`;
-      if (activeHighlightedSeatId === seatId) {
-        el.classList.add("seat-highlighted");
+      el.id = `seat-${seatObj.coordKey}`;
+      el.className = "seat-box";
+
+      if (seatObj.statusOverride === "defective") {
+        el.classList.add("seat-defective-slot");
+        el.textContent = "✕";
+      } else if (seatObj.statusOverride === "empty" || seatObj.type === "empty") {
+        el.classList.add("seat-empty-slot");
+        el.textContent = "";
+      } else if (seatObj.type === "faculty") {
+        el.classList.add("seat-FAC");
+        el.textContent = "F";
+      } else {
+        el.classList.add(`seat-${seatObj.dept}`);
+        if (studentRoster[seatObj.code]) {
+          el.classList.add("seat-assigned");
+        }
+        el.textContent = seatObj.num;
       }
-      el.title = `${seatId}: ${data.studentName || 'Unassigned'}`;
-      el.innerText = `S${data.col}`;
-      el.onclick = () => showSeatDetails(seatId);
+
+      if (selectedSeatKey === seatObj.coordKey) {
+        el.classList.add("seat-selected");
+      }
+
+      el.onclick = () => selectSeat(seatObj.coordKey);
       return el;
     }
 
-    // Modal Details & Interactive Action
-    function showSeatDetails(seatId) {
-      const data = seatsData[seatId];
-      if (!data) return;
+    function updateSeatedCount() {
+      const count = Object.keys(studentRoster).filter(k => studentRoster[k]?.name).length;
+      document.getElementById("seatedCounter").textContent = `${count} students seated`;
+    }
 
-      document.getElementById("modalSeatTitle").innerText = `Seat: ${seatId}`;
-      let content = `
-        <div class="border-b pb-2">
-          <span class="block text-xs text-slate-400 font-semibold uppercase">Status</span>
-          <span class="font-medium text-slate-800 capitalize">${data.status}</span>
-        </div>
-        <div class="border-b pb-2">
-          <span class="block text-xs text-slate-400 font-semibold uppercase">Assigned Student</span>
-          <span class="font-bold text-slate-900">${data.studentName || '<span class="text-slate-400 italic">None</span>'}</span>
-        </div>
-        <div class="border-b pb-2">
-          <span class="block text-xs text-slate-400 font-semibold uppercase">Roll / Register No</span>
-          <span class="font-medium text-slate-800">${data.rollNo || 'N/A'}</span>
-        </div>
-        <div>
-          <span class="block text-xs text-slate-400 font-semibold uppercase">Department</span>
-          <span class="font-medium text-slate-800">${data.dept || 'N/A'}</span>
-        </div>
-      `;
-      document.getElementById("modalSeatBody").innerHTML = content;
+    /********************************************************************
+     * 3. SEAT SELECTION & DETAIL CARD (NO MOVEMENT FOR FACULTY)
+     ********************************************************************/
+    function selectSeat(coordKey, autoScroll = false) {
+      stopWalkAnimation();
+      const prev = document.querySelector(".seat-selected");
+      if (prev) prev.classList.remove("seat-selected");
 
-      let actions = "";
-      if (data.status !== 'faculty') {
-        actions += `
-          <button onclick="toggleDefective('${seatId}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded-lg font-semibold border transition">
-            <i class="fa-solid fa-wrench mr-1"></i> Toggle Defective / Empty
-          </button>
-          <button onclick="triggerWalkAnimation('${seatId}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 rounded-lg font-semibold transition">
-            <i class="fa-solid fa-person-walking mr-1"></i> Show Movement Path to Stage
-          </button>
+      selectedSeatKey = coordKey;
+      const seatEl = document.getElementById(`seat-${coordKey}`);
+      if (seatEl) {
+        seatEl.classList.add("seat-selected");
+        if (autoScroll) {
+          seatEl.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        }
+      }
+
+      const seatObj = seatsByCoord[coordKey];
+      if (seatObj) renderSeatDetailCard(seatObj);
+    }
+
+    function renderSeatDetailCard(seatObj) {
+      const card = document.getElementById("seatInfoCard");
+      card.className = "info-card";
+
+      const isFaculty = seatObj.type === "faculty";
+      const isDefective = seatObj.statusOverride === "defective";
+      const isEmpty = seatObj.statusOverride === "empty" || seatObj.type === "empty";
+
+      const badgeColor = isDefective ? "#374151" : (BRANCH_META[seatObj.dept]?.color || "#64748b");
+      const badgeText = isDefective ? "✕" : (isEmpty ? "◌" : (isFaculty ? "F" : seatObj.num));
+
+      const assignedData = seatObj.code ? studentRoster[seatObj.code] : null;
+      let titleText = "Not yet assigned";
+      if (isFaculty) titleText = "Faculty Seat";
+      else if (isDefective) titleText = "Defective Chair";
+      else if (isEmpty) titleText = "Kept Empty";
+      else if (assignedData && assignedData.name) titleText = assignedData.name;
+
+      const stationNum = seatObj.block <= 3 ? 1 : 2;
+      let waveDesc = "Blue — outer blocks (1st wave)";
+      let waveColor = "#1d4ed8";
+      if (seatObj.block === 2 || seatObj.block === 5) {
+        waveDesc = "Green — middle blocks (2nd wave)";
+        waveColor = "#15803d";
+      } else if (seatObj.block === 3 || seatObj.block === 4) {
+        waveDesc = "Red — inner blocks (3rd wave)";
+        waveColor = "#b91c1c";
+      }
+
+      const ordinal = (n) => {
+        const s = ["th", "st", "nd", "rd"], v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      };
+
+      // Faculty explicitly does NOT get the "Show walk to stage" button
+      let actionButtonsHTML = "";
+      if (isFaculty) {
+        actionButtonsHTML = `
+          <div style="background:#f1f5f9; color:#475569; padding:10px 16px; border-radius:10px; font-size:13.5px; font-weight:600;">
+            Faculty members remain seated during certificate distribution (no stage movement).
+          </div>
         `;
-      } else {
-        actions += `
-          <div class="p-2 bg-purple-50 rounded text-center text-xs text-purple-700 font-medium">
-            Faculty member seat. No stage movement simulation.
+      } else if (!isEmpty && !isDefective) {
+        actionButtonsHTML = `
+          <button class="btn-outline" onclick="highlightMySeat('${seatObj.coordKey}')">This is my seat</button>
+          <button class="btn-primary" onclick="startWalkAnimation('${seatObj.coordKey}')">👣 Show walk to stage</button>
+        `;
+      }
+
+      // Quick admin status toggle if Faculty is unlocked
+      let adminQuickToggle = "";
+      if (isFacultyUnlocked) {
+        adminQuickToggle = `
+          <div style="margin-top:14px; padding-top:14px; border-top:1px dashed #e2e8f0; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span style="font-size:12px; font-weight:700; color:var(--text-muted);">FACULTY QUICK ACTION:</span>
+            <button class="btn-outline" style="padding:6px 12px; font-size:12px;" onclick="quickSetOverride('${seatObj.coordKey}', 'normal')">Set Normal</button>
+            <button class="btn-outline" style="padding:6px 12px; font-size:12px;" onclick="quickSetOverride('${seatObj.coordKey}', 'defective')">Mark Defective (✕)</button>
+            <button class="btn-outline" style="padding:6px 12px; font-size:12px;" onclick="quickSetOverride('${seatObj.coordKey}', 'empty')">Mark Kept Empty (◌)</button>
           </div>
         `;
       }
-      document.getElementById("modalActions").innerHTML = actions;
-      openModal("seatModal");
+
+      card.innerHTML = `
+        <div class="seat-detail-header">
+          <div class="seat-badge-lg" style="background:${badgeColor}">${badgeText}</div>
+          <div>
+            <div class="assigned-label">ASSIGNED TO</div>
+            <div class="assigned-name">${titleText}</div>
+            ${assignedData?.regNo ? `<div style="font-size:13px; color:var(--text-muted);">Reg No: ${assignedData.regNo}</div>` : ""}
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div>
+            <div class="meta-item-label">🎖 BRANCH</div>
+            <div class="meta-item-val">${BRANCH_META[seatObj.dept]?.name || "Unallocated"}</div>
+          </div>
+          <div>
+            <div class="meta-item-label">💺 SEAT NUMBER</div>
+            <div class="meta-item-val">${seatObj.code || seatObj.coordKey}</div>
+          </div>
+          <div>
+            <div class="meta-item-label">📍 LOCATION</div>
+            <div class="meta-item-val">Block ${seatObj.block} · Row ${seatObj.row}</div>
+            <div class="meta-item-sub">${ordinal(seatObj.col)} from the left passage</div>
+          </div>
+          <div>
+            <div class="meta-item-label">👣 CERTIFICATE</div>
+            <div class="meta-item-val">
+              ${isFaculty ? "Seated in Row (No Stage Walk)" : `Station ${stationNum} · <span style="color:${waveColor}">${waveDesc}</span>`}
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          ${actionButtonsHTML}
+        </div>
+        ${adminQuickToggle}
+      `;
     }
 
-    function toggleDefective(seatId) {
-      const data = seatsData[seatId];
-      if (!data) return;
-      if (data.status === 'defective') {
-        data.status = data.studentName ? 'occupied' : 'vacant';
-      } else {
-        data.status = 'defective';
+    function highlightMySeat(coordKey) {
+      const el = document.getElementById(`seat-${coordKey}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
       }
-      saveState();
-      renderLayout();
-      closeModal("seatModal");
     }
 
-    // Search Logic
-    function searchStudent() {
-      const query = document.getElementById("searchInput").value.trim().toLowerCase();
-      if (!query) return;
+    /********************************************************************
+     * 4. SVG WALKING PATH ANIMATION (EXACT DOTTED LOOP TO STAGE & BACK)
+     ********************************************************************/
+    function startWalkAnimation(coordKey) {
+      stopWalkAnimation();
+      const seatObj = seatsByCoord[coordKey];
+      if (!seatObj || seatObj.type === "faculty" || seatObj.type === "empty" || seatObj.statusOverride) {
+        return; // Never animate faculty, empty, or defective seats
+      }
 
-      let foundSeatId = null;
-      for (const [id, s] of Object.entries(seatsData)) {
-        if (
-          (s.studentName && s.studentName.toLowerCase().includes(query)) ||
-          (s.rollNo && s.rollNo.toLowerCase().includes(query))
-        ) {
-          foundSeatId = id;
-          break;
+      const canvas = document.getElementById("hallCanvas");
+      const svg = document.getElementById("walkOverlaySvg");
+      const seatEl = document.getElementById(`seat-${coordKey}`);
+      const blockEl = document.getElementById(`block-el-${seatObj.block}`);
+
+      if (!seatEl || !blockEl) return;
+
+      const cRect = canvas.getBoundingClientRect();
+      const toLocal = (rect) => ({
+        x: (rect.left - cRect.left) / currentZoom,
+        y: (rect.top - cRect.top) / currentZoom,
+        w: rect.width / currentZoom,
+        h: rect.height / currentZoom,
+        cx: (rect.left - cRect.left + rect.width / 2) / currentZoom,
+        cy: (rect.top - cRect.top + rect.height / 2) / currentZoom
+      });
+
+      const sPos = toLocal(seatEl.getBoundingClientRect());
+      const bPos = toLocal(blockEl.getBoundingClientRect());
+      const isLeftHalf = seatObj.block <= 3;
+
+      const stepsEl = document.getElementById(isLeftHalf ? "leftStageSteps" : "rightStageSteps");
+      const stationEl = document.getElementById(isLeftHalf ? "station1Marker" : "station2Marker");
+      const returnStepsEl = document.getElementById("centerReturnSteps");
+
+      const stpPos = toLocal(stepsEl.getBoundingClientRect());
+      const staPos = toLocal(stationEl.getBoundingClientRect());
+      const retPos = toLocal(returnStepsEl.getBoundingClientRect());
+
+      // Outer aisle X and Inner return aisle X for this block
+      const outerAisleX = isLeftHalf ? (bPos.x - 8) : (bPos.x + bPos.w + 8);
+      const innerAisleX = isLeftHalf ? (bPos.x + bPos.w + 8) : (bPos.x - 8);
+      const frontRowTopY = bPos.y + 10;
+
+      // Waypoints: Seat -> Outer Aisle -> Up Outer Aisle -> Side Stage Steps -> Station 1/2 -> Center Return Steps -> Front Inner Aisle -> Down Inner Aisle -> Back to Seat
+      const pts = [
+        { x: sPos.cx, y: sPos.cy },
+        { x: outerAisleX, y: sPos.cy },
+        { x: outerAisleX, y: frontRowTopY },
+        { x: stpPos.cx, y: stpPos.cy },
+        { x: staPos.cx, y: staPos.cy },
+        { x: retPos.cx, y: retPos.cy + 10 },
+        { x: innerAisleX, y: frontRowTopY },
+        { x: innerAisleX, y: sPos.cy },
+        { x: sPos.cx, y: sPos.cy }
+      ];
+
+      const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+
+      // Also highlight row mates dots
+      let rowDotsHTML = "";
+      const blkConf = layoutConfig.blocks.find(b => b.id === seatObj.block);
+      for (let col = 1; col <= blkConf.cols; col++) {
+        const mateEl = document.getElementById(`seat-B${seatObj.block}-R${seatObj.row}-C${col}`);
+        if (mateEl) {
+          const mPos = toLocal(mateEl.getBoundingClientRect());
+          rowDotsHTML += `<circle cx="${mPos.cx}" cy="${mPos.cy}" r="3.5" fill="#2563eb" stroke="#fff" stroke-width="1.2" />`;
         }
       }
 
-      if (foundSeatId) {
-        highlightSeat(foundSeatId);
-        triggerWalkAnimation(foundSeatId);
-      } else {
-        alert("No student found matching the search criteria.");
+      svg.innerHTML = `
+        <path id="walkSvgPath" d="${pathD}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round" stroke-linejoin="round" />
+        ${rowDotsHTML}
+        <circle id="walkerMainDot" cx="${sPos.cx}" cy="${sPos.cy}" r="6" fill="#1d4ed8" stroke="#ffffff" stroke-width="2" />
+      `;
+
+      // Show status banner
+      const statusCard = document.getElementById("walkStatusCard");
+      statusCard.style.display = "block";
+      const mirrorBlock = 7 - seatObj.block;
+      const stationNum = isLeftHalf ? 1 : 2;
+      const otherStation = isLeftHalf ? 2 : 1;
+      document.getElementById("walkEyebrow").textContent = `WALK TO STAGE · ${seatObj.code}`;
+      document.getElementById("walkSubtext").textContent =
+        `Block ${seatObj.block}, row ${seatObj.row} → Station ${stationNum}, alongside block ${mirrorBlock} at Station ${otherStation} (Outer blocks first, Row 1 first)`;
+
+      const pathNode = document.getElementById("walkSvgPath");
+      const walkerDot = document.getElementById("walkerMainDot");
+      const totalLen = pathNode.getTotalLength();
+      let progress = 0;
+
+      walkAnimTimer = setInterval(() => {
+        progress += 4.5;
+        if (progress > totalLen) progress = 0;
+        const pt = pathNode.getPointAtLength(progress);
+        walkerDot.setAttribute("cx", pt.x);
+        walkerDot.setAttribute("cy", pt.y);
+
+        const ratio = progress / totalLen;
+        const stepTitle = document.getElementById("walkStepTitle");
+        if (ratio < 0.28) {
+          stepTitle.textContent = "1. Stepping out to the outer passage and walking forward...";
+        } else if (ratio < 0.55) {
+          stepTitle.textContent = `2. Going up the side steps to receive certificate at Station ${stationNum}...`;
+        } else {
+          stepTitle.textContent = "3. Coming down the centre return steps and back by the inner passage.";
+        }
+      }, 30);
+
+      document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function stopWalkAnimation() {
+      if (walkAnimTimer) {
+        clearInterval(walkAnimTimer);
+        walkAnimTimer = null;
       }
+      const svg = document.getElementById("walkOverlaySvg");
+      if (svg) svg.innerHTML = "";
+      const statusCard = document.getElementById("walkStatusCard");
+      if (statusCard) statusCard.style.display = "none";
     }
 
-    function highlightSeat(seatId) {
-      activeHighlightedSeatId = seatId;
-      renderLayout();
-      const seatEl = document.getElementById(`seat-${seatId}`);
-      if (seatEl) {
-        seatEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
+    /********************************************************************
+     * 5. SEARCH BAR & ZOOM CONTROLS
+     ********************************************************************/
+    function handleSearch(rawQuery) {
+      const q = rawQuery.trim().toUpperCase();
+      document.getElementById("clearSearchBtn").style.display = q ? "flex" : "none";
+      if (!q) return;
 
-    function resetSearch() {
-      document.getElementById("searchInput").value = "";
-      activeHighlightedSeatId = null;
-      renderLayout();
-      document.getElementById("walkingDot").classList.add("hidden");
-    }
-
-    // Stage Movement Animation
-    function triggerWalkAnimation(seatId) {
-      closeModal("seatModal");
-      const seatData = seatsData[seatId];
-      if (!seatData) return;
-
-      // Rule: Do not show movement for Faculty
-      if (seatData.blockKey === 'faculty') {
-        alert("Faculty members do not walk to stage points.");
+      // 1. Direct Seat Code Match (e.g. "CS 45" or "CS45")
+      const normalizedCode = q.replace(/([A-Z]+)\s*(\d+)/, "$1 $2");
+      if (seatsByCode[normalizedCode]) {
+        selectSeat(seatsByCode[normalizedCode].coordKey, true);
         return;
       }
 
-      const seatEl = document.getElementById(`seat-${seatId}`);
-      if (!seatEl) return;
-
-      // Determine Target Point: Left blocks -> Point 1, Right blocks -> Point 2
-      const isLeft = seatData.blockKey.toLowerCase().includes("left");
-      const targetPoint = document.getElementById(isLeft ? "stage-point-1" : "stage-point-2");
-      const hall = document.getElementById("hallContainer");
-      const dot = document.getElementById("walkingDot");
-
-      const hallRect = hall.getBoundingClientRect();
-      const seatRect = seatEl.getBoundingClientRect();
-      const targetRect = targetPoint.getBoundingClientRect();
-
-      // Start position (relative to hall container)
-      const startX = seatRect.left - hallRect.left + (seatRect.width / 2) - 7;
-      const startY = seatRect.top - hallRect.top + (seatRect.height / 2) - 7;
-
-      // Stage Target position
-      const endX = targetRect.left - hallRect.left + (targetRect.width / 2) - 7;
-      const endY = targetRect.top - hallRect.top + targetRect.height + 15;
-
-      dot.classList.remove("hidden");
-      dot.style.transform = `translate(${startX}px, ${startY}px)`;
-
-      // Step 1: Walk into aisle
-      setTimeout(() => {
-        const aisleX = isLeft ? startX + 40 : startX - 40;
-        dot.style.transform = `translate(${aisleX}px, ${startY}px)`;
-      }, 200);
-
-      // Step 2: Proceed towards Stage Front
-      setTimeout(() => {
-        const aisleX = isLeft ? startX + 40 : startX - 40;
-        dot.style.transform = `translate(${aisleX}px, ${endY + 20}px)`;
-      }, 900);
-
-      // Step 3: Arrive at Point 1 or Point 2 Podium
-      setTimeout(() => {
-        dot.style.transform = `translate(${endX}px, ${endY}px)`;
-      }, 1600);
-    }
-
-    // Faculty Authentication
-    function openFacultyModal() {
-      document.getElementById("adminPassword").value = "";
-      openModal("facultyAuthModal");
-    }
-
-    function verifyPassword() {
-      const pwd = document.getElementById("adminPassword").value;
-      if (pwd === ADMIN_PW) {
-        closeModal("facultyAuthModal");
-        openModal("facultyPanelModal");
-      } else {
-        alert("Incorrect password. Access denied.");
+      // 2. Search by Student Name or Register Number
+      for (const [code, info] of Object.entries(studentRoster)) {
+        if (
+          (info.name && info.name.toUpperCase().includes(q)) ||
+          (info.regNo && info.regNo.toUpperCase().includes(q))
+        ) {
+          const seatObj = seatsByCode[code.toUpperCase()];
+          if (seatObj) {
+            selectSeat(seatObj.coordKey, true);
+            return;
+          }
+        }
       }
     }
 
-    // Excel Export & Import
-    function downloadExcelTemplate() {
-      const dept = document.getElementById("deptSelect").value;
-      const rows = [
-        ["Seat_ID", "Student_Name", "Roll_No", "Department", "Status"]
-      ];
+    function clearSearch() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("clearSearchBtn").style.display = "none";
+      stopWalkAnimation();
+    }
 
-      // Offer unassigned or relevant seats in template
-      for (const [id, s] of Object.entries(seatsData)) {
-        if (s.blockKey !== 'faculty') {
-          rows.push([id, s.studentName || "", s.rollNo || "", dept, s.status]);
-        }
+    function adjustZoom(delta) {
+      currentZoom = Math.min(1.6, Math.max(0.55, +(currentZoom + delta).toFixed(2)));
+      document.getElementById("hallCanvas").style.transform = `scale(${currentZoom})`;
+      document.getElementById("zoomLabel").textContent = `${Math.round(currentZoom * 100)}%`;
+      stopWalkAnimation();
+    }
+
+    /********************************************************************
+     * 6. FACULTY PORTAL: AUTH, EXCEL GENERATOR/UPLOAD, & LAYOUT EDITOR
+     ********************************************************************/
+    function switchView(view) {
+      const isSeat = view === "seat";
+      document.getElementById("seatView").style.display = isSeat ? "block" : "none";
+      document.getElementById("facultyView").style.display = isSeat ? "none" : "block";
+      document.getElementById("tabSeatBtn").classList.toggle("active", isSeat);
+      document.getElementById("tabFacultyBtn").classList.toggle("active", !isSeat);
+      if (!isSeat && isFacultyUnlocked) {
+        renderFacultyConfigTables();
+      }
+    }
+
+    function unlockFaculty() {
+      const val = document.getElementById("facultyPassInput").value;
+      if (val === FACULTY_PASSWORD) {
+        isFacultyUnlocked = true;
+        document.getElementById("facultyGateCard").style.display = "none";
+        document.getElementById("facultyConsole").style.display = "block";
+        renderDeptPills();
+        renderFacultyConfigTables();
+      } else {
+        alert("Incorrect password! Please enter the valid CET Graduation password.");
+      }
+    }
+
+    function renderDeptPills() {
+      const container = document.getElementById("deptButtonsContainer");
+      container.innerHTML = "";
+      layoutConfig.allocations.forEach(alloc => {
+        const btn = document.createElement("button");
+        btn.className = `dept-pill-btn ${selectedDeptForExcel === alloc.dept ? 'active' : ''}`;
+        btn.textContent = `${alloc.dept} (${alloc.count} seats)`;
+        btn.onclick = () => {
+          selectedDeptForExcel = alloc.dept;
+          renderDeptPills();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function downloadBranchExcel() {
+      const alloc = layoutConfig.allocations.find(a => a.dept === selectedDeptForExcel);
+      if (!alloc) return;
+
+      const rows = [["Seat_Number", "Department", "Student_Name", "Register_No"]];
+      for (let i = 1; i <= alloc.count; i++) {
+        const code = `${alloc.dept} ${i}`;
+        const existing = studentRoster[code] || {};
+        rows.push([code, alloc.dept, existing.name || "", existing.regNo || ""]);
       }
 
       const ws = XLSX.utils.aoa_to_sheet(rows);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Seating_Allocation");
-      XLSX.writeFile(wb, `CET_${dept.replace(/\s+/g, '_')}_Seating.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, `${alloc.dept}_Seating`);
+      XLSX.writeFile(wb, `CET_2026_${alloc.dept}_Seating_Template.xlsx`);
     }
 
-    function processExcelUpload() {
-      const fileInput = document.getElementById("excelUpload");
+    function uploadBranchExcel() {
+      const fileInput = document.getElementById("excelFileInput");
       if (!fileInput.files.length) {
-        alert("Please select an Excel file to upload.");
+        alert("Please choose an Excel file first.");
         return;
       }
-
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = (e) => {
         const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+        const wb = XLSX.read(data, { type: "array" });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet);
 
-        let updatedCount = 0;
-        jsonData.forEach(row => {
-          const seatId = row.Seat_ID || row.seat_id;
-          if (seatId && seatsData[seatId]) {
-            seatsData[seatId].studentName = row.Student_Name || row.student_name || "";
-            seatsData[seatId].rollNo = row.Roll_No || row.roll_no || "";
-            seatsData[seatId].dept = row.Department || row.department || "";
-            if (row.Status) {
-              seatsData[seatId].status = row.Status.toLowerCase();
+        let count = 0;
+        json.forEach(row => {
+          const rawCode = (row.Seat_Number || row.Seat || row.seat_number || "").toString().trim().toUpperCase();
+          const name = (row.Student_Name || row.Name || row.student_name || "").toString().trim();
+          const regNo = (row.Register_No || row.RegNo || row.register_no || "").toString().trim();
+          if (rawCode) {
+            if (name) {
+              studentRoster[rawCode] = { name, regNo };
+              count++;
             } else {
-              seatsData[seatId].status = seatsData[seatId].studentName ? 'occupied' : 'vacant';
+              delete studentRoster[rawCode];
             }
-            updatedCount++;
           }
         });
 
-        saveState();
-        renderLayout();
-        alert(`Successfully imported and updated ${updatedCount} seats!`);
-        closeModal("facultyPanelModal");
+        saveAllStorage();
+        buildAndRenderMap();
+        alert(`Successfully updated ${count} student seat assignments!`);
       };
       reader.readAsArrayBuffer(fileInput.files[0]);
     }
 
-    // Modal Helpers
-    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
-    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+    function applySeatStatusByInput() {
+      const rawKey = document.getElementById("statusSeatInput").value.trim().toUpperCase();
+      const status = document.getElementById("statusTypeSelect").value;
+      if (!rawKey) {
+        alert("Enter a Seat Code (e.g. EE 12) or Coordinate (e.g. B1-R3-C5).");
+        return;
+      }
+      if (status === "normal") {
+        delete seatOverrides[rawKey];
+      } else {
+        seatOverrides[rawKey] = status;
+      }
+      saveAllStorage();
+      buildAndRenderMap();
+      alert(`Seat "${rawKey}" updated to ${status.toUpperCase()}.`);
+    }
+
+    function quickSetOverride(coordKey, status) {
+      if (status === "normal") {
+        delete seatOverrides[coordKey];
+      } else {
+        seatOverrides[coordKey] = status;
+      }
+      saveAllStorage();
+      buildAndRenderMap();
+    }
+
+    function renderFacultyConfigTables() {
+      const bBody = document.querySelector("#blockConfigTable tbody");
+      bBody.innerHTML = "";
+      layoutConfig.blocks.forEach((b, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>Block ${b.id}</strong></td>
+          <td><input type="number" min="1" max="50" id="cfg-b-rows-${idx}" value="${b.rows}"></td>
+          <td><input type="number" min="1" max="20" id="cfg-b-cols-${idx}" value="${b.cols}"></td>
+          <td><input type="number" min="0" max="10" id="cfg-b-ffac-${idx}" value="${b.frontFacultyRows}"></td>
+          <td><input type="number" min="0" max="10" id="cfg-b-bfac-${idx}" value="${b.backFacultyRows}"></td>
+        `;
+        bBody.appendChild(tr);
+      });
+
+      const dBody = document.querySelector("#deptConfigTable tbody");
+      dBody.innerHTML = "";
+      layoutConfig.allocations.forEach((a, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${a.dept}</strong></td>
+          <td><input type="number" min="1" max="6" id="cfg-d-blk-${idx}" value="${a.block}"></td>
+          <td><input type="number" min="1" max="400" id="cfg-d-cnt-${idx}" value="${a.count}"></td>
+        `;
+        dBody.appendChild(tr);
+      });
+    }
+
+    function saveCustomLayoutConfig() {
+      layoutConfig.blocks.forEach((b, idx) => {
+        b.rows = parseInt(document.getElementById(`cfg-b-rows-${idx}`).value) || b.rows;
+        b.cols = parseInt(document.getElementById(`cfg-b-cols-${idx}`).value) || b.cols;
+        b.frontFacultyRows = parseInt(document.getElementById(`cfg-b-ffac-${idx}`).value) || 0;
+        b.backFacultyRows = parseInt(document.getElementById(`cfg-b-bfac-${idx}`).value) || 0;
+      });
+
+      layoutConfig.allocations.forEach((a, idx) => {
+        a.block = parseInt(document.getElementById(`cfg-d-blk-${idx}`).value) || a.block;
+        a.count = parseInt(document.getElementById(`cfg-d-cnt-${idx}`).value) || a.count;
+      });
+
+      saveAllStorage();
+      renderDeptPills();
+      buildAndRenderMap();
+      alert("Block rows, columns, and seat counts updated! Switching to Hall Map.");
+      switchView("seat");
+    }
+
+    function resetDefaultLayoutConfig() {
+      if (!confirm("Reset block dimensions and seat counts to the default CET 2026 layout?")) return;
+      layoutConfig = JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
+      saveAllStorage();
+      renderFacultyConfigTables();
+      renderDeptPills();
+      buildAndRenderMap();
+    }
+
+    // Initialize on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      buildAndRenderMap();
+    });
   </script>
 </body>
 </html>
