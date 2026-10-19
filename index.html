@@ -211,11 +211,14 @@
       display: inline-block;
     }
     .rect-indicator {
-      width: 12px;
-      height: 8px;
+      width: 14px;
+      height: 9px;
       border-radius: 2px;
       display: inline-block;
     }
+    .rect-indicator.filled { background-color: #16a34a; }
+    .rect-indicator.unoccupied { background-color: #ef4444; }
+
     .dot-defective {
       background: #374151;
       color: #fff;
@@ -921,7 +924,7 @@
             <div class="stage-side-steps" id="leftStageSteps"></div>
 
             <div class="stage-wrapper" id="stageWrapper">
-              <div class="stage-main-rect" id="stageMainrect">
+              <div class="stage-main-rect" id="stageMainRect">
                 <div class="stage-header-pill">GRADUATION DAY 2026 · STAGE</div>
                 <div class="stage-led-tag">LED WALL</div>
 
