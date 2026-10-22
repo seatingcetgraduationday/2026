@@ -287,6 +287,41 @@
       border-color: var(--navy-dark);
     }
 
+    /* Speed Control Pills */
+    .speed-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f4f1e8;
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 1px solid #dcd7cc;
+    }
+    .speed-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      border: 1px solid #d5cfc2;
+      background: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+    }
+    .speed-btn:hover {
+      background: #eeeae0;
+    }
+    .speed-label {
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 72px;
+      text-align: center;
+      color: var(--navy-dark);
+    }
+
     /* Hall Viewport */
     .hall-viewport {
       background: #ffffff;
@@ -897,9 +932,9 @@
       </div>
     </div>
 
-    <!-- Active Walk Simulation Status Banner -->
+    <!-- Active Walk Simulation Status Banner (With Speed Controls) -->
     <div id="walkStatusCard" class="walk-banner-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
         <div>
           <div id="walkEyebrow" class="walk-eyebrow">DEPARTMENT WAVE</div>
           <div id="walkStepTitle" class="serif-title" style="font-size:18px; font-weight:700;">
@@ -909,7 +944,16 @@
             As soon as one row finishes at the station, the first person of the next row enters the stage
           </div>
         </div>
-        <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:7px 14px;">Stop ✕</button>
+
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div class="speed-controls" title="Adjust animation speed">
+            <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-left:4px;">Speed:</span>
+            <button class="speed-btn" onclick="changeAnimSpeed(-1)">−</button>
+            <span id="speedValueLabel" class="speed-label">1x (Normal)</span>
+            <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
+          </div>
+          <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:7px 14px;">Stop ✕</button>
+        </div>
       </div>
     </div>
 
@@ -1118,6 +1162,20 @@
     let selectedSeatKey = null;
     let selectedDeptForExcel = "EE";
     let walkAnimFrame = null;
+
+    // Animation Speed Options (1x = Current Normal)
+    const SPEED_STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
+    let currentSpeedIndex = 3; // Index 3 is 1x (Normal)
+    let animSpeedMultiplier = 1;
+
+    function changeAnimSpeed(delta) {
+      currentSpeedIndex = Math.max(0, Math.min(SPEED_STEPS.length - 1, currentSpeedIndex + delta));
+      animSpeedMultiplier = SPEED_STEPS[currentSpeedIndex];
+      const lbl = document.getElementById("speedValueLabel");
+      if (lbl) {
+        lbl.textContent = animSpeedMultiplier === 1 ? "1x (Normal)" : `${animSpeedMultiplier}x`;
+      }
+    }
 
     const BRANCH_META = {
       PhD:  { name: "Doctoral Programmes (PhD)", color: "#7c3aed" },
@@ -1521,7 +1579,7 @@
     }
 
     /********************************************************************
-     * 4. ANIMATION ENGINE (EXACT STAGE HANDOFF BETWEEN ROWS)
+     * 4. ANIMATION ENGINE (EXACT STAGE HANDOFF & VARIABLE SPEED)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -1565,21 +1623,19 @@
       const stageWalkY = dskPos.cy;
 
       const pts = [
-        { x: rowOuterEdgeX, y: rowY },         // 0: Row exit
-        { x: outerAisleX, y: rowY },           // 1: Outer passage
-        { x: outerAisleX, y: stagingY },       // 2: Top of outer passage
-        { x: stpPos.cx, y: stagingY },         // 3: Bottom of stage steps
-        { x: stpPos.cx, y: stageWalkY },       // 4: ON STAGE (Top of side steps)
-        { x: dskPos.cx, y: stageWalkY },       // 5: AT CERTIFICATE STATION
-        { x: returnStairLaneX, y: stageWalkY },// 6: Top of center return stairs
-        { x: returnStairLaneX, y: returnFrontY }, // 7: Bottom of return stairs
-        { x: innerAisleX, y: returnFrontY },   // 8: Top of inner passage
-        { x: innerAisleX, y: rowY },           // 9: Inner passage at row level
-        { x: rowInnerEdgeX, y: rowY }          // 10: Back into row
+        { x: rowOuterEdgeX, y: rowY },
+        { x: outerAisleX, y: rowY },
+        { x: outerAisleX, y: stagingY },
+        { x: stpPos.cx, y: stagingY },
+        { x: stpPos.cx, y: stageWalkY },
+        { x: dskPos.cx, y: stageWalkY },
+        { x: returnStairLaneX, y: stageWalkY },
+        { x: returnStairLaneX, y: returnFrontY },
+        { x: innerAisleX, y: returnFrontY },
+        { x: innerAisleX, y: rowY },
+        { x: rowInnerEdgeX, y: rowY }
       ];
 
-      // Compute exact cumulative distances along waypoints so we know exact pixel distance
-      // to Stage Entry (pt 4) and Certificate Station (pt 5) for this specific row
       const cumDist = [0];
       for (let i = 1; i < pts.length; i++) {
         const dx = pts[i].x - pts[i - 1].x;
@@ -1607,8 +1663,8 @@
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
-        distToStageEntry: cumDist[4],      // Exact distance from seat to stepping on stage
-        distToStationFinish: cumDist[5],   // Exact distance from seat to finishing station
+        distToStageEntry: cumDist[4],
+        distToStationFinish: cumDist[5],
         totalLength: cumDist[cumDist.length - 1]
       };
     }
@@ -1652,7 +1708,7 @@
 
       let dist = 0;
       function stepSingle() {
-        dist += 2.8;
+        dist += 2.8 * animSpeedMultiplier;
         if (dist > totalLength) dist = 0;
         const pt = pathEl.getPointAtLength(dist);
         dot.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
@@ -1722,13 +1778,6 @@
           dots.push(g);
         }
 
-        // Exact synchronization math:
-        // For Row 0, startDist = 0.
-        // Last person of Row[idx-1] finishes the Certificate Station at globalDist =
-        //   prev.startDist + prev.distToStationFinish + (prev.studentCount - 1) * spacing.
-        // We want the FIRST person of Row[idx] to be ON STAGE (at pCfg.distToStageEntry) at that exact moment:
-        //   curr.startDist + pCfg.distToStageEntry = prevStationFinishGlobalDist
-        //   => curr.startDist = prevStationFinishGlobalDist - pCfg.distToStageEntry
         let startDist = 0;
         if (idx > 0) {
           const prev = rowConvoys[idx - 1];
@@ -1755,7 +1804,7 @@
       let globalDist = 0;
 
       function stepWave() {
-        globalDist += 3.0;
+        globalDist += 3.0 * animSpeedMultiplier;
         if (globalDist > maxGlobalDist) globalDist = 0;
 
         let stageRowLabel = "";
@@ -1772,7 +1821,6 @@
             });
           }
 
-          // Check if this row is currently on stage (between Stage Entry and Station Finish)
           if (localHeadDist >= c.distToStageEntry && tailDist <= c.distToStationFinish) {
             stageRowLabel = `Row ${c.rowNum} (Block ${c.blockId})`;
           }
