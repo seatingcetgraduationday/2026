@@ -1521,7 +1521,7 @@
     }
 
     /********************************************************************
-     * 4. ANIMATION ENGINE (FIXED STAGE ROUTING)
+     * 4. ANIMATION ENGINE (PRECISE STAGE ROUTING & CONTINUOUS WAVE)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -1558,7 +1558,6 @@
       const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
-      // Keep path safely below the stage rect and route precisely through side steps
       const stagingY = stgPos.y + stgPos.h + 8;
       const returnFrontY = strPos.y + strPos.h + 18;
 
@@ -1629,7 +1628,7 @@
       statusCard.style.borderColor = "#cbd5e1";
       document.getElementById("walkEyebrow").style.color = "#64748b";
       document.getElementById("walkEyebrow").textContent =
-        `INDIVIDUAL PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW${rowNum}`} → STATION ${stationNum}`;
+        `INDIVIDUAL PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW ${rowNum}`} → STATION ${stationNum}`;
       document.getElementById("walkStepTitle").textContent = "Walking along path to stage using very light steps...";
       document.getElementById("walkSubtext").textContent = `Outer passage → Stage Reception ${stationNum} → Center return steps`;
 
@@ -1669,7 +1668,7 @@
       statusCard.style.borderColor = "#cbd5e1";
       document.getElementById("walkEyebrow").style.color = "#64748b";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode} (${pathConfigs.length} ROWS)`;
-      document.getElementById("walkSubtext").textContent = `Next row reaches the stage immediately as the previous row leaves`;
+      document.getElementById("walkSubtext").textContent = `Next row reaches stage exactly as the last student of the previous row exits`;
 
       runContinuousDepartmentWaveSVGAnimation(pathConfigs);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1694,7 +1693,10 @@
         svg.appendChild(pathEl);
 
         const totalLength = pathEl.getTotalLength();
-        const stageExitDist = totalLength * 0.68;
+        
+        // Exact timing trigger: Next row starts as soon as the last student of the previous row 
+        // clears the Center Return Steps (which occurs at ~78% of the path length).
+        const exitClearDist = totalLength * 0.78;
 
         const dots = [];
         for (let i = 0; i < pCfg.studentCount; i++) {
@@ -1718,7 +1720,8 @@
           finishDist: cumulativeDelay + totalLength + pCfg.studentCount * spacing
         });
 
-        cumulativeDelay += stageExitDist;
+        // Offset the start of the next row so it steps onto the stage right as the previous row clears exit
+        cumulativeDelay += exitClearDist;
       });
 
       const maxGlobalDist = Math.max(...rowConvoys.map(c => c.finishDist)) + 40;
