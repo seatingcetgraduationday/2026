@@ -906,7 +906,7 @@
             Walking to Stage Reception &rarr; Returning via center steps
           </div>
           <div id="walkSubtext" style="font-size:13px; color:var(--text-muted); margin-top:2px;">
-            Next row reaches stage immediately as the previous row leaves
+            As soon as one row finishes at the station, the first person of the next row enters the stage
           </div>
         </div>
         <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:7px 14px;">Stop ✕</button>
@@ -1521,7 +1521,7 @@
     }
 
     /********************************************************************
-     * 4. ANIMATION ENGINE (PRECISE STAGE ROUTING & CONTINUOUS WAVE)
+     * 4. ANIMATION ENGINE (EXACT STAGE HANDOFF BETWEEN ROWS)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -1565,18 +1565,27 @@
       const stageWalkY = dskPos.cy;
 
       const pts = [
-        { x: rowOuterEdgeX, y: rowY },
-        { x: outerAisleX, y: rowY },
-        { x: outerAisleX, y: stagingY },
-        { x: stpPos.cx, y: stagingY },
-        { x: stpPos.cx, y: stageWalkY },
-        { x: dskPos.cx, y: stageWalkY },
-        { x: returnStairLaneX, y: stageWalkY },
-        { x: returnStairLaneX, y: returnFrontY },
-        { x: innerAisleX, y: returnFrontY },
-        { x: innerAisleX, y: rowY },
-        { x: rowInnerEdgeX, y: rowY }
+        { x: rowOuterEdgeX, y: rowY },         // 0: Row exit
+        { x: outerAisleX, y: rowY },           // 1: Outer passage
+        { x: outerAisleX, y: stagingY },       // 2: Top of outer passage
+        { x: stpPos.cx, y: stagingY },         // 3: Bottom of stage steps
+        { x: stpPos.cx, y: stageWalkY },       // 4: ON STAGE (Top of side steps)
+        { x: dskPos.cx, y: stageWalkY },       // 5: AT CERTIFICATE STATION
+        { x: returnStairLaneX, y: stageWalkY },// 6: Top of center return stairs
+        { x: returnStairLaneX, y: returnFrontY }, // 7: Bottom of return stairs
+        { x: innerAisleX, y: returnFrontY },   // 8: Top of inner passage
+        { x: innerAisleX, y: rowY },           // 9: Inner passage at row level
+        { x: rowInnerEdgeX, y: rowY }          // 10: Back into row
       ];
+
+      // Compute exact cumulative distances along waypoints so we know exact pixel distance
+      // to Stage Entry (pt 4) and Certificate Station (pt 5) for this specific row
+      const cumDist = [0];
+      for (let i = 1; i < pts.length; i++) {
+        const dx = pts[i].x - pts[i - 1].x;
+        const dy = pts[i].y - pts[i - 1].y;
+        cumDist.push(cumDist[i - 1] + Math.hypot(dx, dy));
+      }
 
       const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
 
@@ -1592,7 +1601,16 @@
       }
 
       const color = "#cbd5e1";
-      return { d, color, studentCount: Math.max(1, studentCount), blockId, rowNum };
+      return {
+        d,
+        color,
+        studentCount: Math.max(1, studentCount),
+        blockId,
+        rowNum,
+        distToStageEntry: cumDist[4],      // Exact distance from seat to stepping on stage
+        distToStationFinish: cumDist[5],   // Exact distance from seat to finishing station
+        totalLength: cumDist[cumDist.length - 1]
+      };
     }
 
     function animateSingleStudentPath(blockId, rowNum, colNum, highlightCoordKey) {
@@ -1668,7 +1686,8 @@
       statusCard.style.borderColor = "#cbd5e1";
       document.getElementById("walkEyebrow").style.color = "#64748b";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode} (${pathConfigs.length} ROWS)`;
-      document.getElementById("walkSubtext").textContent = `Next row reaches stage exactly as the last student of the previous row exits`;
+      document.getElementById("walkSubtext").textContent =
+        `As soon as one row finishes at the station, the first person of the next row is already on stage`;
 
       runContinuousDepartmentWaveSVGAnimation(pathConfigs);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1678,11 +1697,10 @@
       const svg = document.getElementById("walkOverlaySvg");
       svg.innerHTML = "";
 
-      const spacing = 18;
+      const spacing = 16;
       const rowConvoys = [];
-      let cumulativeDelay = 0;
 
-      pathConfigs.forEach((pCfg) => {
+      pathConfigs.forEach((pCfg, idx) => {
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
@@ -1691,12 +1709,6 @@
         pathEl.setAttribute("stroke-dasharray", "5 4");
         pathEl.setAttribute("opacity", "0.7");
         svg.appendChild(pathEl);
-
-        const totalLength = pathEl.getTotalLength();
-        
-        // Exact timing trigger: Next row starts as soon as the last student of the previous row 
-        // clears the Center Return Steps (which occurs at ~78% of the path length).
-        const exitClearDist = totalLength * 0.78;
 
         const dots = [];
         for (let i = 0; i < pCfg.studentCount; i++) {
@@ -1710,18 +1722,33 @@
           dots.push(g);
         }
 
+        // Exact synchronization math:
+        // For Row 0, startDist = 0.
+        // Last person of Row[idx-1] finishes the Certificate Station at globalDist =
+        //   prev.startDist + prev.distToStationFinish + (prev.studentCount - 1) * spacing.
+        // We want the FIRST person of Row[idx] to be ON STAGE (at pCfg.distToStageEntry) at that exact moment:
+        //   curr.startDist + pCfg.distToStageEntry = prevStationFinishGlobalDist
+        //   => curr.startDist = prevStationFinishGlobalDist - pCfg.distToStageEntry
+        let startDist = 0;
+        if (idx > 0) {
+          const prev = rowConvoys[idx - 1];
+          const prevLastPersonFinishesStationAt =
+            prev.startDist + prev.distToStationFinish + (prev.studentCount - 1) * spacing;
+          startDist = prevLastPersonFinishesStationAt - pCfg.distToStageEntry;
+        }
+
         rowConvoys.push({
           blockId: pCfg.blockId,
           rowNum: pCfg.rowNum,
           pathEl,
-          totalLength,
+          totalLength: pCfg.totalLength,
+          distToStageEntry: pCfg.distToStageEntry,
+          distToStationFinish: pCfg.distToStationFinish,
+          studentCount: pCfg.studentCount,
           dots,
-          startDist: cumulativeDelay,
-          finishDist: cumulativeDelay + totalLength + pCfg.studentCount * spacing
+          startDist,
+          finishDist: startDist + pCfg.totalLength + pCfg.studentCount * spacing
         });
-
-        // Offset the start of the next row so it steps onto the stage right as the previous row clears exit
-        cumulativeDelay += exitClearDist;
       });
 
       const maxGlobalDist = Math.max(...rowConvoys.map(c => c.finishDist)) + 40;
@@ -1731,12 +1758,13 @@
         globalDist += 3.0;
         if (globalDist > maxGlobalDist) globalDist = 0;
 
-        let activeRowLabel = "";
+        let stageRowLabel = "";
 
         rowConvoys.forEach((c) => {
           const localHeadDist = globalDist - c.startDist;
+          const tailDist = localHeadDist - (c.dots.length - 1) * spacing;
           const rowEl = document.getElementById(`row-el-B${c.blockId}-R${c.rowNum}`);
-          const isRowMoving = localHeadDist > 0 && localHeadDist < (c.totalLength + c.dots.length * spacing);
+          const isRowMoving = localHeadDist > 0 && tailDist < c.totalLength;
 
           if (rowEl) {
             Array.from(rowEl.children).forEach(el => {
@@ -1744,8 +1772,9 @@
             });
           }
 
-          if (isRowMoving && !activeRowLabel) {
-            activeRowLabel = `Row ${c.rowNum} (Block ${c.blockId})`;
+          // Check if this row is currently on stage (between Stage Entry and Station Finish)
+          if (localHeadDist >= c.distToStageEntry && tailDist <= c.distToStationFinish) {
+            stageRowLabel = `Row ${c.rowNum} (Block ${c.blockId})`;
           }
 
           c.dots.forEach((dotGroup, i) => {
@@ -1761,9 +1790,9 @@
         });
 
         const stepTitle = document.getElementById("walkStepTitle");
-        stepTitle.textContent = activeRowLabel
-          ? `Continuous Wave: ${activeRowLabel} on stage / approaching reception`
-          : "Department wave circulation complete.";
+        stepTitle.textContent = stageRowLabel
+          ? `On Stage Now: ${stageRowLabel} · Next row queued at stage steps`
+          : "Department wave circulation in progress...";
 
         walkAnimFrame = requestAnimationFrame(stepWave);
       }
@@ -1851,7 +1880,7 @@
         renderDeptPills();
         renderFacultyConfigTables();
       } else {
-        alert("Incorrect password! Use CET_Graduation@2026");
+        alert("Incorrect password! Access denied.");
       }
     }
 
