@@ -462,8 +462,8 @@
       padding: 0 50px;
     }
     .reception-desk {
-      border: 1.5px solid #e6b333;
-      background: rgba(254, 240, 138, 0.35); /* Distinct light color for collection reception point */
+      border: 2px solid #fef08a;
+      background: #fef9c3; /* Clear light color highlighting certificate collection reception point */
       border-radius: 6px;
       padding: 6px 16px;
       text-align: center;
@@ -475,9 +475,9 @@
     }
     .reception-desk-title {
       font-size: 8.5px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.08em;
-      color: #fef08a;
+      color: #854d0e;
       text-transform: uppercase;
       line-height: 1.2;
     }
@@ -664,7 +664,7 @@
       width: 20px;
       height: 20px;
       border-radius: 4px;
-      font-size: 5px;
+      font-size: 4.8px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -675,6 +675,7 @@
       position: relative;
       border: 1px solid transparent;
       white-space: nowrap;
+      overflow: visible; /* Allows Top UG / Top PG text to sit clearly outside if needed */
     }
     .seat-box:hover {
       transform: scale(1.25);
@@ -706,8 +707,8 @@
     .occ-rect.absent { background-color: #f97316; }
 
     .seat-FAC { background: #64748b; color: #fff; font-size: 5.5px; }
-    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 4.8px; }
-    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 4.8px; }
+    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 4.6px; }
+    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 4.6px; }
     .seat-EE  { background: #dceaff; color: #1e40af; border-color: #93c5fd; }
     .seat-PTDC{ background: #d5f3f7; color: #0e7490; border-color: #67e8f9; }
     .seat-CS  { background: #d6f5e3; color: #065f46; border-color: #6ee7b7; }
@@ -760,6 +761,7 @@
       text-transform: uppercase;
     }
 
+    /* Footer: Central Door between 3 & 4 matching passage width, NO sound system */
     .hall-bottom-footer {
       display: flex;
       justify-content: center;
@@ -1151,7 +1153,6 @@
 
         <div class="hall-bottom-footer">
           <div class="footer-arch-box">DOOR (CENTRAL BETWEEN BLOCK 3 &amp; 4)</div>
-          <div class="footer-arch-box">6 ft × 6 ft SOUND SYSTEM (BEHIND BLOCK 4)</div>
         </div>
       </div>
     </div>
@@ -1518,7 +1519,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v6").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v7").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1541,7 +1542,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v6").set({
+      db.collection("cet2026").doc("seatingState_v7").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1871,7 +1872,7 @@
         el.textContent = "";
       } else if (seatObj.type === "faculty") {
         el.classList.add(`seat-${seatObj.dept}`);
-        el.textContent = seatObj.num;
+        el.textContent = seatObj.num; // Faculty seat numbers F1-F59 rendered correctly
         el.title = seatObj.designation ? `${seatObj.num}: ${seatObj.designation}` : seatObj.num;
       } else {
         el.classList.add(`seat-${seatObj.dept}`);
@@ -2040,7 +2041,7 @@
     }
 
     /********************************************************************
-     * 5. NON-INTERSECTING ANIMATION ENGINE (ZERO-LAG HANDOFF & PATH LINES)
+     * 5. ANIMATION ENGINE (STRICTLY NON-INTERSECTING & PATH LINES SHOWN)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect, isCentralStage = false) {
       const toLocal = (rect) => ({
@@ -2070,32 +2071,32 @@
       const strPos = toLocal(stairsEl.getBoundingClientRect());
       const cPos = toLocal(centralPt.getBoundingClientRect());
 
-      // Distinct Non-Intersecting Outbound & Return Passages
-      const outerAisleX = isLeft ? (bPos.x - 10) : (bPos.x + bPos.w + 10);
-      const innerAisleX = isLeft ? (bPos.x + bPos.w + 14) : (bPos.x - 14);
+      // STRICT NON-INTERSECTING CHANNELS: Outbound on outer side, Return on deeper inner channel
+      const outerAisleX = isLeft ? (bPos.x - 12) : (bPos.x + bPos.w + 12);
+      const innerAisleX = isLeft ? (bPos.x + bPos.w + 24) : (bPos.x - 24);
 
       const rowOuterEdgeX = isLeft ? (bPos.x + 16) : (bPos.x + bPos.w - 4);
       const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
-      const outboundY = stgPos.y + stgPos.h + 8;
-      const returnY = strPos.y + strPos.h + 24;
+      const outboundY = stgPos.y + stgPos.h + 10;
+      const returnY = strPos.y + strPos.h + 36; // Deeper return lane to guarantee zero path intersection
 
       const targetX = isCentralStage ? cPos.cx : stpPos.cx;
       const targetY = isCentralStage ? cPos.cy : (stgPos.y + stgPos.h / 2);
-      const returnStairX = strPos.cx + (isLeft ? -15 : 15);
+      const returnStairX = strPos.cx + (isLeft ? -18 : 18);
 
       const pts = [
-        { x: rowOuterEdgeX, y: rowY },
-        { x: outerAisleX, y: rowY },
-        { x: outerAisleX, y: outboundY },
-        { x: targetX, y: outboundY },
-        { x: targetX, y: targetY },
-        { x: returnStairX, y: targetY },
-        { x: returnStairX, y: returnY },
-        { x: innerAisleX, y: returnY },
-        { x: innerAisleX, y: rowY },
-        { x: rowInnerEdgeX, y: rowY }
+        { x: rowOuterEdgeX, y: rowY },       // 0: Row exit
+        { x: outerAisleX, y: rowY },         // 1: Outer passage
+        { x: outerAisleX, y: outboundY },     // 2: Outbound channel
+        { x: targetX, y: outboundY },         // 3: Approach stage
+        { x: targetX, y: targetY },           // 4: AT RECEPTION / CENTRAL STAGE
+        { x: returnStairX, y: targetY },      // 5: Exit stage
+        { x: returnStairX, y: returnY },      // 6: Deep return channel
+        { x: innerAisleX, y: returnY },       // 7: Return aisle
+        { x: innerAisleX, y: rowY },           // 8: Back to row level
+        { x: rowInnerEdgeX, y: rowY }          // 9: Re-enter seat
       ];
 
       const cumDist = [0];
@@ -2116,7 +2117,7 @@
 
       return {
         d,
-        color: "#cbd5e1", // Light trajectory path lines shown for waves & individual walk
+        color: "#94a3b8", // Light trajectory path lines displayed during movement
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
@@ -2144,7 +2145,7 @@
       pathEl.setAttribute("d", baseInfo.d);
       pathEl.setAttribute("fill", "none");
       pathEl.setAttribute("stroke", baseInfo.color);
-      pathEl.setAttribute("stroke-width", "2.5");
+      pathEl.setAttribute("stroke-width", "2");
       pathEl.setAttribute("stroke-dasharray", "6 4");
       svg.appendChild(pathEl);
 
@@ -2276,8 +2277,8 @@
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", pCfg.color); // Path trajectory lines displayed
-        pathEl.setAttribute("stroke-width", "1.6");
+        pathEl.setAttribute("stroke", pCfg.color); // Light trajectory lines displayed
+        pathEl.setAttribute("stroke-width", "1.5");
         pathEl.setAttribute("stroke-dasharray", "5 4");
         pathEl.setAttribute("opacity", "0.7");
         svg.appendChild(pathEl);
@@ -2368,7 +2369,7 @@
           const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
           pathEl.setAttribute("d", pCfg.d);
           pathEl.setAttribute("fill", "none");
-          pathEl.setAttribute("stroke", pCfg.color); // Path trajectory lines displayed
+          pathEl.setAttribute("stroke", pCfg.color); // Light trajectory lines displayed
           pathEl.setAttribute("stroke-width", "1.5");
           pathEl.setAttribute("stroke-dasharray", "5 4");
           pathEl.setAttribute("opacity", "0.65");
@@ -2468,7 +2469,7 @@
     }
 
     /********************************************************************
-     * 6. REAL FUNCTIONAL VIDEO EXPORT (MEDIARECORDER API)
+     * 6. TRUE FUNCTIONAL VIDEO EXPORT (MEDIARECORDER API)
      ********************************************************************/
     async function recordVideoExport(mode) {
       stopWalkAnimation();
@@ -2898,7 +2899,7 @@
           const name = (row.Student_Name || row.Name || row.student_name || "").toString().trim();
           const regNo = (row.Register_No || row.RegNo || row.register_no || "").toString().trim();
           const branch = (row.Branch || row.branch || "").toString().trim();
-          const stream = (row.Stream_PG || row.Stream || row.stream_pg || "").toString().trim();
+          const stream = (row.Stream_PG || row.Stream || row.stream_pg || row.stream || "").toString().trim();
 
           if (rawCode) {
             if (name) {
