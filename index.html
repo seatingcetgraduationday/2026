@@ -290,7 +290,7 @@
     .zoom-btn {
       width: 34px;
       height: 34px;
-      border-radius: 9px;
+      border-radius: 99px;
       border: 1px solid #dcd7cc;
       background: #fff;
       font-size: 17px;
@@ -463,7 +463,7 @@
     }
     .reception-desk {
       border: 2px solid #fef08a;
-      background: #fef9c3; /* Clear light color highlighting certificate collection reception point */
+      background: #fef9c3;
       border-radius: 6px;
       padding: 6px 16px;
       text-align: center;
@@ -660,12 +660,13 @@
       text-align: center;
     }
 
+    /* SEAT STYLING FIXES FOR TOP UG / TOP PG BADGES & FACULTY NUMBERS */
     .seat-box {
       width: 20px;
       height: 20px;
       border-radius: 4px;
-      font-size: 4.8px;
-      font-weight: 700;
+      font-size: 6px;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -675,7 +676,7 @@
       position: relative;
       border: 1px solid transparent;
       white-space: nowrap;
-      overflow: visible; /* Allows Top UG / Top PG text to sit clearly outside if needed */
+      overflow: visible;
     }
     .seat-box:hover {
       transform: scale(1.25);
@@ -692,6 +693,25 @@
       box-shadow: 0 0 0 2px #152542;
     }
 
+    /* TOP UG & TOP PG Badge outside rectangle */
+    .top-outside-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 5px;
+      font-weight: 800;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+      padding: 0.5px 2px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 4;
+      line-height: 1;
+    }
+
     .occ-rect {
       position: absolute;
       bottom: 1px;
@@ -706,9 +726,9 @@
     .occ-rect.unoccupied { background-color: #ef4444; }
     .occ-rect.absent { background-color: #f97316; }
 
-    .seat-FAC { background: #64748b; color: #fff; font-size: 5.5px; }
-    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 4.6px; }
-    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 4.6px; }
+    .seat-FAC { background: #64748b; color: #fff; font-size: 6px; font-weight: 800; }
+    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 5px; }
+    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 5px; }
     .seat-EE  { background: #dceaff; color: #1e40af; border-color: #93c5fd; }
     .seat-PTDC{ background: #d5f3f7; color: #0e7490; border-color: #67e8f9; }
     .seat-CS  { background: #d6f5e3; color: #065f46; border-color: #6ee7b7; }
@@ -761,24 +781,31 @@
       text-transform: uppercase;
     }
 
-    /* Footer: Central Door between 3 & 4 matching passage width, NO sound system */
+    /* Central door matching passage width between Block 3 & 4 */
+    .central-door-structure {
+      width: 34px;
+      background: #e2e8f0;
+      border-left: 2px solid #94a3b8;
+      border-right: 2px solid #94a3b8;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8.5px;
+      font-weight: 800;
+      writing-mode: vertical-rl;
+      text-transform: uppercase;
+      color: #334155;
+      margin: 34px 5px 0 5px;
+      border-radius: 4px;
+    }
+
     .hall-bottom-footer {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 24px;
       margin-top: 14px;
       padding-top: 8px;
-    }
-    .footer-arch-box {
-      border: 1.5px solid #94a3b8;
-      background: #f8fafc;
-      color: #334155;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 5px 18px;
-      border-radius: 4px;
-      text-transform: uppercase;
     }
 
     #walkOverlaySvg {
@@ -1043,7 +1070,7 @@
         <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch</div>
         <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA</div>
         <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC</div>
-        <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty (HoDs match Dept)</div>
+        <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty (F1–F59)</div>
         <div class="legend-item"><span class="rect-indicator filled"></span> Registered / Filled</div>
         <div class="legend-item"><span class="rect-indicator unoccupied"></span> Unoccupied</div>
         <div class="legend-item"><span class="rect-indicator absent"></span> Absent</div>
@@ -1086,7 +1113,7 @@
             Walking to Stage Reception &rarr; Returning via center steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Strictly non-intersecting entry and exit pathways
+            Strictly non-intersecting entry and exit pathways (Trajectory lines shown)
           </div>
         </div>
 
@@ -1098,7 +1125,7 @@
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
           <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
-          <button class="btn-primary" onclick="recordVideoExport('single')" style="background:#7c3aed;">🎥 Download Student Video</button>
+          <button class="btn-primary" onclick="recordVideoExport('single')" style="background:#7c3aed;">🎥 Download Single Video</button>
           <button class="btn-primary" onclick="recordVideoExport('block')" style="background:#1e3a8a;">🎥 Download Block Video</button>
           <button class="btn-primary" onclick="recordVideoExport('simultaneous')" style="background:#059669;">🎥 Download Simultaneous Video</button>
         </div>
@@ -1151,9 +1178,7 @@
 
         <div class="blocks-wrapper" id="blocksWrapper"></div>
 
-        <div class="hall-bottom-footer">
-          <div class="footer-arch-box">DOOR (CENTRAL BETWEEN BLOCK 3 &amp; 4)</div>
-        </div>
+        <div class="hall-bottom-footer"></div>
       </div>
     </div>
 
@@ -1423,6 +1448,7 @@
       if (lbl) lbl.textContent = animSpeedMultiplier === 1 ? "1x (Normal)" : `${animSpeedMultiplier}x`;
     }
 
+    // Complete Faculty designations F1 - F59
     const FACULTY_DESIGNATIONS = {
       F1: { title: "HoD - CE", dept: "CE" },
       F2: { title: "HoD - Arch", dept: "Arch" },
@@ -1473,7 +1499,7 @@
       Arch: { name: "Architecture (Arch)", color: "#dc2626" },
       MBA:  { name: "Master of Business Administration (MBA)", color: "#c026d3" },
       EC:   { name: "Electronics & Communication Engineering (EC)", color: "#4f46e5" },
-      FAC:  { name: "Faculty", color: "#64748b" }
+      FAC:  { name: "Faculty Member", color: "#64748b" }
     };
 
     const DEFAULT_LAYOUT = {
@@ -1519,7 +1545,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v7").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v8").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1542,7 +1568,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v7").set({
+      db.collection("cet2026").doc("seatingState_v8").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1554,30 +1580,36 @@
     }
 
     /********************************************************************
-     * 2. EXACT 24-ROW SEATING BUILDER
+     * 2. SEATING ALLOCATION LOGIC WITH FACULTY CHAIR NUMBERS
      ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
+      
+      // Row 1: Faculty F1 - F52 Across Blocks
       if (rowNum === 1) {
         const startMap = { 3: 1, 2: 10, 1: 19, 4: 27, 5: 36, 6: 45 };
         const s = startMap[blockId] || 1;
         for (let i = 0; i < cols; i++) {
-          const fCode = `F${s + i}`;
-          const fMeta = FACULTY_DESIGNATIONS[fCode] || { title: "Faculty", dept: "FAC" };
-          items.push({ type: "faculty", dept: fMeta.dept, num: fCode, code: fCode, designation: fMeta.title });
+          const fNum = s + i;
+          if (fNum <= 52) {
+            const fCode = `F${fNum}`;
+            const fMeta = FACULTY_DESIGNATIONS[fCode] || { title: "Faculty", dept: "FAC" };
+            items.push({ type: "faculty", dept: fMeta.dept, num: fCode, code: fCode, designation: fMeta.title });
+          }
         }
         return items;
       }
 
+      // Row 2: Toppers, PhD & Remaining Faculty (F53-F59)
       if (rowNum === 2) {
         if (blockId === 1) {
-          for (let i = 1; i <= 8; i++) items.push({ type: "student", dept: "TOP", subType: "UG", label: `TOP UG ${i}`, code: `TOP UG ${i}` });
+          for (let i = 1; i <= 8; i++) items.push({ type: "student", dept: "TOP", subType: "UG", label: `UG ${i}`, code: `TOP UG ${i}` });
         } else if (blockId === 2) {
-          for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "TOP", subType: "PG", label: `TOP PG ${i}`, code: `TOP PG ${i}` });
+          for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG ${i}`, code: `TOP PG ${i}` });
         } else if (blockId === 3) {
-          for (let i = 10; i <= 18; i++) items.push({ type: "student", dept: "TOP", subType: "PG", label: `TOP PG ${i}`, code: `TOP PG ${i}` });
+          for (let i = 10; i <= 18; i++) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG ${i}`, code: `TOP PG ${i}` });
         } else if (blockId === 4) {
-          for (let i = 19; i <= 25; i++) items.push({ type: "student", dept: "TOP", subType: "PG", label: `TOP PG ${i}`, code: `TOP PG ${i}` });
+          for (let i = 19; i <= 25; i++) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG ${i}`, code: `TOP PG ${i}` });
           for (let i = 1; i <= 2; i++) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD ${i}`, code: `PhD ${i}` });
         } else if (blockId === 5) {
           for (let i = 3; i <= 11; i++) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD ${i}`, code: `PhD ${i}` });
@@ -1592,6 +1624,7 @@
         return items;
       }
 
+      // Rows 3 to 24: Departmental allocations
       const rIdx = rowNum - 3;
       if (blockId === 1) {
         if (rowNum <= 19) {
@@ -1608,7 +1641,7 @@
             if (n <= 30) items.push({ type: "student", dept: "PTDC", label: n, code: `PTDC ${n}` });
           }
         } else if (rowNum === 24) {
-          for (let i = 0; i < cols; i++) items.push({ type: "faculty", dept: "FAC", num: "F", code: `FAC B1-R24-${i+1}` });
+          for (let i = 0; i < cols; i++) items.push({ type: "faculty", dept: "FAC", num: `F${53 + i}`, code: `FAC_B1_R24_${i+1}` });
         }
       } else if (blockId === 2) {
         if (rowNum <= 20) {
@@ -1653,8 +1686,6 @@
             const n = start + i;
             if (n <= 107) items.push({ type: "student", dept: "MBA", label: n, code: `MBA ${n}` });
           }
-        } else if (rowNum === 23) {
-          for (let i = 0; i < cols; i++) items.push({ type: "faculty", dept: "FAC", num: "F", code: `FAC B5-R23-${i+1}` });
         }
       } else if (blockId === 6) {
         if (rowNum <= 20) {
@@ -1663,8 +1694,6 @@
             const n = start + i;
             if (n <= 159) items.push({ type: "student", dept: "EC", label: n, code: `EC ${n}` });
           }
-        } else if (rowNum <= 23) {
-          for (let i = 0; i < cols; i++) items.push({ type: "faculty", dept: "FAC", num: "F", code: `FAC B6-R${rowNum}-${i+1}` });
         }
       }
 
@@ -1690,7 +1719,7 @@
         if (r === 16) {
           const gap = document.createElement("div");
           gap.className = "row-cross-gap";
-          gap.textContent = "Entry 6";
+          gap.textContent = "Entry";
           rowNumCol.appendChild(gap);
         }
       }
@@ -1756,7 +1785,8 @@
               subType: item.subType || null,
               label: item.label,
               code: item.code,
-              designation: item.designation || null
+              designation: item.designation || null,
+              num: item.num || null
             };
 
             if (seatObj.type === "student" && seatObj.dept) {
@@ -1789,12 +1819,10 @@
           if (r === 16) {
             const midBar = document.createElement("div");
             midBar.className = "mid-cross-passage";
-            if (blk.id === 1) midBar.innerHTML = `<span>Passage (6 ft)</span>`;
-            else if (blk.id === 2) midBar.innerHTML = `<span>Passage (6 ft)</span>`;
+            if (blk.id === 1 || blk.id === 2 || blk.id === 6) midBar.innerHTML = `<span>Passage (6 ft)</span>`;
             else if (blk.id === 3) midBar.innerHTML = `<span class="symbol-badge">📷 3</span><span>6 ft</span>`;
             else if (blk.id === 4) midBar.innerHTML = `<span class="symbol-badge">📷 1</span>`;
             else if (blk.id === 5) midBar.innerHTML = `<span class="symbol-badge">📷 2</span>`;
-            else if (blk.id === 6) midBar.innerHTML = `<span>Passage</span>`;
             rowsStack.appendChild(midBar);
           }
         }
@@ -1822,11 +1850,11 @@
         blockEl.appendChild(body);
         wrapper.appendChild(blockEl);
 
-        // CENTRAL DOOR BETWEEN BLOCK 3 AND 4 (EXACT CENTER 6FT)
+        // CENTRAL DOOR BETWEEN BLOCK 3 AND BLOCK 4 (EXACT CENTER 6FT)
         if (idx === 2) {
           const doorDiv = document.createElement("div");
-          doorDiv.style.cssText = "width: 34px; background: #e2e8f0; border-left: 2px solid #94a3b8; border-right: 2px solid #94a3b8; align-self: stretch; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; writing-mode: vertical-rl; text-transform: uppercase; color: #334155; margin: 22px 4px 0 4px; border-radius: 4px;";
-          doorDiv.textContent = "Central Door";
+          doorDiv.className = "central-door-structure";
+          doorDiv.textContent = "Central Door (6 ft)";
           wrapper.appendChild(doorDiv);
         } else if (idx < layoutConfig.blocks.length - 1) {
           const isCenter = blk.id === 3;
@@ -1872,7 +1900,7 @@
         el.textContent = "";
       } else if (seatObj.type === "faculty") {
         el.classList.add(`seat-${seatObj.dept}`);
-        el.textContent = seatObj.num; // Faculty seat numbers F1-F59 rendered correctly
+        el.textContent = seatObj.num || seatObj.code; // Clearly display Faculty seat numbers F1-F59
         el.title = seatObj.designation ? `${seatObj.num}: ${seatObj.designation}` : seatObj.num;
       } else {
         el.classList.add(`seat-${seatObj.dept}`);
@@ -1883,7 +1911,16 @@
         if (isFilled) el.classList.add("seat-assigned");
         if (isAbsent) el.classList.add("seat-absent-slot");
 
-        el.textContent = seatObj.label;
+        // TOP UG / TOP PG badge outside rectangle
+        if (seatObj.subType === "UG" || seatObj.subType === "PG") {
+          const badge = document.createElement("div");
+          badge.className = "top-outside-badge";
+          badge.textContent = seatObj.subType === "UG" ? "TOP UG" : "TOP PG";
+          el.appendChild(badge);
+          el.insertAdjacentText("beforeend", seatObj.label.replace("UG ", "").replace("PG ", ""));
+        } else {
+          el.textContent = seatObj.label;
+        }
 
         const rectInd = document.createElement("span");
         rectInd.className = `occ-rect ${isAbsent ? 'absent' : (isFilled ? 'filled' : 'unoccupied')}`;
@@ -1977,7 +2014,7 @@
 
       const assignedData = seatObj.code ? studentRoster[seatObj.code] : null;
       let titleText = "Not yet assigned";
-      if (isFaculty) titleText = seatObj.designation || assignedData?.name || "Faculty Member";
+      if (isFaculty) titleText = seatObj.designation || assignedData?.name || `Faculty (${seatObj.num})`;
       else if (isDefective) titleText = "Defective Chair";
       else if (isEmpty) titleText = "Kept Empty";
       else if (assignedData && assignedData.name) titleText = assignedData.name;
@@ -2041,7 +2078,7 @@
     }
 
     /********************************************************************
-     * 5. ANIMATION ENGINE (STRICTLY NON-INTERSECTING & PATH LINES SHOWN)
+     * 5. ANIMATION ENGINE: STRICTLY NON-INTERSECTING & PATH LINES SHOWN
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect, isCentralStage = false) {
       const toLocal = (rect) => ({
@@ -2071,16 +2108,16 @@
       const strPos = toLocal(stairsEl.getBoundingClientRect());
       const cPos = toLocal(centralPt.getBoundingClientRect());
 
-      // STRICT NON-INTERSECTING CHANNELS: Outbound on outer side, Return on deeper inner channel
-      const outerAisleX = isLeft ? (bPos.x - 12) : (bPos.x + bPos.w + 12);
-      const innerAisleX = isLeft ? (bPos.x + bPos.w + 24) : (bPos.x - 24);
+      // STRICT NON-INTERSECTING CHANNELS: Outbound on outer wing aisle, Return on dedicated inner channel
+      const outerAisleX = isLeft ? (bPos.x - 14) : (bPos.x + bPos.w + 14);
+      const innerAisleX = isLeft ? (bPos.x + bPos.w + 22) : (bPos.x - 22);
 
       const rowOuterEdgeX = isLeft ? (bPos.x + 16) : (bPos.x + bPos.w - 4);
       const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
       const outboundY = stgPos.y + stgPos.h + 10;
-      const returnY = strPos.y + strPos.h + 36; // Deeper return lane to guarantee zero path intersection
+      const returnY = strPos.y + strPos.h + 38; // Deeper return lane to guarantee zero path intersection
 
       const targetX = isCentralStage ? cPos.cx : stpPos.cx;
       const targetY = isCentralStage ? cPos.cy : (stgPos.y + stgPos.h / 2);
@@ -2089,12 +2126,12 @@
       const pts = [
         { x: rowOuterEdgeX, y: rowY },       // 0: Row exit
         { x: outerAisleX, y: rowY },         // 1: Outer passage
-        { x: outerAisleX, y: outboundY },     // 2: Outbound channel
-        { x: targetX, y: outboundY },         // 3: Approach stage
+        { x: outerAisleX, y: outboundY },     // 2: Outbound channel to stage
+        { x: targetX, y: outboundY },         // 3: Approach stage entry
         { x: targetX, y: targetY },           // 4: AT RECEPTION / CENTRAL STAGE
-        { x: returnStairX, y: targetY },      // 5: Exit stage
+        { x: returnStairX, y: targetY },      // 5: Exit stage to return stairs
         { x: returnStairX, y: returnY },      // 6: Deep return channel
-        { x: innerAisleX, y: returnY },       // 7: Return aisle
+        { x: innerAisleX, y: returnY },       // 7: Isolated return aisle
         { x: innerAisleX, y: rowY },           // 8: Back to row level
         { x: rowInnerEdgeX, y: rowY }          // 9: Re-enter seat
       ];
@@ -2117,7 +2154,7 @@
 
       return {
         d,
-        color: "#94a3b8", // Light trajectory path lines displayed during movement
+        color: "#94a3b8", // Trajectory path lines displayed during movement
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
@@ -2134,7 +2171,7 @@
       const cRect = canvas.getBoundingClientRect();
 
       const seatObj = seatsByCoord[highlightCoordKey];
-      const isCentral = seatObj.dept === 'TOP' || seatObj.dept === 'PhD';
+      const isCentral = seatObj ? (seatObj.dept === 'TOP' || seatObj.dept === 'PhD') : false;
 
       const baseInfo = buildCleanRowPath(blockId, rowNum, cRect, isCentral);
       if (!baseInfo) return;
@@ -2232,7 +2269,7 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode} (${pathConfigs.length} ROWS)`;
-      document.getElementById("walkSubtext").textContent = `Next row reaches stage immediately as previous row exits`;
+      document.getElementById("walkSubtext").textContent = `Trajectory path lines visible; zero path intersection`;
 
       runContinuousDepartmentWaveSVGAnimation(pathConfigs, isCentral);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2261,7 +2298,7 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = "⚡ SIMULTANEOUS LEFT + RIGHT WAVE";
-      document.getElementById("walkSubtext").textContent = "Both wings circulating to Stations 1 & 2 in parallel";
+      document.getElementById("walkSubtext").textContent = "Both wings circulating to Stations 1 & 2 in parallel without path crossing";
 
       runDualWingWaveSVGAnimation(leftPaths, rightPaths);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2277,7 +2314,7 @@
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", pCfg.color); // Light trajectory lines displayed
+        pathEl.setAttribute("stroke", pCfg.color); // Trajectory path lines shown
         pathEl.setAttribute("stroke-width", "1.5");
         pathEl.setAttribute("stroke-dasharray", "5 4");
         pathEl.setAttribute("opacity", "0.7");
@@ -2295,7 +2332,6 @@
           dots.push(g);
         }
 
-        // EXACT ZERO-LAG HANDOFF: Next row first person reaches stage the exact moment previous row finishes station
         let startDist = 0;
         if (rowConvoys.length > 0) {
           const prev = rowConvoys[rowConvoys.length - 1];
@@ -2350,8 +2386,8 @@
         });
 
         document.getElementById("walkStepTitle").textContent = activeRowLabel
-          ? `On Stage Now: ${activeRowLabel} · Zero-lag exact handoff active`
-          : "Wave circulation complete.";
+          ? `On Stage Now: ${activeRowLabel}`
+          : "Wave circulation in progress...";
 
         walkAnimFrame = requestAnimationFrame(stepWave);
       }
@@ -2369,7 +2405,7 @@
           const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
           pathEl.setAttribute("d", pCfg.d);
           pathEl.setAttribute("fill", "none");
-          pathEl.setAttribute("stroke", pCfg.color); // Light trajectory lines displayed
+          pathEl.setAttribute("stroke", pCfg.color);
           pathEl.setAttribute("stroke-width", "1.5");
           pathEl.setAttribute("stroke-dasharray", "5 4");
           pathEl.setAttribute("opacity", "0.65");
@@ -2445,7 +2481,7 @@
         });
 
         document.getElementById("walkStepTitle").textContent = activeStageLabels.length
-          ? `On Stage Now: ${activeStageLabels.slice(0, 2).join(" & ")} · Zero-lag parallel handoff`
+          ? `On Stage Now: ${activeStageLabels.slice(0, 2).join(" & ")}`
           : "Simultaneous circulation in progress...";
 
         walkAnimFrame = requestAnimationFrame(stepWave);
@@ -2469,7 +2505,7 @@
     }
 
     /********************************************************************
-     * 6. TRUE FUNCTIONAL VIDEO EXPORT (MEDIARECORDER API)
+     * 6. REAL-TIME CANVAS CONTINUOUS VIDEO RECORDER (SINGLE, BLOCK & SIMULTANEOUS)
      ********************************************************************/
     async function recordVideoExport(mode) {
       stopWalkAnimation();
@@ -2487,56 +2523,60 @@
         startParallelDualWave(btn);
       }
 
-      setTimeout(async () => {
+      // Create an offscreen recording canvas matching the viewport size
+      const offCanvas = document.createElement("canvas");
+      const w = canvasEl.offsetWidth;
+      const h = canvasEl.offsetHeight;
+      offCanvas.width = w;
+      offCanvas.height = h;
+      const ctx = offCanvas.getContext("2d");
+
+      const stream = offCanvas.captureStream(30);
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      } catch (e) {
         try {
-          const renderedCanvas = await html2canvas(canvasEl, { scale: 1.5, backgroundColor: "#ffffff" });
-          const stream = renderedCanvas.captureStream ? renderedCanvas.captureStream(30) : null;
-          
-          if (!stream) {
-            alert("Canvas recording (captureStream) is not supported in this browser.");
-            stopWalkAnimation();
-            canvasEl.style.transform = prevTransform;
-            return;
-          }
-
-          let recorder;
-          try {
-            recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-          } catch (e) {
-            try {
-              recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-            } catch (err) {
-              alert("MediaRecorder initialization failed: " + err.message);
-              stopWalkAnimation();
-              canvasEl.style.transform = prevTransform;
-              return;
-            }
-          }
-
-          const chunks = [];
-          recorder.ondataavailable = e => chunks.push(e.data);
-          recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `CET_2026_${mode}_Cycle_Video.webm`;
-            a.click();
-            stopWalkAnimation();
-            canvasEl.style.transform = prevTransform;
-          };
-
-          recorder.start();
-          setTimeout(() => {
-            if (recorder.state === 'recording') recorder.stop();
-          }, 4500);
-
+          recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
         } catch (err) {
-          alert("Video recording error: " + err.message);
+          alert("MediaRecorder not supported: " + err.message);
           stopWalkAnimation();
           canvasEl.style.transform = prevTransform;
+          return;
         }
-      }, 500);
+      }
+
+      const chunks = [];
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CET_2026_${mode}_Movement_Video.webm`;
+        a.click();
+        stopWalkAnimation();
+        canvasEl.style.transform = prevTransform;
+      };
+
+      recorder.start();
+
+      // Render loop capturing live frames from html2canvas onto the video stream
+      let isRecording = true;
+      async function drawFrame() {
+        if (!isRecording) return;
+        try {
+          const snap = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
+          ctx.drawImage(snap, 0, 0);
+        } catch (e) {}
+        if (isRecording) setTimeout(drawFrame, 50);
+      }
+      drawFrame();
+
+      setTimeout(() => {
+        isRecording = false;
+        if (recorder.state === 'recording') recorder.stop();
+      }, 5000);
     }
 
     /********************************************************************
