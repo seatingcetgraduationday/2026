@@ -585,9 +585,10 @@
       top: 50%;
       transform: translateY(-50%) rotate(-90deg);
       transform-origin: center;
-      font-size: 7.5px;
+      font-size: 7px;
       font-weight: 700;
       white-space: nowrap;
+      letter-spacing: 0.02em;
     }
 
     .rows-stack {
@@ -1497,7 +1498,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v11").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v12").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1520,7 +1521,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v11").set({
+      db.collection("cet2026").doc("seatingState_v12").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1532,7 +1533,7 @@
     }
 
     /********************************************************************
-     * 2. EXACT LAYOUT MATCHING IMAGE 1000153282.JPG
+     * 2. COMPLETE SEATING & NUMBERING PER IMAGE 1000153300.JPG
      ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
@@ -1559,7 +1560,6 @@
       // Row 2: PhD in Block 1 (right-to-left 12 to 1), Toppers in Block 3 (UG 1-9), PG toppers right blocks
       if (rowNum === 2) {
         if (blockId === 1) {
-          // PhD(10-12) then 1-9 right to left per image
           for (let i = 12; i >= 1; i--) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
         } else if (blockId === 2) {
           for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "CS", label: `${i}`, code: `CS ${i}` });
@@ -1578,22 +1578,22 @@
       // Rows 3 to 24: Departmental allocations & Bottom Faculty
       const rIdx = rowNum - 3;
       if (blockId === 1) {
-        if (rowNum >= 3 && rowNum <= 15) {
+        if (rowNum >= 3 && rowNum <= 16) {
           const start = (rowNum - 3) * 8 + 1;
           for (let i = 0; i < 8; i++) {
             const n = start + i;
-            if (n <= 112) items.push({ type: "student", dept: "EE", label: `${n}`, code: `EE ${n}` });
+            if (n <= 128) items.push({ type: "student", dept: "EE", label: `${n}`, code: `EE ${n}` });
           }
-        } else if (rowNum >= 18 && rowNum <= 21) {
+        } else if (rowNum >= 18 && rowNum <= 22) {
           const pIdx = rowNum - 18;
           const start = pIdx * 8 + 1;
           for (let i = 0; i < 8; i++) {
             const n = start + i;
-            if (n <= 30) items.push({ type: "student", dept: "PTDC", label: `${n}`, code: `PTDC ${n}` });
+            if (n <= 40) items.push({ type: "student", dept: "PTDC", label: `${n}`, code: `PTDC ${n}` });
           }
-        } else if (rowNum === 22) {
+        } else if (rowNum >= 23 && rowNum <= 24) {
           for (let i = 0; i < cols; i++) {
-            items.push({ type: "faculty", dept: "FAC", num: `Faculty`, code: `FAC_B1_R22_${i+1}`, designation: "Faculty" });
+            items.push({ type: "faculty", dept: "FAC", num: `Faculty`, code: `FAC_B1_R${rowNum}_${i+1}`, designation: "Faculty" });
           }
         }
       } else if (blockId === 2) {
@@ -1608,7 +1608,7 @@
           const start = mIdx * 9 + 1;
           for (let i = 0; i < 9; i++) {
             const n = start + i;
-            if (n <= 34) items.push({ type: "student", dept: "MCA", label: `${n}`, code: `MCA ${n}` });
+            if (n <= 54) items.push({ type: "student", dept: "MCA", label: `${n}`, code: `MCA ${n}` });
           }
         } else if (rowNum === 24) {
           for (let i = 0; i < cols; i++) {
@@ -1638,11 +1638,11 @@
           }
         }
       } else if (blockId === 5) {
-        if (rowNum >= 3 && rowNum <= 11) {
+        if (rowNum >= 3 && rowNum <= 12) {
           const start = rIdx * 9 + 1;
           for (let i = 0; i < 9; i++) {
             const n = start + i;
-            if (n <= 86) items.push({ type: "student", dept: "Arch", label: `${n}`, code: `Arch ${n}` });
+            if (n <= 90) items.push({ type: "student", dept: "Arch", label: `${n}`, code: `Arch ${n}` });
           }
         } else if (rowNum >= 13 && rowNum <= 23) {
           const mIdx = rowNum - 13;
@@ -1657,13 +1657,13 @@
           }
         }
       } else if (blockId === 6) {
-        if (rowNum >= 3 && rowNum <= 21) {
+        if (rowNum >= 3 && rowNum <= 22) {
           const start = rIdx * 8 + 1;
           for (let i = 0; i < 8; i++) {
             const n = start + i;
             if (n <= 159) items.push({ type: "student", dept: "EC", label: `${n}`, code: `EC ${n}` });
           }
-        } else if (rowNum >= 22 && rowNum <= 24) {
+        } else if (rowNum >= 23 && rowNum <= 24) {
           for (let i = 0; i < cols; i++) {
             items.push({ type: "faculty", dept: "FAC", num: `Faculty`, code: `FAC_B6_R${rowNum}_${i+1}`, designation: "Faculty" });
           }
@@ -1813,7 +1813,11 @@
           const barLbl = document.createElement("div");
           barLbl.className = "branch-bar-label";
           barLbl.style.color = BRANCH_META[span.dept]?.color || "#333";
-          barLbl.textContent = span.dept === "TOP" ? "Toppers" : span.dept;
+          // Compact text for Topper/PhD labels to prevent clipping into passages
+          if (span.dept === "TOP") barLbl.textContent = "Toppers";
+          else if (span.dept === "PhD") barLbl.textContent = "PhD";
+          else barLbl.textContent = span.dept;
+
           bar.appendChild(barLbl);
           barsCol.appendChild(bar);
         });
@@ -2196,7 +2200,7 @@
           tempPath.setAttribute("d", pInfo.returnD);
           pt = tempPath.getPointAtLength(retDist);
           document.getElementById("walkStepTitle").textContent = "Stage reached! Returning to seat (Return route visible)...";
-          outPathEl.style.opacity = "0"; // Outbound disappears completely once stage reached!
+          outPathEl.style.opacity = "0";
           retPathEl.style.opacity = "1";
         }
 
@@ -2356,8 +2360,8 @@
                 const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 tempPath.setAttribute("d", c.returnD);
                 pt = tempPath.getPointAtLength(retDist);
-                c.outPathEl.setAttribute("opacity", "0"); // Outbound disappears once stage reached
-                c.retPathEl.setAttribute("opacity", "0.7"); // Only return path remains visible
+                c.outPathEl.setAttribute("opacity", "0");
+                c.retPathEl.setAttribute("opacity", "0.7");
               }
               dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
             }
@@ -2473,8 +2477,8 @@
                 const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 tempPath.setAttribute("d", c.returnD);
                 pt = tempPath.getPointAtLength(retDist);
-                c.outPathEl.setAttribute("opacity", "0"); // Outbound disappears
-                c.retPathEl.setAttribute("opacity", "0.65"); // Only return path remains
+                c.outPathEl.setAttribute("opacity", "0");
+                c.retPathEl.setAttribute("opacity", "0.65");
               }
               dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
             }
@@ -2701,12 +2705,12 @@
       const tbody = document.querySelector("#facultyProgressTable tbody");
       tbody.innerHTML = "";
       const blockDepts = {
-        1: "PhD (12–1), EE, PTDC, Faculty",
-        2: "CS, MCA, Faculty",
-        3: "UG Toppers (1–9), CE",
-        4: "PG Toppers (9–1), ME",
-        5: "PG Toppers (18–10), Arch, MBA, Faculty",
-        6: "PG Toppers (25–19), EC, Faculty"
+        1: "PhD (12–1), EE (1–128), PTDC (1–40), Faculty",
+        2: "CS (1–126), MCA (1–54), Faculty",
+        3: "UG Toppers (1–9), CE (1–196)",
+        4: "PG Toppers (9–1), ME (1–198)",
+        5: "PG Toppers (18–10), Arch (1–90), MBA (1–107), Faculty",
+        6: "PG Toppers (25–19), EC (1–159), Faculty"
       };
 
       for (let b = 1; b <= 6; b++) {
