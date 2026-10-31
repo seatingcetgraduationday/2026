@@ -1870,7 +1870,6 @@
           barLbl.className = "branch-bar-label";
           barLbl.style.color = BRANCH_META[span.dept]?.color || "#333";
 
-          // Compact text for Topper/PhD labels to prevent clipping into passages
           if (span.dept === "TOP") barLbl.textContent = "Toppers";
           else if (span.dept === "PhD") barLbl.textContent = "PhD";
           else barLbl.textContent = span.dept;
