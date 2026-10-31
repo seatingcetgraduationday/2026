@@ -463,7 +463,7 @@
     }
     .reception-desk {
       border: 1.5px solid #e6b333;
-      background: rgba(254, 240, 138, 0.25); /* Light color for collection point */
+      background: rgba(254, 240, 138, 0.35); /* Distinct light color for collection reception point */
       border-radius: 6px;
       padding: 6px 16px;
       text-align: center;
@@ -664,7 +664,7 @@
       width: 20px;
       height: 20px;
       border-radius: 4px;
-      font-size: 5px; /* Compact font size ensuring text fits in one line */
+      font-size: 5px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -706,8 +706,8 @@
     .occ-rect.absent { background-color: #f97316; }
 
     .seat-FAC { background: #64748b; color: #fff; font-size: 5.5px; }
-    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 5px; }
-    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 5px; }
+    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 4.8px; }
+    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 4.8px; }
     .seat-EE  { background: #dceaff; color: #1e40af; border-color: #93c5fd; }
     .seat-PTDC{ background: #d5f3f7; color: #0e7490; border-color: #67e8f9; }
     .seat-CS  { background: #d6f5e3; color: #065f46; border-color: #6ee7b7; }
@@ -1084,7 +1084,7 @@
             Walking to Stage Reception &rarr; Returning via center steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Non-intersecting entry and exit pathways
+            Strictly non-intersecting entry and exit pathways
           </div>
         </div>
 
@@ -1518,7 +1518,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v5").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v6").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1541,7 +1541,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v5").set({
+      db.collection("cet2026").doc("seatingState_v6").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1553,7 +1553,7 @@
     }
 
     /********************************************************************
-     * 2. EXACT 24-ROW SEATING BUILDER (FACULTY & TOPPERS L-to-R)
+     * 2. EXACT 24-ROW SEATING BUILDER
      ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
@@ -1821,10 +1821,10 @@
         blockEl.appendChild(body);
         wrapper.appendChild(blockEl);
 
-        // CENTRAL DOOR BETWEEN BLOCK 3 AND 4
+        // CENTRAL DOOR BETWEEN BLOCK 3 AND 4 (EXACT CENTER 6FT)
         if (idx === 2) {
           const doorDiv = document.createElement("div");
-          doorDiv.style.cssText = "width: 38px; background: #e2e8f0; border-left: 2px solid #94a3b8; border-right: 2px solid #94a3b8; align-self: stretch; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; writing-mode: vertical-rl; text-transform: uppercase; color: #334155; margin: 22px 4px 0 4px; border-radius: 4px;";
+          doorDiv.style.cssText = "width: 34px; background: #e2e8f0; border-left: 2px solid #94a3b8; border-right: 2px solid #94a3b8; align-self: stretch; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; writing-mode: vertical-rl; text-transform: uppercase; color: #334155; margin: 22px 4px 0 4px; border-radius: 4px;";
           doorDiv.textContent = "Central Door";
           wrapper.appendChild(doorDiv);
         } else if (idx < layoutConfig.blocks.length - 1) {
@@ -2040,7 +2040,7 @@
     }
 
     /********************************************************************
-     * 5. ANIMATION ENGINE (ZERO-LAG HANDOFF & NO PATH RECTANGLE)
+     * 5. NON-INTERSECTING ANIMATION ENGINE (ZERO-LAG HANDOFF & PATH LINES)
      ********************************************************************/
     function buildCleanRowPath(blockId, rowNum, canvasRect, isCentralStage = false) {
       const toLocal = (rect) => ({
@@ -2070,6 +2070,7 @@
       const strPos = toLocal(stairsEl.getBoundingClientRect());
       const cPos = toLocal(centralPt.getBoundingClientRect());
 
+      // Distinct Non-Intersecting Outbound & Return Passages
       const outerAisleX = isLeft ? (bPos.x - 10) : (bPos.x + bPos.w + 10);
       const innerAisleX = isLeft ? (bPos.x + bPos.w + 14) : (bPos.x - 14);
 
@@ -2115,7 +2116,7 @@
 
       return {
         d,
-        color: "transparent", // No path rectangle/line displayed
+        color: "#cbd5e1", // Light trajectory path lines shown for waves & individual walk
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
@@ -2138,6 +2139,14 @@
       if (!baseInfo) return;
 
       if (isCentral) toggleCentralStageElements(true);
+
+      const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      pathEl.setAttribute("d", baseInfo.d);
+      pathEl.setAttribute("fill", "none");
+      pathEl.setAttribute("stroke", baseInfo.color);
+      pathEl.setAttribute("stroke-width", "2.5");
+      pathEl.setAttribute("stroke-dasharray", "6 4");
+      svg.appendChild(pathEl);
 
       const totalLength = baseInfo.totalLength;
       const dot = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -2267,7 +2276,10 @@
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathEl.setAttribute("d", pCfg.d);
         pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", "transparent"); // No path rectangle/line
+        pathEl.setAttribute("stroke", pCfg.color); // Path trajectory lines displayed
+        pathEl.setAttribute("stroke-width", "1.6");
+        pathEl.setAttribute("stroke-dasharray", "5 4");
+        pathEl.setAttribute("opacity", "0.7");
         svg.appendChild(pathEl);
 
         const dots = [];
@@ -2356,7 +2368,10 @@
           const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
           pathEl.setAttribute("d", pCfg.d);
           pathEl.setAttribute("fill", "none");
-          pathEl.setAttribute("stroke", "transparent"); // No path rectangle/line
+          pathEl.setAttribute("stroke", pCfg.color); // Path trajectory lines displayed
+          pathEl.setAttribute("stroke-width", "1.5");
+          pathEl.setAttribute("stroke-dasharray", "5 4");
+          pathEl.setAttribute("opacity", "0.65");
           svg.appendChild(pathEl);
 
           const dots = [];
