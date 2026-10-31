@@ -618,15 +618,33 @@
       border-radius: 4px;
       position: relative;
     }
-    .symbol-badge {
-      background: #e2e8f0;
-      border: 1px solid #94a3b8;
-      color: #1e293b;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 8.5px;
+
+    /* 3x3 ft Camera Box Symbol Styling */
+    .camera-box-3x3 {
+      width: 32px;
+      height: 32px;
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
       font-weight: 800;
-      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      z-index: 12;
+      flex-shrink: 0;
+    }
+    .camera-box-3x3 span.cam-icon {
+      font-size: 10px;
+      line-height: 1;
+    }
+    .camera-box-3x3 span.cam-label {
+      font-size: 6.5px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
     }
 
     .seat-box {
@@ -763,23 +781,6 @@
       writing-mode: vertical-rl;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-    }
-
-    .camera-box-embedded {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #ffffff;
-      border: 1.5px solid #1e293b;
-      border-radius: 4px;
-      padding: 2px 4px;
-      font-size: 7.5px;
-      font-weight: 800;
-      color: #0f172a;
-      white-space: nowrap;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      z-index: 10;
     }
 
     .hall-bottom-footer {
@@ -1557,15 +1558,14 @@
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
       
-      // Row 1: Faculty top headers
       if (rowNum === 1) {
         let fNums = [];
-        if (blockId === 1) fNums = [19,20,21,22,23,24,25,26]; // F(19-26)
-        else if (blockId === 2) fNums = [10,11,12,13,14,15,16,17,18]; // F(10-18)
-        else if (blockId === 3) fNums = [1,2,3,4,5,6,7,8,9]; // F(1-9)
-        else if (blockId === 4) fNums = [26,27,28,29,30,31,32,33,34,35]; // F(26-35)
-        else if (blockId === 5) fNums = [36,37,38,39,40,41,42,43,44]; // F(36-44)
-        else if (blockId === 6) fNums = [45,46,47,48,49,50,51,52]; // F(45-52)
+        if (blockId === 1) fNums = [19,20,21,22,23,24,25,26];
+        else if (blockId === 2) fNums = [10,11,12,13,14,15,16,17,18];
+        else if (blockId === 3) fNums = [1,2,3,4,5,6,7,8,9];
+        else if (blockId === 4) fNums = [26,27,28,29,30,31,32,33,34,35];
+        else if (blockId === 5) fNums = [36,37,38,39,40,41,42,43,44];
+        else if (blockId === 6) fNums = [45,46,47,48,49,50,51,52];
 
         for (let i = 0; i < cols; i++) {
           const fNum = fNums[i] || (i + 1);
@@ -1576,47 +1576,34 @@
         return items;
       }
 
-      // Row 2: PhD & Topper rows
       if (rowNum === 2) {
         if (blockId === 1) {
-          // PhD(10-12): 3 seats (12, 11, 10)
           for (let i = 12; i >= 10; i--) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
         } else if (blockId === 2) {
-          // PhD(1-9): 9 seats (9 down to 1)
           for (let i = 9; i >= 1; i--) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
         } else if (blockId === 3) {
-          // UG(1-9): 9 seats
           for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "TOP", subType: "UG", label: `UG${i}`, code: `TOP UG ${i}` });
         } else if (blockId === 4) {
-          // PG(9-1): 9 seats (9 down to 1)
           for (let i = 9; i >= 1; i--) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG${i}`, code: `TOP PG ${i}` });
         } else if (blockId === 5) {
-          // PG(18-10): 9 seats (18 down to 10)
           for (let i = 18; i >= 10; i--) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG${i}`, code: `TOP PG ${i}` });
         } else if (blockId === 6) {
-          // PG(25-19): 7 seats (25 down to 19)
           for (let i = 25; i >= 19; i--) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG${i}`, code: `TOP PG ${i}` });
         }
         return items;
       }
 
-      // BLOCK 1 (EE & PTDC)
       if (blockId === 1) {
-        // EE Top Block (Rows 3 to 15): 8 per row, 1-8 up to 105-112
         if (rowNum >= 3 && rowNum <= 15) {
           const start = (rowNum - 3) * 8 + 1;
           for (let i = 0; i < 8; i++) items.push({ type: "student", dept: "EE", label: `${start + i}`, code: `EE ${start + i}` });
-        }
-        // EE Bottom Block (Rows 17 to 19): 113-120, 121-128, 129-135 (7 seats)
-        else if (rowNum === 17) {
+        } else if (rowNum === 17) {
           for (let i = 113; i <= 120; i++) items.push({ type: "student", dept: "EE", label: `${i}`, code: `EE ${i}` });
         } else if (rowNum === 18) {
           for (let i = 121; i <= 128; i++) items.push({ type: "student", dept: "EE", label: `${i}`, code: `EE ${i}` });
         } else if (rowNum === 19) {
           for (let i = 129; i <= 135; i++) items.push({ type: "student", dept: "EE", label: `${i}`, code: `EE ${i}` });
-        }
-        // PTDC (Rows 20 to 23): 1-8, 9-16, 17-24, 25-30 (6 seats)
-        else if (rowNum === 20) {
+        } else if (rowNum === 20) {
           for (let i = 1; i <= 8; i++) items.push({ type: "student", dept: "PTDC", label: `${i}`, code: `PTDC ${i}` });
         } else if (rowNum === 21) {
           for (let i = 9; i <= 16; i++) items.push({ type: "student", dept: "PTDC", label: `${i}`, code: `PTDC ${i}` });
@@ -1624,22 +1611,14 @@
           for (let i = 17; i <= 24; i++) items.push({ type: "student", dept: "PTDC", label: `${i}`, code: `PTDC ${i}` });
         } else if (rowNum === 23) {
           for (let i = 25; i <= 30; i++) items.push({ type: "student", dept: "PTDC", label: `${i}`, code: `PTDC ${i}` });
-        }
-        // Row 24: Faculty
-        else if (rowNum === 24) {
+        } else if (rowNum === 24) {
           for (let i = 1; i <= cols; i++) items.push({ type: "faculty", dept: "FAC", num: "Faculty", code: `FAC_B1_R24_${i}`, designation: "Faculty" });
         }
-      }
-
-      // BLOCK 2 (CS & MCA)
-      else if (blockId === 2) {
-        // CS Top Block (Rows 3 to 15): 9 per row, 1-9 up to 118-126
+      } else if (blockId === 2) {
         if (rowNum >= 3 && rowNum <= 15) {
           const start = (rowNum - 3) * 9 + 1;
           for (let i = 0; i < 9; i++) items.push({ type: "student", dept: "CS", label: `${start + i}`, code: `CS ${start + i}` });
-        }
-        // CS Bottom Block (Rows 17 to 20): 127-135, 136-144, 145-153, 154-159 (6 seats)
-        else if (rowNum === 17) {
+        } else if (rowNum === 17) {
           for (let i = 127; i <= 135; i++) items.push({ type: "student", dept: "CS", label: `${i}`, code: `CS ${i}` });
         } else if (rowNum === 18) {
           for (let i = 136; i <= 144; i++) items.push({ type: "student", dept: "CS", label: `${i}`, code: `CS ${i}` });
@@ -1647,9 +1626,7 @@
           for (let i = 145; i <= 153; i++) items.push({ type: "student", dept: "CS", label: `${i}`, code: `CS ${i}` });
         } else if (rowNum === 20) {
           for (let i = 154; i <= 159; i++) items.push({ type: "student", dept: "CS", label: `${i}`, code: `CS ${i}` });
-        }
-        // MCA (Rows 21 to 24): 1-9, 10-18, 19-27, 28-34 (7 seats)
-        else if (rowNum === 21) {
+        } else if (rowNum === 21) {
           for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "MCA", label: `${i}`, code: `MCA ${i}` });
         } else if (rowNum === 22) {
           for (let i = 10; i <= 18; i++) items.push({ type: "student", dept: "MCA", label: `${i}`, code: `MCA ${i}` });
@@ -1658,76 +1635,48 @@
         } else if (rowNum === 24) {
           for (let i = 28; i <= 34; i++) items.push({ type: "student", dept: "MCA", label: `${i}`, code: `MCA ${i}` });
         }
-      }
-
-      // BLOCK 3 (CE)
-      else if (blockId === 3) {
-        // CE Top Block (Rows 3 to 15): 9 per row, 1-9 up to 118-126
+      } else if (blockId === 3) {
         if (rowNum >= 3 && rowNum <= 15) {
           const start = (rowNum - 3) * 9 + 1;
           for (let i = 0; i < 9; i++) items.push({ type: "student", dept: "CE", label: `${start + i}`, code: `CE ${start + i}` });
-        }
-        // CE Bottom Block (Rows 17 to 24): 127-135, 136-144, 145-153, 154-162, 163-171, 172-180, 181-189, 190-196 (7 seats)
-        else if (rowNum >= 17 && rowNum <= 23) {
+        } else if (rowNum >= 17 && rowNum <= 23) {
           const start = 127 + (rowNum - 17) * 9;
           for (let i = 0; i < 9; i++) items.push({ type: "student", dept: "CE", label: `${start + i}`, code: `CE ${start + i}` });
         } else if (rowNum === 24) {
           for (let i = 190; i <= 196; i++) items.push({ type: "student", dept: "CE", label: `${i}`, code: `CE ${i}` });
         }
-      }
-
-      // BLOCK 4 (ME — Right-to-Left Mirror Numbering)
-      else if (blockId === 4) {
-        // ME Top Block (Rows 3 to 15): 9-1, 18-10, ..., 117-109, 126-118
+      } else if (blockId === 4) {
         if (rowNum >= 3 && rowNum <= 15) {
           const end = (rowNum - 2) * 9;
           for (let i = end; i >= end - 8; i--) items.push({ type: "student", dept: "ME", label: `${i}`, code: `ME ${i}` });
-        }
-        // ME Bottom Block (Rows 17 to 24): 135-127 up to 198-190
-        else if (rowNum >= 17 && rowNum <= 24) {
+        } else if (rowNum >= 17 && rowNum <= 24) {
           const end = 126 + (rowNum - 16) * 9;
           for (let i = end; i >= end - 8; i--) items.push({ type: "student", dept: "ME", label: `${i}`, code: `ME ${i}` });
         }
-      }
-
-      // BLOCK 5 (Arch & MBA — Right-to-Left Mirror Numbering)
-      else if (blockId === 5) {
-        // Arch Top Block (Rows 3 to 11): 9-1 up to 72-64, then Row 12: 86-82 (5 seats)
+      } else if (blockId === 5) {
         if (rowNum >= 3 && rowNum <= 11) {
           const end = (rowNum - 2) * 9;
           for (let i = end; i >= end - 8; i--) items.push({ type: "student", dept: "Arch", label: `${i}`, code: `Arch ${i}` });
         } else if (rowNum === 12) {
           for (let i = 86; i >= 82; i--) items.push({ type: "student", dept: "Arch", label: `${i}`, code: `Arch ${i}` });
-        }
-        // MBA Bottom Block (Rows 17 to 23): 9-1, 18-10, ..., 99-91, and Row 23: 107-100 (8 seats)
-        else if (rowNum >= 17 && rowNum <= 22) {
+        } else if (rowNum >= 17 && rowNum <= 22) {
           const end = (rowNum - 16) * 9;
           for (let i = end; i >= end - 8; i--) items.push({ type: "student", dept: "MBA", label: `${i}`, code: `MBA ${i}` });
         } else if (rowNum === 23) {
           for (let i = 107; i >= 100; i--) items.push({ type: "student", dept: "MBA", label: `${i}`, code: `MBA ${i}` });
-        }
-        // Row 24: Faculty
-        else if (rowNum === 24) {
+        } else if (rowNum === 24) {
           for (let i = 1; i <= cols; i++) items.push({ type: "faculty", dept: "FAC", num: "Faculty", code: `FAC_B5_R24_${i}`, designation: "Faculty" });
         }
-      }
-
-      // BLOCK 6 (EC — Right-to-Left Mirror Numbering)
-      else if (blockId === 6) {
-        // EC Top Block (Rows 3 to 16): 8 per row, 1-8 up to 105-112
+      } else if (blockId === 6) {
         if (rowNum >= 3 && rowNum <= 16) {
           const end = (rowNum - 2) * 8;
           for (let i = end; i >= end - 7; i--) items.push({ type: "student", dept: "EC", label: `${i}`, code: `EC ${i}` });
-        }
-        // EC Bottom Block (Rows 17 to 21): 113-120, 121-128, 129-136, 137-144, 145-152, 153-159 (7 seats)
-        else if (rowNum >= 17 && rowNum <= 20) {
+        } else if (rowNum >= 17 && rowNum <= 20) {
           const end = 112 + (rowNum - 16) * 8;
           for (let i = end; i >= end - 7; i--) items.push({ type: "student", dept: "EC", label: `${i}`, code: `EC ${i}` });
         } else if (rowNum === 21) {
           for (let i = 159; i >= 153; i--) items.push({ type: "student", dept: "EC", label: `${i}`, code: `EC ${i}` });
-        }
-        // Rows 22 to 24: Faculty
-        else if (rowNum >= 22 && rowNum <= 24) {
+        } else if (rowNum >= 22 && rowNum <= 24) {
           for (let i = 1; i <= cols; i++) items.push({ type: "faculty", dept: "FAC", num: "Faculty", code: `FAC_B6_R${rowNum}_${i}`, designation: "Faculty" });
         }
       }
@@ -1848,10 +1797,22 @@
           if (r === 16) {
             const midBar = document.createElement("div");
             midBar.className = "mid-cross-passage";
-            if (blk.id === 1 || blk.id === 2 || blk.id === 6) midBar.innerHTML = `<span>Passage (6 ft)</span>`;
-            else if (blk.id === 3) midBar.innerHTML = `<span class="camera-box-embedded">Camera 3 (3x3)</span><span>Passage (6 ft)</span>`;
-            else if (blk.id === 4) midBar.innerHTML = `<span class="camera-box-embedded">Camera 1 (3x3)</span>`;
-            else if (blk.id === 5) midBar.innerHTML = `<span class="camera-box-embedded">Camera 3 (3x3)</span>`;
+            if (blk.id === 1 || blk.id === 2 || blk.id === 6) {
+              midBar.innerHTML = `<span>Passage (6 ft)</span>`;
+            } else if (blk.id === 3) {
+              midBar.innerHTML = `
+                <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div>
+                <span>Passage (6 ft)</span>
+              `;
+            } else if (blk.id === 4) {
+              midBar.innerHTML = `
+                <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 1</span></div>
+              `;
+            } else if (blk.id === 5) {
+              midBar.innerHTML = `
+                <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div>
+              `;
+            }
             rowsStack.appendChild(midBar);
           }
         }
@@ -1888,7 +1849,7 @@
           passageDiv.className = "central-passage-container";
           passageDiv.innerHTML = `
             <div class="central-passage-text">Central Passage (6ft)</div>
-            <div class="camera-box-embedded" style="top:50%;">Camera 1 (3x3)</div>
+            <div class="camera-box-3x3" style="position:absolute; top:50%; transform:translateY(-50%);"><span class="cam-icon">📷</span><span class="cam-label">Camera 1</span></div>
             <div class="main-entrance-badge">Main Entrance</div>
           `;
           wrapper.appendChild(passageDiv);
@@ -1969,9 +1930,6 @@
         `${count} students registered · ${absentCount} absent`;
     }
 
-    /********************************************************************
-     * 3. LIVE CONVOCATION PROGRESS BANNER & HIGHLIGHT
-     ********************************************************************/
     function renderLiveProgressBanner() {
       const pillsRow = document.getElementById("liveProgressPills");
       const summaryEl = document.getElementById("liveProgressSummary");
@@ -2007,9 +1965,6 @@
       buildAndRenderMap();
     }
 
-    /********************************************************************
-     * 4. SEAT SELECTION & DETAIL CARD
-     ********************************************************************/
     function selectSeat(coordKey, autoScroll = false) {
       stopWalkAnimation();
       const prev = document.querySelector(".seat-selected");
@@ -2104,9 +2059,6 @@
       if (el) el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
 
-    /********************************************************************
-     * 5. ANIMATION ENGINE: OUTBOUND DISAPPEARS ON STAGE ARRIVAL, ONLY RETURN REMAINS
-     ********************************************************************/
     function buildSplitRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
         x: (rect.left - canvasRect.left) / currentZoom,
