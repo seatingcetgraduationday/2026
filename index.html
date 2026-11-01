@@ -325,6 +325,11 @@
       color: #fff;
       border-color: #7c3aed;
     }
+    .wave-pill.special-wave-btn {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #f59e0b;
+    }
     .wave-pill.block-wave-btn {
       background: #eff6ff;
       color: #1e40af;
@@ -405,12 +410,17 @@
       display: flex;
       align-items: center;
     }
+    /* Explicit SVG-backed steps so html2canvas renders every step tread cleanly in video exports */
     .stage-side-steps {
       width: 26px;
       height: 48px;
-      background: repeating-linear-gradient(90deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
+      background: #dce4ee;
       border: 1.5px solid #7f97b2;
       z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
     .stage-wrapper {
       display: flex;
@@ -451,7 +461,6 @@
       font-weight: 700;
       margin-top: -8px;
     }
-    /* Moved back Certificate Stations toward rear of stage for clear front pathway */
     .stage-receptions-row {
       width: 100%;
       display: flex;
@@ -484,13 +493,16 @@
     .center-return-stairs {
       width: 36px;
       height: 22px;
-      background: repeating-linear-gradient(180deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
+      background: #dce4ee;
       border: 1.5px solid #7f97b2;
       border-top: none;
       position: absolute;
       top: 126px;
       left: 50%;
       transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .return-stairs-label {
       position: absolute;
@@ -1062,7 +1074,7 @@
       </div>
     </div>
 
-    <!-- Toolbar -->
+    <!-- Toolbar with PhD, Toppers UG & Toppers PG Waves -->
     <div class="toolbar">
       <div class="zoom-controls">
         <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
@@ -1073,6 +1085,9 @@
 
       <div class="ceremony-bar" id="deptWaveBar">
         <button class="wave-pill full-wave-btn" onclick="startFullWave(this)">🌟 Full Wave</button>
+        <button class="wave-pill special-wave-btn" onclick="startSpecialGroupWave('UG', this)">Toppers UG</button>
+        <button class="wave-pill special-wave-btn" onclick="startSpecialGroupWave('PG', this)">Toppers PG</button>
+        <button class="wave-pill special-wave-btn" style="background:#ede4ff; color:#5b21b6; border-color:#c084fc;" onclick="startSpecialGroupWave('PhD', this)">PhD</button>
         <button class="wave-pill block-wave-btn" onclick="startBlockWave(1, this)">Block 1</button>
         <button class="wave-pill block-wave-btn" onclick="startBlockWave(2, this)">Block 2</button>
         <button class="wave-pill block-wave-btn" onclick="startBlockWave(3, this)">Block 3</button>
@@ -1091,7 +1106,7 @@
       </div>
     </div>
 
-    <!-- Active Walk Simulation Status Banner (Unobstructed Outside Map) -->
+    <!-- Active Walk Simulation Status Banner -->
     <div id="walkStatusCard" class="walk-banner-card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
         <div>
@@ -1100,7 +1115,7 @@
             Walking through center of side steps &rarr; Bottom edge of Certificate Station &rarr; Central return steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Next row enters stage as previous row exits; new department starts only after previous department fully seats.
+            When last student of one row exits stage, next row first student of same department is at the step of stage.
           </div>
         </div>
 
@@ -1130,7 +1145,16 @@
           <div class="entry-box">ENTRY (29 ft)</div>
 
           <div class="stage-cluster" id="stageCluster">
-            <div class="stage-side-steps" id="leftStageSteps"></div>
+            <!-- Left Side Steps with explicit SVG treads for crisp video & image export -->
+            <div class="stage-side-steps" id="leftStageSteps">
+              <svg width="26" height="48" viewBox="0 0 26 48">
+                <rect width="26" height="48" fill="#dce4ee" />
+                <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+              </svg>
+            </div>
 
             <div class="stage-wrapper" id="stageWrapper">
               <div class="stage-main-rect" id="stageMainRect">
@@ -1148,12 +1172,29 @@
 
                 <div class="stage-floor-label">MAIN STAGE</div>
               </div>
+              <!-- Center Return Steps with explicit SVG treads for crisp video & image export -->
               <div class="center-return-stairs" id="centerReturnStairs">
+                <svg width="36" height="22" viewBox="0 0 36 22">
+                  <rect width="36" height="22" fill="#dce4ee" />
+                  <line x1="0" y1="5" x2="36" y2="5" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="0" y1="10" x2="36" y2="10" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="0" y1="15" x2="36" y2="15" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="0" y1="20" x2="36" y2="20" stroke="#7f97b2" stroke-width="1.5" />
+                </svg>
                 <span class="return-stairs-label">RETURN STEPS</span>
               </div>
             </div>
 
-            <div class="stage-side-steps" id="rightStageSteps"></div>
+            <!-- Right Side Steps with explicit SVG treads for crisp video & image export -->
+            <div class="stage-side-steps" id="rightStageSteps">
+              <svg width="26" height="48" viewBox="0 0 26 48">
+                <rect width="26" height="48" fill="#dce4ee" />
+                <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+              </svg>
+            </div>
           </div>
 
           <div class="entry-box">ENTRY (29 ft)</div>
@@ -1524,7 +1565,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v18").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v19").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1547,7 +1588,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v18").set({
+      db.collection("cet2026").doc("seatingState_v19").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -2109,7 +2150,7 @@
       const returnFrontY = strPos.y + strPos.h + 10 + blockOffset;
 
       // Side steps entry through the EXACT CENTER of side steps
-      const stepOuterApproachX = isLeft ? (stpPos.x - 10) : (stpPos.x + stpPos.w + 10);
+      const stepOuterApproachX = isLeft ? (stpPos.x - 6) : (stpPos.x + stpPos.w + 6);
       const stepCenterY = stpPos.cy;
       const stepInnerStageX = isLeft ? (stpPos.x + stpPos.w + 8) : (stpPos.x - 8);
 
@@ -2124,12 +2165,12 @@
         { x: outerAisleX, y: rowY },                // 1: Enter outer passage
         { x: outerAisleX, y: outboundFrontY },      // 2: Walk up outer passage
         { x: stepOuterApproachX, y: outboundFrontY },// 3: Move outside side steps
-        { x: stepOuterApproachX, y: stepCenterY },  // 4: Align with vertical center of side steps
-        { x: stepInnerStageX, y: stepCenterY },     // 5: Enter stage through center of side steps
+        { x: stepOuterApproachX, y: stepCenterY },  // 4: AT STEP OF STAGE (ready to ascend center of side steps)
+        { x: stepInnerStageX, y: stepCenterY },     // 5: Ascend through center of side steps onto stage
         { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Certificate Station
         { x: stationStartX, y: stationBottomY },    // 7: Start of Certificate Station bottom edge
         { x: stationEndX, y: stationBottomY },      // 8: End of Certificate Station bottom edge
-        { x: returnStairX, y: stationBottomY },     // 9: Reach top of Central Return Steps (Stage Exit)
+        { x: returnStairX, y: stationBottomY },     // 9: STAGE EXIT (Top of Central Return Steps)
         { x: returnStairX, y: returnFrontY },       // 10: Descend Central Return Steps aligned with Central Passage
         { x: innerAisleX, y: returnFrontY },        // 11: Enter return passage
         { x: innerAisleX, y: rowY },                // 12: Walk down return passage to row
@@ -2162,7 +2203,8 @@
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
-        distToStageEntry: cumDist[5],   // Enters stage through center of side steps
+        distToStepOfStage: cumDist[4],  // Exact point at the step of stage before ascending
+        distToStageEntry: cumDist[5],   // Inside stage after ascending steps
         distToStageExit: cumDist[9],    // Exits stage at top of return steps
         totalLength: cumDist[cumDist.length - 1]
       };
@@ -2223,6 +2265,48 @@
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    // Dedicated Waves for Toppers UG, Toppers PG & PhD
+    function startSpecialGroupWave(groupType, btnEl) {
+      stopWalkAnimation();
+      if (btnEl) btnEl.classList.add("active-wave");
+
+      const canvas = document.getElementById("hallCanvas");
+      const cRect = canvas.getBoundingClientRect();
+      const leftConfigs = [];
+      const rightConfigs = [];
+
+      if (groupType === "UG") {
+        const ugRow = buildNonIntersectingRowPath(3, 2, cRect);
+        if (ugRow) leftConfigs.push(ugRow);
+      } else if (groupType === "PG") {
+        const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect);
+        if (pg1to9) rightConfigs.push(pg1to9);
+        const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect);
+        if (pg10to18) rightConfigs.push(pg10to18);
+        const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect);
+        if (pg19to25) rightConfigs.push(pg19to25);
+      } else if (groupType === "PhD") {
+        const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect);
+        if (phd1to9) leftConfigs.push(phd1to9);
+        const phd10to12 = buildNonIntersectingRowPath(1, 2, cRect);
+        if (phd10to12) leftConfigs.push(phd10to12);
+      }
+
+      const statusCard = document.getElementById("walkStatusCard");
+      statusCard.style.display = "block";
+      const labelMap = {
+        UG: "TOPPERS UG WAVE (UG 1–9 → STATION 1)",
+        PG: "TOPPERS PG WAVE (PG 1–25 → STATION 2)",
+        PhD: "PhD SCHOLARS WAVE (PhD 1–12 → STATION 1)"
+      };
+      document.getElementById("walkEyebrow").textContent = labelMap[groupType] || groupType;
+      document.getElementById("walkSubtext").textContent =
+        "When last student of one row exits stage, next row first student of same department is at the step of stage.";
+
+      runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Wave_${groupType}`);
+      document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     function startBlockWave(blockId, btnEl) {
       stopWalkAnimation();
       if (btnEl) btnEl.classList.add("active-wave");
@@ -2248,7 +2332,7 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `BLOCK ${blockId} WAVE (EXCLUDING TOPPERS & PhD ROW)`;
-      document.getElementById("walkSubtext").textContent = `Next row enters stage as previous row exits; new department waits until previous department fully seats.`;
+      document.getElementById("walkSubtext").textContent = `When last student of one row exits stage, next row first student of same department is at the step of stage.`;
 
       if (blockId <= 3) runContinuousDualWingAnimation(configs, [], `Block_${blockId}`);
       else runContinuousDualWingAnimation([], configs, `Block_${blockId}`);
@@ -2278,7 +2362,7 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode}`;
-      document.getElementById("walkSubtext").textContent = `Continuous non-intersecting flow along bottom edge of Certificate Station.`;
+      document.getElementById("walkSubtext").textContent = `When last student of one row exits stage, next row first student is at the step of stage.`;
 
       runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Department_${deptCode}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2334,7 +2418,7 @@
       document.getElementById("walkEyebrow").textContent =
         "🌟 FULL WAVE · UG & PhD (ST 1) + PG (ST 2) → BLOCKS 3 & 4 → BLOCKS 2 & 5 → BLOCKS 1 & 6";
       document.getElementById("walkSubtext").textContent =
-        "Same-department rows hand off on stage; new departments wait until the previous department fully seats.";
+        "Same-department next row is at the step of stage when previous row exits stage; new department waits until previous department seats.";
 
       runContinuousDualWingAnimation(st1Configs, st2Configs, "Full_Wave");
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2422,9 +2506,10 @@
               // NEW DEPARTMENT GAP: First row of a new department starts ONLY after previous row is fully seated!
               startDist = prev.finishDist + 15;
             } else {
-              // SAME DEPARTMENT: First person of next row enters stage as soon as last person of previous row exits stage!
+              // SAME DEPARTMENT: When last student of previous row exits stage (distToStageExit),
+              // first student of next row is at the step of stage (distToStepOfStage)!
               const prevLastExitsStageAt = prev.startDist + prev.distToStageExit + (prev.studentCount - 1) * spacing;
-              startDist = Math.max(prev.startDist + 25, prevLastExitsStageAt - pCfg.distToStageEntry);
+              startDist = Math.max(prev.startDist + 25, prevLastExitsStageAt - pCfg.distToStepOfStage);
             }
           }
 
@@ -2459,7 +2544,7 @@
 
           c.pathEl.style.opacity = isRowMoving ? "0.55" : "0";
 
-          if (localHeadDist >= c.distToStageEntry && tailDist <= c.distToStageExit) {
+          if (localHeadDist >= c.distToStepOfStage && tailDist <= c.distToStageExit) {
             activeStageLabels.push(`${c.deptLabel} (B${c.blockId} R${c.rowNum})`);
           }
 
@@ -2500,8 +2585,56 @@
     }
 
     /********************************************************************
-     * 6. PLAYABLE FULL-CYCLE VIDEO EXPORT (FIRST TO LAST STUDENT + TOP LOG)
+     * 6. PLAYABLE FULL-CYCLE VIDEO EXPORT (WITH EXPLICIT STEPS & TOP LOG)
      ********************************************************************/
+    function drawStageStepsOnCanvas(ctx, canvasEl, headerHeight) {
+      const cRect = canvasEl.getBoundingClientRect();
+      const toLocal = (el) => {
+        const r = el.getBoundingClientRect();
+        return {
+          x: r.left - cRect.left,
+          y: r.top - cRect.top + headerHeight,
+          w: r.width,
+          h: r.height
+        };
+      };
+
+      const leftStp = document.getElementById("leftStageSteps");
+      const rightStp = document.getElementById("rightStageSteps");
+      const retStp = document.getElementById("centerReturnStairs");
+
+      [leftStp, rightStp].forEach(el => {
+        if (!el) return;
+        const p = toLocal(el);
+        ctx.fillStyle = "#dce4ee";
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.strokeStyle = "#7f97b2";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(p.x, p.y, p.w, p.h);
+        for (let x = p.x + 5; x < p.x + p.w; x += 5) {
+          ctx.beginPath();
+          ctx.moveTo(x, p.y);
+          ctx.lineTo(x, p.y + p.h);
+          ctx.stroke();
+        }
+      });
+
+      if (retStp) {
+        const p = toLocal(retStp);
+        ctx.fillStyle = "#dce4ee";
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.strokeStyle = "#7f97b2";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(p.x, p.y, p.w, p.h);
+        for (let y = p.y + 5; y < p.y + p.h; y += 5) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, y);
+          ctx.lineTo(p.x + p.w, y);
+          ctx.stroke();
+        }
+      }
+    }
+
     async function downloadCurrentAnimationVideo() {
       if (!activeAnimState || !activeAnimState.convoys.length) {
         alert("Please trigger a Student Path, Block Wave, Department Wave, or Full Wave first!");
@@ -2521,12 +2654,16 @@
       svg.style.display = "none";
 
       try {
+        const headerHeight = 76;
         const bgCanvas = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
+
+        // Explicitly draw left/right stage steps & center return steps onto bgCanvas so they are never missing
+        const bgCtx = bgCanvas.getContext("2d");
+        drawStageStepsOnCanvas(bgCtx, canvasEl, 0);
+
         svg.style.display = prevSvgDisplay;
         canvasEl.style.transform = `scale(${prevZoom})`;
 
-        // Add 76px non-obstructing top header bar above the hall map for live Station 1 & Station 2 logs
-        const headerHeight = 76;
         const recCanvas = document.createElement("canvas");
         recCanvas.width = bgCanvas.width;
         recCanvas.height = bgCanvas.height + headerHeight;
@@ -2564,7 +2701,6 @@
 
         recorder.start();
 
-        // Cover 100% of the cycle from the first student leaving to the very last student seated
         const convoys = activeAnimState.convoys.map(c => {
           const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
           tempPath.setAttribute("d", c.d);
@@ -2602,7 +2738,7 @@
           ctx.fillText(st1Text, 24, 50);
           ctx.fillText(st2Text, 24, 68);
 
-          // 2. Draw hall map below the header bar (zero obstruction of stage or seats)
+          // 2. Draw hall map (with explicit stage steps included) below the header bar
           ctx.drawImage(bgCanvas, 0, headerHeight);
 
           // 3. Draw active paths and moving students shifted by headerHeight
