@@ -383,8 +383,8 @@
       align-items: flex-start;
       justify-content: space-between;
       position: relative;
-      height: 150px;
-      margin-bottom: 14px;
+      height: 154px;
+      margin-bottom: 16px;
     }
     .entry-box {
       background: #e9f2ec;
@@ -407,7 +407,7 @@
     }
     .stage-side-steps {
       width: 26px;
-      height: 46px;
+      height: 48px;
       background: repeating-linear-gradient(90deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
       border: 1.5px solid #7f97b2;
       z-index: 5;
@@ -416,6 +416,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
     .stage-main-rect {
       width: 720px;
@@ -428,7 +429,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px 10px 24px;
+      padding: 0 24px 12px 24px;
       box-shadow: 0 4px 14px rgba(21,37,66,0.18);
       color: #fff;
     }
@@ -439,7 +440,7 @@
       font-weight: 700;
       font-size: 11px;
       letter-spacing: 0.08em;
-      padding: 4px 28px;
+      padding: 3px 28px;
       border-radius: 0 0 6px 6px;
       text-transform: uppercase;
     }
@@ -448,24 +449,26 @@
       letter-spacing: 0.14em;
       color: #9ab0d4;
       font-weight: 700;
-      margin-top: -6px;
+      margin-top: -8px;
     }
+    /* Moved back Certificate Stations toward rear of stage for clear front pathway */
     .stage-receptions-row {
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 56px;
+      padding: 0 64px;
+      margin-top: -12px;
     }
     .reception-desk {
       border: 2px solid #fef08a;
       background: #fef9c3;
       border-radius: 6px;
-      padding: 6px 18px;
+      padding: 4px 16px;
       text-align: center;
     }
     .reception-desk-title {
-      font-size: 8.5px;
+      font-size: 8px;
       font-weight: 800;
       letter-spacing: 0.08em;
       color: #854d0e;
@@ -479,17 +482,20 @@
       font-weight: 700;
     }
     .center-return-stairs {
-      width: 68px;
-      height: 20px;
+      width: 36px;
+      height: 22px;
       background: repeating-linear-gradient(180deg, #dce4ee, #dce4ee 3px, #b8c7d9 3px, #b8c7d9 6px);
       border: 1.5px solid #7f97b2;
       border-top: none;
-      position: relative;
+      position: absolute;
+      top: 126px;
+      left: 50%;
+      transform: translateX(-50%);
     }
     .return-stairs-label {
       position: absolute;
-      left: 74px;
-      top: 3px;
+      left: 42px;
+      top: 4px;
       font-size: 8px;
       font-weight: 700;
       color: #5c708a;
@@ -899,6 +905,23 @@
       text-transform: uppercase;
       margin-bottom: 3px;
     }
+    .station-live-log-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #e2e8f0;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+    .station-log-pill {
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+    }
 
     .role-view { display: none; }
     .admin-grid {
@@ -1068,16 +1091,16 @@
       </div>
     </div>
 
-    <!-- Active Walk Simulation Status Banner -->
+    <!-- Active Walk Simulation Status Banner (Unobstructed Outside Map) -->
     <div id="walkStatusCard" class="walk-banner-card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
         <div>
           <div id="walkEyebrow" class="walk-eyebrow">STAGE MOVEMENT SIMULATION</div>
           <div id="walkStepTitle" class="serif-title" style="font-size:17px; font-weight:700;">
-            Walking along bottom edge of Certificate Station &rarr; Returning via center steps
+            Walking through center of side steps &rarr; Bottom edge of Certificate Station &rarr; Central return steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Strictly non-intersecting channels ensuring paths never cross
+            Next row enters stage as previous row exits; new department starts only after previous department fully seats.
           </div>
         </div>
 
@@ -1089,8 +1112,12 @@
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
           <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
-          <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669;">🎥 Download Video (Current Mode)</button>
+          <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669;">🎥 Download Full Cycle Video</button>
         </div>
+      </div>
+      <div class="station-live-log-row">
+        <div class="station-log-pill" id="st1LiveLog">Station 1: Waiting...</div>
+        <div class="station-log-pill" id="st2LiveLog">Station 2: Waiting...</div>
       </div>
     </div>
 
@@ -1392,7 +1419,7 @@
     let selectedDeptForExcel = "EE";
     let walkAnimFrame = null;
     let highlightCompletedActive = false;
-    let activeAnimState = null; // Stores active convoys for video recording
+    let activeAnimState = null;
 
     const SPEED_STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
     let currentSpeedIndex = 3;
@@ -1497,7 +1524,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v17").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v18").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1520,7 +1547,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v17").set({
+      db.collection("cet2026").doc("seatingState_v18").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1532,12 +1559,11 @@
     }
 
     /********************************************************************
-     * 2. COMPLETE ALLOCATION & SEAT NUMBERING (ZERO BLANK SEATS)
+     * 2. COMPLETE ALLOCATION & SEAT NUMBERING
      ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
 
-      // Row 1: Pre-assigned Faculty (Left-to-Right across all blocks)
       if (rowNum === 1) {
         let fNums = [];
         if (blockId === 1) fNums = [19,20,21,22,23,24,25,26];
@@ -1556,7 +1582,6 @@
         return items;
       }
 
-      // Row 2: PhD (Left-to-Right in Blocks 1 & 2), UG (L-to-R in Block 3), PG (Mirror in Blocks 4-6)
       if (rowNum === 2) {
         if (blockId === 1) {
           for (let i = 10; i <= 12; i++) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
@@ -1574,7 +1599,6 @@
         return items;
       }
 
-      // Rows 3 to 24 (INCLUDING Row 16 across all blocks!)
       if (blockId === 1) {
         if (rowNum >= 3 && rowNum <= 19) {
           const start = (rowNum - 3) * 8 + 1;
@@ -1650,6 +1674,18 @@
       }
 
       return items;
+    }
+
+    function alignExitStepsWithCentralPassage() {
+      const passageEl = document.getElementById("passage-after-3");
+      const wrapperEl = document.getElementById("stageWrapper");
+      const stairsEl = document.getElementById("centerReturnStairs");
+      if (!passageEl || !wrapperEl || !stairsEl) return;
+
+      const pRect = passageEl.getBoundingClientRect();
+      const wRect = wrapperEl.getBoundingClientRect();
+      const centerOffsetPx = ((pRect.left + pRect.width / 2) - wRect.left) / currentZoom;
+      stairsEl.style.left = `${centerOffsetPx.toFixed(1)}px`;
     }
 
     function buildAndRenderMap() {
@@ -1812,7 +1848,6 @@
         blockEl.appendChild(body);
         wrapper.appendChild(blockEl);
 
-        // CENTRAL 6 FT PASSAGE WITH DOOR AT BOTTOM BETWEEN BLOCK 3 & 4
         if (idx === 2) {
           const centerPassage = document.createElement("div");
           centerPassage.id = "passage-after-3";
@@ -1832,6 +1867,7 @@
       wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, "passage-right-outer"));
 
       updateSeatedCount();
+      requestAnimationFrame(alignExitStepsWithCentralPassage);
       if (selectedSeatKey && seatsByCoord[selectedSeatKey]) {
         renderSeatDetailCard(seatsByCoord[selectedSeatKey]);
       }
@@ -2025,10 +2061,13 @@
 
     /********************************************************************
      * 5. STRICTLY NON-INTERSECTING DUAL-CHANNEL ANIMATION ENGINE
-     * - Outbound uses outer aisle -> side steps -> bottom edge of Station
-     * - Return uses center return steps -> inner aisle -> row entry
+     * - Enters horizontally through the EXACT CENTER of side steps
+     * - Walks along bottom edge of moved-back Certificate Station
+     * - Exits down central return steps aligned with central passage
      ********************************************************************/
     function buildNonIntersectingRowPath(blockId, rowNum, canvasRect) {
+      alignExitStepsWithCentralPassage();
+
       const toLocal = (rect) => ({
         x: (rect.left - canvasRect.left) / currentZoom,
         y: (rect.top - canvasRect.top) / currentZoom,
@@ -2064,30 +2103,37 @@
       const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
-      // Separated horizontal front corridors (Outbound is higher, Return is lower per block)
-      const blockOffset = (blockId <= 3 ? (3 - blockId) : (blockId - 4)) * 4;
-      const outboundFrontY = stgPos.y + stgPos.h + 6 + blockOffset;
-      const returnFrontY = strPos.y + strPos.h + 14 + blockOffset;
+      // Separated horizontal front corridors
+      const blockOffset = (blockId <= 3 ? (3 - blockId) : (blockId - 4)) * 3.5;
+      const outboundFrontY = stgPos.y + stgPos.h + 5 + blockOffset;
+      const returnFrontY = strPos.y + strPos.h + 10 + blockOffset;
+
+      // Side steps entry through the EXACT CENTER of side steps
+      const stepOuterApproachX = isLeft ? (stpPos.x - 10) : (stpPos.x + stpPos.w + 10);
+      const stepCenterY = stpPos.cy;
+      const stepInnerStageX = isLeft ? (stpPos.x + stpPos.w + 8) : (stpPos.x - 8);
 
       // Path along the BOTTOM EDGE of the Certificate Station rectangle
-      const stationBottomY = dskPos.y + dskPos.h + 4;
+      const stationBottomY = dskPos.y + dskPos.h + 5;
       const stationStartX = isLeft ? dskPos.x : (dskPos.x + dskPos.w);
       const stationEndX = isLeft ? (dskPos.x + dskPos.w) : dskPos.x;
-      const returnStairX = strPos.cx + (isLeft ? -12 : 12);
+      const returnStairX = strPos.cx + (isLeft ? -7 : 7);
 
       const pts = [
-        { x: rowOuterEdgeX, y: rowY },
-        { x: outerAisleX, y: rowY },
-        { x: outerAisleX, y: outboundFrontY },
-        { x: stpPos.cx, y: outboundFrontY },
-        { x: stpPos.cx, y: stationBottomY },
-        { x: stationStartX, y: stationBottomY },
-        { x: stationEndX, y: stationBottomY }, // Bottom edge of Certificate Station
-        { x: returnStairX, y: stationBottomY },
-        { x: returnStairX, y: returnFrontY },
-        { x: innerAisleX, y: returnFrontY },
-        { x: innerAisleX, y: rowY },
-        { x: rowInnerEdgeX, y: rowY }
+        { x: rowOuterEdgeX, y: rowY },              // 0: Leave row
+        { x: outerAisleX, y: rowY },                // 1: Enter outer passage
+        { x: outerAisleX, y: outboundFrontY },      // 2: Walk up outer passage
+        { x: stepOuterApproachX, y: outboundFrontY },// 3: Move outside side steps
+        { x: stepOuterApproachX, y: stepCenterY },  // 4: Align with vertical center of side steps
+        { x: stepInnerStageX, y: stepCenterY },     // 5: Enter stage through center of side steps
+        { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Certificate Station
+        { x: stationStartX, y: stationBottomY },    // 7: Start of Certificate Station bottom edge
+        { x: stationEndX, y: stationBottomY },      // 8: End of Certificate Station bottom edge
+        { x: returnStairX, y: stationBottomY },     // 9: Reach top of Central Return Steps (Stage Exit)
+        { x: returnStairX, y: returnFrontY },       // 10: Descend Central Return Steps aligned with Central Passage
+        { x: innerAisleX, y: returnFrontY },        // 11: Enter return passage
+        { x: innerAisleX, y: rowY },                // 12: Walk down return passage to row
+        { x: rowInnerEdgeX, y: rowY }               // 13: Re-enter row seat
       ];
 
       const cumDist = [0];
@@ -2099,21 +2145,25 @@
 
       const blkConf = layoutConfig.blocks.find(b => b.id === blockId);
       let studentCount = 0;
+      let rowDept = "Student";
       for (let c = 1; c <= blkConf.cols; c++) {
         const s = seatsByCoord[`B${blockId}-R${rowNum}-C${c}`];
         if (s && s.type === "student" && s.statusOverride !== "defective" && s.statusOverride !== "empty") {
           studentCount++;
+          rowDept = s.subType === "UG" ? "TOP UG" : (s.subType === "PG" ? "TOP PG" : s.dept);
         }
       }
 
       return {
         pts,
         d,
+        deptLabel: rowDept,
+        stationNum: isLeft ? 1 : 2,
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
-        distToStageEntry: cumDist[4],
-        distToStationFinish: cumDist[7],
+        distToStageEntry: cumDist[5],   // Enters stage through center of side steps
+        distToStageExit: cumDist[9],    // Exits stage at top of return steps
         totalLength: cumDist[cumDist.length - 1]
       };
     }
@@ -2147,11 +2197,17 @@
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent =
         `INDIVIDUAL STUDENT PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW ${rowNum}`}`;
-      document.getElementById("walkStepTitle").textContent = "Walking along bottom edge of Certificate Station & returning...";
+      document.getElementById("walkStepTitle").textContent = "Entering through center of side steps & walking along bottom edge of Certificate Station...";
 
+      const singleConvoy = {
+        ...pInfo,
+        studentCount: 1,
+        startDist: 0,
+        finishDist: pInfo.totalLength
+      };
       activeAnimState = {
         mode: `Student_${seatObj ? seatObj.code.replace(/\s+/g, '_') : 'Walk'}`,
-        convoys: [{ ...pInfo, studentCount: 1, startDist: 0, finishDist: pInfo.totalLength }]
+        convoys: [singleConvoy]
       };
 
       let dist = 0;
@@ -2160,13 +2216,13 @@
         if (dist > pInfo.totalLength) dist = 0;
         const pt = pathEl.getPointAtLength(dist);
         dot.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
+        updateLiveStationLogs(dist, [singleConvoy]);
         walkAnimFrame = requestAnimationFrame(stepSingle);
       }
       walkAnimFrame = requestAnimationFrame(stepSingle);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    // Block 1..6 Wave (Excludes Row 2 Toppers/PhD)
     function startBlockWave(blockId, btnEl) {
       stopWalkAnimation();
       if (btnEl) btnEl.classList.add("active-wave");
@@ -2176,15 +2232,14 @@
       const configs = [];
 
       for (let r = 3; r <= 24; r++) {
-        const p = buildNonIntersectingRowPath(blockId, r, cRect);
-        if (p && p.studentCount > 0) {
-          // Check if row actually has students (not faculty)
-          let hasStudents = false;
-          for (let c = 1; c <= 9; c++) {
-            const s = seatsByCoord[`B${blockId}-R${r}-C${c}`];
-            if (s && s.type === "student") hasStudents = true;
-          }
-          if (hasStudents) configs.push(p);
+        let hasStudents = false;
+        for (let c = 1; c <= 9; c++) {
+          const s = seatsByCoord[`B${blockId}-R${r}-C${c}`];
+          if (s && s.type === "student") hasStudents = true;
+        }
+        if (hasStudents) {
+          const p = buildNonIntersectingRowPath(blockId, r, cRect);
+          if (p) configs.push(p);
         }
       }
 
@@ -2193,14 +2248,13 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `BLOCK ${blockId} WAVE (EXCLUDING TOPPERS & PhD ROW)`;
-      document.getElementById("walkSubtext").textContent = `Next row reaches stage immediately as previous row exits station.`;
+      document.getElementById("walkSubtext").textContent = `Next row enters stage as previous row exits; new department waits until previous department fully seats.`;
 
       if (blockId <= 3) runContinuousDualWingAnimation(configs, [], `Block_${blockId}`);
       else runContinuousDualWingAnimation([], configs, `Block_${blockId}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    // Department Wave
     function startDepartmentWave(deptCode, btnEl) {
       stopWalkAnimation();
       if (btnEl) btnEl.classList.add("active-wave");
@@ -2226,17 +2280,10 @@
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode}`;
       document.getElementById("walkSubtext").textContent = `Continuous non-intersecting flow along bottom edge of Certificate Station.`;
 
-      runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Dept_${deptCode}`);
+      runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Department_${deptCode}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    /* FULL WAVE (EXACT ORDER SPECIFIED):
-     * 1. Station 1: UG (1..9 in Block 3 Row 2) followed by PhD (1..9 in Block 2 Row 2, then 10..12 in Block 1 Row 2).
-     *    Station 2: PG (1..9 in Block 4 Row 2, 10..18 in Block 5 Row 2, 19..25 in Block 6 Row 2).
-     * 2. Followed by Block 3 (Station 1) & Block 4 (Station 2) simultaneously (Rows 3..24).
-     * 3. Followed by Block 2 (Station 1) & Block 5 (Station 2) simultaneously (Rows 3..24).
-     * 4. Followed by Block 1 (Station 1) & Block 6 (Station 2) simultaneously (Rows 3..24).
-     */
     function startFullWave(btnEl) {
       stopWalkAnimation();
       if (btnEl) btnEl.classList.add("active-wave");
@@ -2287,10 +2334,56 @@
       document.getElementById("walkEyebrow").textContent =
         "🌟 FULL WAVE · UG & PhD (ST 1) + PG (ST 2) → BLOCKS 3 & 4 → BLOCKS 2 & 5 → BLOCKS 1 & 6";
       document.getElementById("walkSubtext").textContent =
-        "Zero-lag stage handoff along bottom edge of Certificate Stations with non-intersecting return aisles.";
+        "Same-department rows hand off on stage; new departments wait until the previous department fully seats.";
 
       runContinuousDualWingAnimation(st1Configs, st2Configs, "Full_Wave");
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function computeStationDepartmentTimings(convoys, stationNum) {
+      const stConvoys = convoys.filter(c => c.stationNum === stationNum);
+      const deptMap = {};
+      stConvoys.forEach(c => {
+        if (!deptMap[c.deptLabel]) {
+          deptMap[c.deptLabel] = {
+            dept: c.deptLabel,
+            startDist: c.startDist,
+            endDist: c.finishDist
+          };
+        } else {
+          deptMap[c.deptLabel].endDist = Math.max(deptMap[c.deptLabel].endDist, c.finishDist);
+        }
+      });
+      return Object.values(deptMap);
+    }
+
+    function getStationLogString(simDist, convoys, stationNum) {
+      const timings = computeStationDepartmentTimings(convoys, stationNum);
+      if (!timings.length) return `Station ${stationNum}: Idle`;
+
+      const completed = [];
+      let currentActive = null;
+
+      timings.forEach(t => {
+        if (simDist >= t.endDist) {
+          completed.push(t.dept);
+        } else if (simDist >= t.startDist && simDist < t.endDist) {
+          currentActive = t.dept;
+        }
+      });
+
+      const parts = [];
+      if (currentActive) parts.push(`Active: ${currentActive} (Started)`);
+      if (completed.length) parts.push(`Completed: ${completed.join(", ")}`);
+      if (!parts.length) parts.push(`Queued: ${timings[0].dept}`);
+      return `Station ${stationNum} — ${parts.join(" | ")}`;
+    }
+
+    function updateLiveStationLogs(simDist, allConvoys) {
+      const st1El = document.getElementById("st1LiveLog");
+      const st2El = document.getElementById("st2LiveLog");
+      if (st1El) st1El.textContent = getStationLogString(simDist, allConvoys, 1);
+      if (st2El) st2El.textContent = getStationLogString(simDist, allConvoys, 2);
     }
 
     function runContinuousDualWingAnimation(leftConfigs, rightConfigs, modeLabel) {
@@ -2307,7 +2400,7 @@
           pathEl.setAttribute("stroke", "#cbd5e1");
           pathEl.setAttribute("stroke-width", "1.4");
           pathEl.setAttribute("stroke-dasharray", "4 4");
-          pathEl.style.opacity = "0"; // Only shown while row is actively walking
+          pathEl.style.opacity = "0";
           svg.appendChild(pathEl);
 
           const dots = [];
@@ -2325,8 +2418,14 @@
           let startDist = 0;
           if (idx > 0) {
             const prev = queue[idx - 1];
-            const prevLastExitsStageAt = prev.startDist + prev.distToStationFinish + (prev.studentCount - 1) * spacing;
-            startDist = prevLastExitsStageAt - pCfg.distToStageEntry;
+            if (prev.deptLabel !== pCfg.deptLabel) {
+              // NEW DEPARTMENT GAP: First row of a new department starts ONLY after previous row is fully seated!
+              startDist = prev.finishDist + 15;
+            } else {
+              // SAME DEPARTMENT: First person of next row enters stage as soon as last person of previous row exits stage!
+              const prevLastExitsStageAt = prev.startDist + prev.distToStageExit + (prev.studentCount - 1) * spacing;
+              startDist = Math.max(prev.startDist + 25, prevLastExitsStageAt - pCfg.distToStageEntry);
+            }
           }
 
           queue.push({
@@ -2334,7 +2433,7 @@
             pathEl,
             dots,
             startDist,
-            finishDist: startDist + pCfg.totalLength + pCfg.studentCount * spacing
+            finishDist: startDist + pCfg.totalLength + (pCfg.studentCount - 1) * spacing
           });
         });
         return queue;
@@ -2349,7 +2448,7 @@
       let globalDist = 0;
 
       function stepWave() {
-        globalDist += 3.0 * animSpeedMultiplier;
+        globalDist += 3.2 * animSpeedMultiplier;
         if (globalDist > maxGlobalDist) globalDist = 0;
 
         const activeStageLabels = [];
@@ -2358,11 +2457,10 @@
           const tailDist = localHeadDist - (c.dots.length - 1) * spacing;
           const isRowMoving = localHeadDist > 0 && tailDist < c.totalLength;
 
-          // Only show subtle path line for rows currently in motion (no weird block-wide rectangle clutter)
           c.pathEl.style.opacity = isRowMoving ? "0.55" : "0";
 
-          if (localHeadDist >= c.distToStageEntry && tailDist <= c.distToStationFinish) {
-            activeStageLabels.push(`B${c.blockId} R${c.rowNum}`);
+          if (localHeadDist >= c.distToStageEntry && tailDist <= c.distToStageExit) {
+            activeStageLabels.push(`${c.deptLabel} (B${c.blockId} R${c.rowNum})`);
           }
 
           c.dots.forEach((dotGroup, i) => {
@@ -2377,9 +2475,11 @@
           });
         });
 
+        updateLiveStationLogs(globalDist, allConvoys);
+
         document.getElementById("walkStepTitle").textContent = activeStageLabels.length
-          ? `At Certificate Stations Now: ${activeStageLabels.slice(0, 2).join(" & ")}`
-          : "Continuous wave circulation in progress...";
+          ? `On Stage Now: ${activeStageLabels.slice(0, 2).join(" & ")}`
+          : "Department transition / returning to seats...";
 
         walkAnimFrame = requestAnimationFrame(stepWave);
       }
@@ -2400,32 +2500,36 @@
     }
 
     /********************************************************************
-     * 6. PLAYABLE VIDEO EXPORT (DIRECT 30 FPS CANVAS STREAM)
+     * 6. PLAYABLE FULL-CYCLE VIDEO EXPORT (FIRST TO LAST STUDENT + TOP LOG)
      ********************************************************************/
     async function downloadCurrentAnimationVideo() {
       if (!activeAnimState || !activeAnimState.convoys.length) {
-        alert("Please start a Student Path, Block Wave, Department Wave, or Full Wave first!");
+        alert("Please trigger a Student Path, Block Wave, Department Wave, or Full Wave first!");
         return;
       }
 
       const btn = document.getElementById("downloadVideoBtn");
       const origText = btn.textContent;
-      btn.textContent = "⏳ Rendering Playable Video...";
+      btn.textContent = "⏳ Recording Full Cycle (0%)...";
       btn.disabled = true;
 
       const canvasEl = document.getElementById("hallCanvas");
       const svg = document.getElementById("walkOverlaySvg");
       const prevSvgDisplay = svg.style.display;
+      const prevZoom = currentZoom;
+      canvasEl.style.transform = "scale(1)";
       svg.style.display = "none";
 
       try {
-        // Capture clean background snapshot once
         const bgCanvas = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
         svg.style.display = prevSvgDisplay;
+        canvasEl.style.transform = `scale(${prevZoom})`;
 
+        // Add 76px non-obstructing top header bar above the hall map for live Station 1 & Station 2 logs
+        const headerHeight = 76;
         const recCanvas = document.createElement("canvas");
         recCanvas.width = bgCanvas.width;
-        recCanvas.height = bgCanvas.height;
+        recCanvas.height = bgCanvas.height + headerHeight;
         const ctx = recCanvas.getContext("2d");
 
         const stream = recCanvas.captureStream(30);
@@ -2449,7 +2553,7 @@
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `CET_2026_${activeAnimState.mode}.${ext}`;
+          a.download = `CET_2026_${activeAnimState.mode}_Complete.${ext}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -2460,48 +2564,71 @@
 
         recorder.start();
 
-        // Render 180 smooth frames at 30 FPS (6 seconds of crisp playable video)
-        const convoys = activeAnimState.convoys;
+        // Cover 100% of the cycle from the first student leaving to the very last student seated
+        const convoys = activeAnimState.convoys.map(c => {
+          const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          tempPath.setAttribute("d", c.d);
+          return { ...c, tempPath };
+        });
+
         const spacing = 15;
-        const maxDist = Math.max(...convoys.map(c => c.finishDist));
-        const totalFrames = 180;
+        const maxDist = Math.max(...convoys.map(c => c.finishDist)) + 20;
+        const totalFrames = convoys.length > 25 ? 450 : (convoys.length > 5 ? 270 : 150);
         let frame = 0;
 
         function renderNextFrame() {
-          if (frame >= totalFrames) {
+          if (frame > totalFrames) {
             recorder.stop();
             return;
           }
-          const simDist = (frame / totalFrames) * Math.min(maxDist, 1800);
-          ctx.drawImage(bgCanvas, 0, 0);
 
+          const pct = Math.round((frame / totalFrames) * 100);
+          btn.textContent = `⏳ Recording Full Cycle (${pct}%)...`;
+
+          const simDist = (frame / totalFrames) * maxDist;
+
+          // 1. Draw non-obstructing top status log bar
+          ctx.fillStyle = "#152542";
+          ctx.fillRect(0, 0, recCanvas.width, headerHeight);
+
+          ctx.fillStyle = "#e6b333";
+          ctx.font = "bold 15px sans-serif";
+          ctx.fillText(`CET GRADUATION DAY 2026 — ${activeAnimState.mode.replace(/_/g, " ").toUpperCase()} (${pct}% COMPLETE)`, 24, 26);
+
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 13px sans-serif";
+          const st1Text = getStationLogString(simDist, convoys, 1);
+          const st2Text = getStationLogString(simDist, convoys, 2);
+          ctx.fillText(st1Text, 24, 50);
+          ctx.fillText(st2Text, 24, 68);
+
+          // 2. Draw hall map below the header bar (zero obstruction of stage or seats)
+          ctx.drawImage(bgCanvas, 0, headerHeight);
+
+          // 3. Draw active paths and moving students shifted by headerHeight
           convoys.forEach(c => {
             const localHead = simDist - c.startDist;
             const tail = localHead - (c.studentCount - 1) * spacing;
             if (localHead > 0 && tail < c.totalLength) {
-              // Draw subtle path
               ctx.save();
               ctx.strokeStyle = "rgba(148, 163, 184, 0.65)";
               ctx.lineWidth = 1.5;
               ctx.setLineDash([4, 4]);
               ctx.beginPath();
               c.pts.forEach((p, idx) => {
-                if (idx === 0) ctx.moveTo(p.x, p.y);
-                else ctx.lineTo(p.x, p.y);
+                if (idx === 0) ctx.moveTo(p.x, p.y + headerHeight);
+                else ctx.lineTo(p.x, p.y + headerHeight);
               });
               ctx.stroke();
               ctx.restore();
 
-              // Draw moving students
-              const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-              tempPath.setAttribute("d", c.d);
               for (let i = 0; i < c.studentCount; i++) {
                 const d = localHead - i * spacing;
                 if (d > 0 && d < c.totalLength) {
-                  const pt = tempPath.getPointAtLength(d);
+                  const pt = c.tempPath.getPointAtLength(d);
                   ctx.fillStyle = "#152542";
                   ctx.beginPath();
-                  ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+                  ctx.arc(pt.x, pt.y + headerHeight, 4, 0, Math.PI * 2);
                   ctx.fill();
                   ctx.strokeStyle = "#ffffff";
                   ctx.lineWidth = 1.2;
@@ -2512,12 +2639,13 @@
           });
 
           frame++;
-          setTimeout(renderNextFrame, 33);
+          setTimeout(renderNextFrame, 30);
         }
 
         renderNextFrame();
       } catch (err) {
         svg.style.display = prevSvgDisplay;
+        canvasEl.style.transform = `scale(${prevZoom})`;
         btn.textContent = origText;
         btn.disabled = false;
         alert("Video generation error: " + err.message);
@@ -2601,6 +2729,7 @@
       document.getElementById("hallCanvas").style.transform = `scale(${currentZoom})`;
       document.getElementById("zoomLabel").textContent = `${Math.round(currentZoom * 100)}%`;
       stopWalkAnimation();
+      requestAnimationFrame(alignExitStepsWithCentralPassage);
     }
 
     function switchView(view) {
@@ -2959,6 +3088,10 @@
       renderAdminConfigTables();
       renderDeptPills();
     }
+
+    window.addEventListener("resize", () => {
+      requestAnimationFrame(alignExitStepsWithCentralPassage);
+    });
 
     window.addEventListener("DOMContentLoaded", () => {
       initFirestoreListener();
