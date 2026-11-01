@@ -358,7 +358,7 @@
     .speed-label {
       font-size: 11.5px;
       font-weight: 700;
-      min-width: 90px;
+      min-width: 100px;
       text-align: center;
       color: var(--navy-dark);
     }
@@ -489,7 +489,6 @@
       text-transform: uppercase;
       line-height: 1.2;
     }
-    /* Central Collection Point for First Wave (Toppers & PhD) */
     .central-collection-desk {
       position: absolute;
       left: 50%;
@@ -1056,7 +1055,7 @@
     <div class="eyebrow">CERTIFICATE DISTRIBUTION · CENTRAL &amp; DUAL STATIONS</div>
     <h1 class="hero-title">Find your seat for Graduation Day</h1>
     <p class="hero-desc">
-      Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left (with Row 1 Faculty and Row 2 PhD/UG Left-to-Right).
+      Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left (with Row 1 Faculty and Row 2 UG/PhD Left-to-Right).
     </p>
 
     <!-- Search & Export Row -->
@@ -1094,7 +1093,7 @@
       </div>
     </div>
 
-    <!-- Toolbar with First Wave (Toppers & PhD) and Full Wave (Excludes Toppers & PhD) -->
+    <!-- Toolbar -->
     <div class="toolbar">
       <div class="zoom-controls">
         <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
@@ -1130,10 +1129,10 @@
         <div>
           <div id="walkEyebrow" class="walk-eyebrow">STAGE MOVEMENT SIMULATION</div>
           <div id="walkStepTitle" class="serif-title" style="font-size:17px; font-weight:700;">
-            Walking through center of side steps &rarr; Bottom edge of Certificate Station &rarr; Central return steps
+            Entry path line shown while entering stage; Exit path line appears only after stage completion
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Default speed: 5 sec per student at collection center. Same-department rows connect continuously at collection center.
+            Default speed: 0.15 sec per student. Use − / + to decrease or increase speed.
           </div>
         </div>
 
@@ -1141,7 +1140,7 @@
           <div class="speed-controls">
             <span style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Speed:</span>
             <button class="speed-btn" onclick="changeAnimSpeed(-1)">−</button>
-            <span id="speedValueLabel" class="speed-label">1x (5s/student)</span>
+            <span id="speedValueLabel" class="speed-label">1x (0.15s/st)</span>
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
           <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
@@ -1222,7 +1221,7 @@
           <div class="entry-box">ENTRY (29 ft)</div>
         </div>
 
-        <div class="front-area-banner">FRONT AREA — 12 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
+        <div class="front-area-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
 
         <div class="blocks-wrapper" id="blocksWrapper"></div>
       </div>
@@ -1484,12 +1483,12 @@
     let highlightCompletedActive = false;
     let activeAnimState = null;
 
-    // Default 1x speed = 5 seconds per student at collection center!
-    // Student spacing = 15 px => 3.0 px per second = 5.0 seconds per student.
+    // Default 1x speed = 0.15 seconds per student at collection center!
+    // Student spacing = 15 px => 100.0 px per second = 0.15 seconds per student.
     const STUDENT_SPACING_PX = 15;
-    const BASE_PX_PER_SECOND = STUDENT_SPACING_PX / 5.0; // Exactly 3.0 px/s (5 sec/student)
-    const SPEED_STEPS = [0.5, 1, 2, 5, 10, 20, 40];
-    let currentSpeedIndex = 1; // 1x (5s/student)
+    const BASE_PX_PER_SECOND = STUDENT_SPACING_PX / 0.15; // 100 px/s (0.15 sec/student)
+    const SPEED_STEPS = [0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.5, 2];
+    let currentSpeedIndex = 5; // Index 5 is 1x (0.15s/student)
     let animSpeedMultiplier = 1;
 
     function changeAnimSpeed(delta) {
@@ -1497,8 +1496,8 @@
       animSpeedMultiplier = SPEED_STEPS[currentSpeedIndex];
       const lbl = document.getElementById("speedValueLabel");
       if (lbl) {
-        const secPerStudent = (5 / animSpeedMultiplier).toFixed(animSpeedMultiplier > 5 ? 2 : 1);
-        lbl.textContent = animSpeedMultiplier === 1 ? "1x (5s/student)" : `${animSpeedMultiplier}x (${secPerStudent}s/st)`;
+        const secPerStudent = (0.15 / animSpeedMultiplier).toFixed(2);
+        lbl.textContent = animSpeedMultiplier === 1 ? "1x (0.15s/st)" : `${animSpeedMultiplier}x (${secPerStudent}s/st)`;
       }
     }
 
@@ -1570,8 +1569,8 @@
         { id: 6, rows: 24, cols: 8, spec: "Column 6 · 13 ft · 8 chairs" }
       ],
       allocations: [
-        { dept: "TOP",  block: 3, count: 34 },
-        { dept: "PhD",  block: 1, count: 12 },
+        { dept: "TOP",  block: 1, count: 33 },
+        { dept: "PhD",  block: 2, count: 12 },
         { dept: "EE",   block: 1, count: 135 },
         { dept: "PTDC", block: 1, count: 30 },
         { dept: "CS",   block: 2, count: 159 },
@@ -1603,7 +1602,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v20").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v21").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1626,7 +1625,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v20").set({
+      db.collection("cet2026").doc("seatingState_v21").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1638,7 +1637,7 @@
     }
 
     /********************************************************************
-     * 2. COMPLETE ALLOCATION & SEAT NUMBERING
+     * 2. COMPLETE ALLOCATION & SEAT NUMBERING PER NEW IMAGE
      ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
@@ -1661,13 +1660,20 @@
         return items;
       }
 
+      // Updated Row 2 Layout:
+      // Block 1: UG(1-8)
+      // Block 2: PhD(1-9)
+      // Block 3: PhD(10-12)
+      // Block 4: PG(9-1)
+      // Block 5: PG(18-10)
+      // Block 6: PG(25-19)
       if (rowNum === 2) {
         if (blockId === 1) {
-          for (let i = 10; i <= 12; i++) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
+          for (let i = 1; i <= 8; i++) items.push({ type: "student", dept: "TOP", subType: "UG", label: `UG${i}`, code: `TOP UG ${i}` });
         } else if (blockId === 2) {
           for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
         } else if (blockId === 3) {
-          for (let i = 1; i <= 9; i++) items.push({ type: "student", dept: "TOP", subType: "UG", label: `UG${i}`, code: `TOP UG ${i}` });
+          for (let i = 10; i <= 12; i++) items.push({ type: "student", dept: "PhD", subType: "PhD", label: `PhD${i}`, code: `PhD ${i}` });
         } else if (blockId === 4) {
           for (let i = 9; i >= 1; i--) items.push({ type: "student", dept: "TOP", subType: "PG", label: `PG${i}`, code: `TOP PG ${i}` });
         } else if (blockId === 5) {
@@ -2142,9 +2148,10 @@
     }
 
     /********************************************************************
-     * 5. STRICTLY NON-INTERSECTING DUAL-CHANNEL & CENTRAL STAGE ENGINE
-     * - Supports Central Collection Point for First Wave (Toppers & PhD)
-     * - Supports Dual Stations (1 & 2) for Regular Waves
+     * 5. SPLIT ENTRY / EXIT NON-INTERSECTING PATH ENGINE
+     * - Entry Path (entryPts / entryD): Seat -> Outer Aisle -> Side Assembly -> Center of Side Steps -> Bottom Edge of Station -> Top of Return Stairs
+     * - Exit Path (exitPts / exitD): Top of Return Stairs -> Down Return Stairs -> Inner Aisle -> Back to Seat
+     * - Only Entry line is shown until stage is completed; then Entry line disappears and Exit line appears!
      ********************************************************************/
     function buildNonIntersectingRowPath(blockId, rowNum, canvasRect, useCentralStation = false) {
       alignExitStepsWithCentralPassage();
@@ -2178,7 +2185,7 @@
       const stgPos = toLocal(stageEl.getBoundingClientRect());
       const strPos = toLocal(stairsEl.getBoundingClientRect());
 
-      // Dedicated non-intersecting vertical lanes per block
+      // Strictly separated Entry (outer) and Exit (inner) vertical aisles per block
       const outerAisleX = isLeft ? (bPos.x - 10) : (bPos.x + bPos.w + 10);
       const innerAisleX = isLeft ? (bPos.x + bPos.w + 10) : (bPos.x - 10);
 
@@ -2192,7 +2199,7 @@
       const returnFrontY = strPos.y + strPos.h + 10 + blockOffset;
 
       // Side assembly & entry through the EXACT CENTER of left/right stage steps
-      const stepOuterApproachX = isLeft ? (stpPos.x - 6) : (stpPos.x + stpPos.w + 6);
+      const stepOuterApproachX = isLeft ? (stpPos.x - 8) : (stpPos.x + stpPos.w + 8);
       const stepCenterY = stpPos.cy;
       const stepInnerStageX = isLeft ? (stpPos.x + stpPos.w + 8) : (stpPos.x - 8);
 
@@ -2207,7 +2214,7 @@
         { x: rowOuterEdgeX, y: rowY },              // 0: Leave row
         { x: outerAisleX, y: rowY },                // 1: Enter outer passage
         { x: outerAisleX, y: outboundFrontY },      // 2: Walk up outer passage
-        { x: stepOuterApproachX, y: outboundFrontY },// 3: Move outside side steps
+        { x: stepOuterApproachX, y: outboundFrontY },// 3: Move to side assembly line
         { x: stepOuterApproachX, y: stepCenterY },  // 4: Assemble at side of stage (center of side steps)
         { x: stepInnerStageX, y: stepCenterY },     // 5: Enter stage through center of side steps
         { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Collection Point
@@ -2226,7 +2233,13 @@
         cumDist.push(cumDist[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
       }
 
+      // Split into Entry Path (0..10) and Exit Path (10..14) so only one is shown at a time!
+      const entryPts = pts.slice(0, 11);
+      const exitPts = pts.slice(10);
+
       const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+      const entryD = entryPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+      const exitD = exitPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
 
       const blkConf = layoutConfig.blocks.find(b => b.id === blockId);
       let studentCount = 0;
@@ -2241,7 +2254,11 @@
 
       return {
         pts,
+        entryPts,
+        exitPts,
         d,
+        entryD,
+        exitD,
         deptLabel: rowDept,
         stationNum: useCentralStation ? 0 : (isLeft ? 1 : 2),
         useCentralStation,
@@ -2251,7 +2268,7 @@
         distToStepOfStage: cumDist[4],       // Side assembly point at step of stage
         distToStageEntry: cumDist[5],        // Inside stage
         distToCollectionCenter: cumDist[8],  // Exact point where student receives certificate
-        distToStageExit: cumDist[10],        // Top of central return steps
+        distToStageExit: cumDist[10],        // End of Entry Stage / Start of Exit Stage
         totalLength: cumDist[cumDist.length - 1]
       };
     }
@@ -2261,7 +2278,6 @@
       const seatObj = seatsByCoord[highlightCoordKey];
       const isCentralPerson = seatObj && seatObj.row === 2 && (seatObj.dept === "TOP" || seatObj.dept === "PhD");
 
-      // Show Central Collection Point & hide Stations 1 and 2 if this person is a Topper or PhD
       setCentralStationMode(Boolean(isCentralPerson));
 
       const canvas = document.getElementById("hallCanvas");
@@ -2271,13 +2287,31 @@
       const pInfo = buildNonIntersectingRowPath(blockId, rowNum, cRect, Boolean(isCentralPerson));
       if (!pInfo) return;
 
-      const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      pathEl.setAttribute("d", pInfo.d);
-      pathEl.setAttribute("fill", "none");
-      pathEl.setAttribute("stroke", "#94a3b8");
-      pathEl.setAttribute("stroke-width", "2");
-      pathEl.setAttribute("stroke-dasharray", "5 4");
-      svg.appendChild(pathEl);
+      // Full hidden path for point-at-length calculation
+      const fullPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      fullPathEl.setAttribute("d", pInfo.d);
+      fullPathEl.setAttribute("fill", "none");
+      fullPathEl.setAttribute("stroke", "none");
+      svg.appendChild(fullPathEl);
+
+      // Visible Entry Path Line (Shown ONLY while entering/on stage)
+      const entryPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      entryPathEl.setAttribute("d", pInfo.entryD);
+      entryPathEl.setAttribute("fill", "none");
+      entryPathEl.setAttribute("stroke", "#2563eb");
+      entryPathEl.setAttribute("stroke-width", "2");
+      entryPathEl.setAttribute("stroke-dasharray", "5 4");
+      svg.appendChild(entryPathEl);
+
+      // Visible Exit Path Line (Shown ONLY after stage completion)
+      const exitPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      exitPathEl.setAttribute("d", pInfo.exitD);
+      exitPathEl.setAttribute("fill", "none");
+      exitPathEl.setAttribute("stroke", "#16a34a");
+      exitPathEl.setAttribute("stroke-width", "2");
+      exitPathEl.setAttribute("stroke-dasharray", "5 4");
+      exitPathEl.style.opacity = "0";
+      svg.appendChild(exitPathEl);
 
       const dot = document.createElementNS("http://www.w3.org/2000/svg", "g");
       dot.innerHTML = `
@@ -2290,9 +2324,6 @@
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent =
         `INDIVIDUAL STUDENT PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW ${rowNum}`}`;
-      document.getElementById("walkStepTitle").textContent = isCentralPerson
-        ? "Assembling at side of stage & proceeding to Central Collection Point..."
-        : "Entering through center of side steps & walking along bottom edge of Certificate Station...";
 
       const singleConvoy = {
         ...pInfo,
@@ -2314,11 +2345,23 @@
         dist += BASE_PX_PER_SECOND * animSpeedMultiplier * dt;
 
         if (dist > pInfo.totalLength) {
-          if (isCentralPerson) setCentralStationMode(false);
           dist = 0;
-          if (isCentralPerson) setCentralStationMode(true);
         }
-        const pt = pathEl.getPointAtLength(dist);
+
+        // Toggle Entry vs Exit path line exclusively
+        if (dist <= pInfo.distToStageExit) {
+          entryPathEl.style.opacity = "0.85";
+          exitPathEl.style.opacity = "0";
+          document.getElementById("walkStepTitle").textContent =
+            "Entry Stage Active (Entry path line visible)...";
+        } else {
+          entryPathEl.style.opacity = "0";
+          exitPathEl.style.opacity = "0.85";
+          document.getElementById("walkStepTitle").textContent =
+            "Entry Completed — Returning to Seat (Exit path line visible)...";
+        }
+
+        const pt = fullPathEl.getPointAtLength(dist);
         dot.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
         updateLiveStationLogs(dist, [singleConvoy], Boolean(isCentralPerson));
         walkAnimFrame = requestAnimationFrame(stepSingle);
@@ -2328,10 +2371,13 @@
     }
 
     /* FIRST WAVE (TOPPERS & PhD AT CENTRAL COLLECTION POINT):
-     * - Hides Station 1 & Station 2, reveals Central Collection Point.
-     * - All Toppers & PhD assemble at left/right side of stage.
-     * - Order: All UG (UG 1..9) together in one line -> gap -> All PG (PG 1..25) together in one line -> gap -> All PhD (PhD 1..12) together in one line.
-     * - After all PhD students return to their seats, Central Collection Point disappears.
+     * - Blocks 1, 2, 3 (UG 1-8 in B1, PhD 1-9 in B2, PhD 10-12 in B3) assemble on LEFT side of stage with gap.
+     * - Blocks 4, 5, 6 (PG 1-9 in B4, PG 10-18 in B5, PG 19-25 in B6) assemble on RIGHT side of stage.
+     * - Sequence:
+     *   1. UG (Block 1, Left) goes to Central Collection Point and exits stage.
+     *   2. Followed by PG (Blocks 4, 5, 6, Right) going to Central Collection Point and exiting stage.
+     *   3. Followed by PhD (Blocks 2, 3, Left) going to Central Collection Point and exiting stage.
+     * - Entry and exit paths never intersect; only Entry line or Exit line is shown for each row at a time.
      */
     function startFirstWave(btnEl) {
       stopWalkAnimation();
@@ -2341,42 +2387,63 @@
       const canvas = document.getElementById("hallCanvas");
       const cRect = canvas.getBoundingClientRect();
 
-      const ugRow = buildNonIntersectingRowPath(3, 2, cRect, true);     // UG 1..9 (Left side assembly)
-      const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect, true);    // PG 1..9 (Right side assembly)
-      const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect, true);  // PG 10..18 (Right side assembly)
-      const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect, true);  // PG 19..25 (Right side assembly)
-      const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect, true);   // PhD 1..9 (Left side assembly)
-      const phd10to12 = buildNonIntersectingRowPath(1, 2, cRect, true); // PhD 10..12 (Left side assembly)
+      const ugRow = buildNonIntersectingRowPath(1, 2, cRect, true);     // Block 1: UG 1..8 (Left side)
+      const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect, true);    // Block 4: PG 1..9 (Right side)
+      const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect, true);  // Block 5: PG 10..18 (Right side)
+      const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect, true);  // Block 6: PG 19..25 (Right side)
+      const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect, true);   // Block 2: PhD 1..9 (Left side)
+      const phd10to12 = buildNonIntersectingRowPath(3, 2, cRect, true); // Block 3: PhD 10..12 (Left side)
 
       const firstWaveConfigs = [ugRow, pg1to9, pg10to18, pg19to25, phd1to9, phd10to12].filter(Boolean);
 
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent =
-        "🥇 FIRST WAVE (TOPPERS & PhD) · CENTRAL STAGE COLLECTION POINT";
+        "🥇 FIRST WAVE (TOPPERS & PhD) · LEFT & RIGHT STAGE ASSEMBLY → CENTRAL COLLECTION POINT";
       document.getElementById("walkSubtext").textContent =
-        "UG (1–9) in one line → Gap → PG (1–25) in one line → Gap → PhD (1–12) in one line. Central station disappears after PhD returns.";
+        "1. UG (Left, B1) goes & exits → 2. PG (Right, B4–B6) goes & exits → 3. PhD (Left, B2–B3) goes & exits.";
 
       runFirstWaveCentralAnimation(firstWaveConfigs);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function createSplitPathElementsForConvoy(svg, pCfg) {
+      const fullPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      fullPathEl.setAttribute("d", pCfg.d);
+      fullPathEl.setAttribute("fill", "none");
+      fullPathEl.setAttribute("stroke", "none");
+      svg.appendChild(fullPathEl);
+
+      const entryPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      entryPathEl.setAttribute("d", pCfg.entryD);
+      entryPathEl.setAttribute("fill", "none");
+      entryPathEl.setAttribute("stroke", "#2563eb");
+      entryPathEl.setAttribute("stroke-width", "1.6");
+      entryPathEl.setAttribute("stroke-dasharray", "4 4");
+      entryPathEl.style.opacity = "0";
+      svg.appendChild(entryPathEl);
+
+      const exitPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      exitPathEl.setAttribute("d", pCfg.exitD);
+      exitPathEl.setAttribute("fill", "none");
+      exitPathEl.setAttribute("stroke", "#16a34a");
+      exitPathEl.setAttribute("stroke-width", "1.6");
+      exitPathEl.setAttribute("stroke-dasharray", "4 4");
+      exitPathEl.style.opacity = "0";
+      svg.appendChild(exitPathEl);
+
+      return { fullPathEl, entryPathEl, exitPathEl };
     }
 
     function runFirstWaveCentralAnimation(configs) {
       const svg = document.getElementById("walkOverlaySvg");
       svg.innerHTML = "";
       const spacing = STUDENT_SPACING_PX;
-      const groupGapPx = 45; // Clear visual gap between UG -> PG and PG -> PhD at the Central Collection Point
+      const groupSwitchGapPx = 35; // Clear gap after previous group exits stage before next group enters stage
 
       const queue = [];
       configs.forEach((pCfg, idx) => {
-        const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        pathEl.setAttribute("d", pCfg.d);
-        pathEl.setAttribute("fill", "none");
-        pathEl.setAttribute("stroke", "#cbd5e1");
-        pathEl.setAttribute("stroke-width", "1.4");
-        pathEl.setAttribute("stroke-dasharray", "4 4");
-        pathEl.style.opacity = "0";
-        svg.appendChild(pathEl);
+        const { fullPathEl, entryPathEl, exitPathEl } = createSplitPathElementsForConvoy(svg, pCfg);
 
         const dots = [];
         for (let i = 0; i < pCfg.studentCount; i++) {
@@ -2393,27 +2460,30 @@
         let startDist = 0;
         if (idx > 0) {
           const prev = queue[idx - 1];
-          const prevLastAtCenter = prev.startDist + prev.distToCollectionCenter + (prev.studentCount - 1) * spacing;
           if (prev.deptLabel === pCfg.deptLabel) {
             // Same group (e.g. PG 1-9 -> PG 10-18 -> PG 19-25, or PhD 1-9 -> PhD 10-12):
-            // Come together in one continuous line (next row's 1st student is exactly 1 spacing behind previous row's last student)
+            // Continuous line at Central Collection Point
+            const prevLastAtCenter = prev.startDist + prev.distToCollectionCenter + (prev.studentCount - 1) * spacing;
             startDist = prevLastAtCenter + spacing - pCfg.distToCollectionCenter;
           } else {
-            // Gap between UG -> PG, and PG -> PhD
-            startDist = prevLastAtCenter + groupGapPx - pCfg.distToCollectionCenter;
+            // Different group (UG on Left -> PG on Right -> PhD on Left):
+            // Next group enters stage ONLY after the last student of the previous group exits the stage!
+            const prevLastExitsStage = prev.startDist + prev.distToStageExit + (prev.studentCount - 1) * spacing;
+            startDist = prevLastExitsStage + groupSwitchGapPx - pCfg.distToStepOfStage;
           }
         }
 
         queue.push({
           ...pCfg,
-          pathEl,
+          pathEl: fullPathEl,
+          entryPathEl,
+          exitPathEl,
           dots,
           startDist,
           finishDist: startDist + pCfg.totalLength + (pCfg.studentCount - 1) * spacing
         });
       });
 
-      // Normalize so earliest startDist is 0
       const minStart = Math.min(...queue.map(q => q.startDist));
       queue.forEach(q => {
         q.startDist -= minStart;
@@ -2432,7 +2502,6 @@
         globalDist += BASE_PX_PER_SECOND * animSpeedMultiplier * dt;
 
         if (globalDist >= maxGlobalDist) {
-          // After all PhD students return to their seats, Central Collection Point disappears!
           setCentralStationMode(false);
           document.getElementById("walkStepTitle").textContent =
             "First Wave Complete — All Toppers & PhD seated; Central Collection Point hidden.";
@@ -2451,7 +2520,18 @@
           const tailDist = localHeadDist - (c.dots.length - 1) * spacing;
           const isRowMoving = localHeadDist > 0 && tailDist < c.totalLength;
 
-          c.pathEl.style.opacity = isRowMoving ? "0.55" : "0";
+          if (!isRowMoving) {
+            c.entryPathEl.style.opacity = "0";
+            c.exitPathEl.style.opacity = "0";
+          } else if (tailDist < c.distToStageExit) {
+            // Entry stage in progress: show ONLY entry path line
+            c.entryPathEl.style.opacity = "0.75";
+            c.exitPathEl.style.opacity = "0";
+          } else {
+            // Entry stage completed: hide entry path line and show ONLY exit path line
+            c.entryPathEl.style.opacity = "0";
+            c.exitPathEl.style.opacity = "0.75";
+          }
 
           if (localHeadDist >= c.distToStepOfStage && tailDist <= c.distToStageExit) {
             activeStageLabels.push(`${c.deptLabel} (B${c.blockId})`);
@@ -2473,7 +2553,7 @@
 
         document.getElementById("walkStepTitle").textContent = activeStageLabels.length
           ? `At Central Collection Point: ${activeStageLabels.join(" · ")}`
-          : "Assembling / returning to seats...";
+          : "Assembling at stage sides / returning to seats...";
 
         walkAnimFrame = requestAnimationFrame(stepFirstWave);
       }
@@ -2507,7 +2587,7 @@
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `BLOCK ${blockId} WAVE (EXCLUDING TOPPERS & PhD ROW)`;
       document.getElementById("walkSubtext").textContent =
-        `5 sec per student at collection center; same-department rows connect continuously at collection center.`;
+        `Default 0.15s/student; Entry line shown until stage completes, then only Exit line appears.`;
 
       if (blockId <= 3) runContinuousDualWingAnimation(configs, [], `Block_${blockId}`);
       else runContinuousDualWingAnimation([], configs, `Block_${blockId}`);
@@ -2539,17 +2619,12 @@
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode}`;
       document.getElementById("walkSubtext").textContent =
-        `5 sec per student at collection center; next row first student reaches collection center continuously after previous row last student.`;
+        `Default 0.15s/student; Entry line shown until stage completes, then only Exit line appears.`;
 
       runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Department_${deptCode}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    /* FULL WAVE (EXCLUDES TOPPERS & PhD ROW 2):
-     * - Starts with Block 3 (Station 1) & Block 4 (Station 2) simultaneously (Rows 3..24)
-     * - Followed by Block 2 (Station 1) & Block 5 (Station 2) simultaneously (Rows 3..24)
-     * - Followed by Block 1 (Station 1) & Block 6 (Station 2) simultaneously (Rows 3..24)
-     */
     function startFullWave(btnEl) {
       stopWalkAnimation();
       setCentralStationMode(false);
@@ -2585,7 +2660,7 @@
       document.getElementById("walkEyebrow").textContent =
         "🌟 FULL WAVE (EXCLUDING TOPPERS & PhD) · BLOCKS 3 & 4 → BLOCKS 2 & 5 → BLOCKS 1 & 6";
       document.getElementById("walkSubtext").textContent =
-        "Same-department rows connect continuously at collection center; new department waits until previous department fully seats.";
+        "Entry line shown while entering stage; Exit line appears only after stage completion.";
 
       runContinuousDualWingAnimation(st1Configs, st2Configs, "Full_Wave");
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2651,14 +2726,7 @@
       function buildQueue(configs) {
         const queue = [];
         configs.forEach((pCfg, idx) => {
-          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          pathEl.setAttribute("d", pCfg.d);
-          pathEl.setAttribute("fill", "none");
-          pathEl.setAttribute("stroke", "#cbd5e1");
-          pathEl.setAttribute("stroke-width", "1.4");
-          pathEl.setAttribute("stroke-dasharray", "4 4");
-          pathEl.style.opacity = "0";
-          svg.appendChild(pathEl);
+          const { fullPathEl, entryPathEl, exitPathEl } = createSplitPathElementsForConvoy(svg, pCfg);
 
           const dots = [];
           for (let i = 0; i < pCfg.studentCount; i++) {
@@ -2680,8 +2748,6 @@
               startDist = prev.finishDist + 15;
             } else {
               // SAME DEPARTMENT CONTINUITY AT COLLECTION CENTER:
-              // As the last student of the previous row receives their certificate at distToCollectionCenter,
-              // the first student of the next row reaches distToCollectionCenter immediately after (1 spacing = 5 sec behind)!
               const prevLastReceivesCertAt = prev.startDist + prev.distToCollectionCenter + (prev.studentCount - 1) * spacing;
               startDist = prevLastReceivesCertAt + spacing - pCfg.distToCollectionCenter;
             }
@@ -2689,7 +2755,9 @@
 
           queue.push({
             ...pCfg,
-            pathEl,
+            pathEl: fullPathEl,
+            entryPathEl,
+            exitPathEl,
             dots,
             startDist,
             finishDist: startDist + pCfg.totalLength + (pCfg.studentCount - 1) * spacing
@@ -2701,7 +2769,6 @@
       const allConvoys = [...buildQueue(leftConfigs), ...buildQueue(rightConfigs)];
       if (!allConvoys.length) return;
 
-      // Normalize so earliest startDist is 0
       const minStart = Math.min(...allConvoys.map(c => c.startDist));
       allConvoys.forEach(c => {
         c.startDist -= minStart;
@@ -2726,7 +2793,18 @@
           const tailDist = localHeadDist - (c.dots.length - 1) * spacing;
           const isRowMoving = localHeadDist > 0 && tailDist < c.totalLength;
 
-          c.pathEl.style.opacity = isRowMoving ? "0.55" : "0";
+          if (!isRowMoving) {
+            c.entryPathEl.style.opacity = "0";
+            c.exitPathEl.style.opacity = "0";
+          } else if (tailDist < c.distToStageExit) {
+            // Entry stage active: show ONLY entry path line
+            c.entryPathEl.style.opacity = "0.7";
+            c.exitPathEl.style.opacity = "0";
+          } else {
+            // Entry stage completed: hide entry path line and show ONLY exit path line
+            c.entryPathEl.style.opacity = "0";
+            c.exitPathEl.style.opacity = "0.7";
+          }
 
           if (localHeadDist >= c.distToStepOfStage && tailDist <= c.distToStageExit) {
             activeStageLabels.push(`${c.deptLabel} (B${c.blockId} R${c.rowNum})`);
@@ -2770,7 +2848,7 @@
     }
 
     /********************************************************************
-     * 6. PLAYABLE FULL-CYCLE VIDEO EXPORT (WITH EXPLICIT STEPS & TOP LOG)
+     * 6. PLAYABLE FULL-CYCLE VIDEO EXPORT (WITH SPLIT ENTRY/EXIT LINES)
      ********************************************************************/
     function drawStageStepsOnCanvas(ctx, canvasEl, headerHeight) {
       const cRect = canvasEl.getBoundingClientRect();
@@ -2844,7 +2922,6 @@
         const headerHeight = 76;
         const bgCanvas = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
 
-        // Explicitly draw left/right stage steps & center return steps onto bgCanvas so they are never missing
         const bgCtx = bgCanvas.getContext("2d");
         drawStageStepsOnCanvas(bgCtx, canvasEl, 0);
 
@@ -2930,20 +3007,23 @@
             ctx.fillText(st2Text, 24, 68);
           }
 
-          // 2. Draw hall map (with explicit stage steps included) below the header bar
+          // 2. Draw hall map below the header bar
           ctx.drawImage(bgCanvas, 0, headerHeight);
 
-          // 3. Draw active paths and moving students shifted by headerHeight
+          // 3. Draw active Entry or Exit path line (never both at once) and moving students
           convoys.forEach(c => {
             const localHead = simDist - c.startDist;
             const tail = localHead - (c.studentCount - 1) * spacing;
             if (localHead > 0 && tail < c.totalLength) {
+              const isEntryPhase = tail < c.distToStageExit;
+              const activePts = isEntryPhase ? c.entryPts : c.exitPts;
+
               ctx.save();
-              ctx.strokeStyle = "rgba(148, 163, 184, 0.65)";
-              ctx.lineWidth = 1.5;
+              ctx.strokeStyle = isEntryPhase ? "rgba(37, 99, 235, 0.75)" : "rgba(22, 163, 74, 0.75)";
+              ctx.lineWidth = 1.6;
               ctx.setLineDash([4, 4]);
               ctx.beginPath();
-              c.pts.forEach((p, idx) => {
+              activePts.forEach((p, idx) => {
                 if (idx === 0) ctx.moveTo(p.x, p.y + headerHeight);
                 else ctx.lineTo(p.x, p.y + headerHeight);
               });
@@ -3108,9 +3188,9 @@
       const tbody = document.querySelector("#facultyProgressTable tbody");
       tbody.innerHTML = "";
       const blockDepts = {
-        1: "PhD (10–12), EE (1–135), PTDC (1–30), Faculty",
+        1: "UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty",
         2: "PhD (1–9), CS (1–159), MCA (1–34)",
-        3: "UG Toppers (1–9), CE (1–196)",
+        3: "PhD (10–12), CE (1–196)",
         4: "PG Toppers (9–1), ME (1–198)",
         5: "PG Toppers (18–10), Arch (1–86), MBA (1–107), Faculty",
         6: "PG Toppers (25–19), EC (1–159), Faculty"
