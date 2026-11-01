@@ -362,6 +362,16 @@
       text-align: center;
       color: var(--navy-dark);
     }
+    .video-speed-select {
+      padding: 5px 8px;
+      border-radius: 7px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      cursor: pointer;
+    }
 
     .hall-viewport {
       background: #ffffff;
@@ -1088,7 +1098,7 @@
     <div class="eyebrow">CERTIFICATE DISTRIBUTION · CENTRAL &amp; DUAL STATIONS</div>
     <h1 class="hero-title">Find your seat for Graduation Day</h1>
     <p class="hero-desc">
-      Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left (with Row 1 Faculty and Row 2 UG/PhD Left-to-Right)[span_0](start_span)[span_0](end_span).
+      Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left (with Row 1 Faculty and Row 2 UG/PhD Left-to-Right).
     </p>
 
     <!-- Search & Export Row -->
@@ -1165,19 +1175,33 @@
             Entry path stops at Certificate Station; Exit path starts from Station &amp; descends Central Steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Default speed: 0.15 sec per student. All returnees descend strictly through the Central Return Steps.
+            Default speed: 0.15 sec per student. Choose your desired video pace (up to 3 sec/student) next to Download.
           </div>
         </div>
 
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <div class="speed-controls">
-            <span style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Speed:</span>
+            <span style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Live Speed:</span>
             <button class="speed-btn" onclick="changeAnimSpeed(-1)">−</button>
             <span id="speedValueLabel" class="speed-label">1x (0.15s/st)</span>
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
+
+          <div class="speed-controls" style="background:#eef2ff; border-color:#c7d2fe;">
+            <span style="font-size:10.5px; font-weight:700; color:#1e3a8a; text-transform:uppercase;">Video Pace:</span>
+            <select id="videoSecPerStudentSelect" class="video-speed-select">
+              <option value="0.15" selected>0.15 sec / student (Max Speed)</option>
+              <option value="0.3">0.30 sec / student</option>
+              <option value="0.5">0.50 sec / student</option>
+              <option value="1.0">1.0 sec / student</option>
+              <option value="2.0">2.0 sec / student</option>
+              <option value="3.0">3.0 sec / student (Min Speed)</option>
+            </select>
+          </div>
+
+          <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669;">🎥 Download Video</button>
+          <button class="btn-danger" onclick="finishVideoRecordingEarly()" id="stopSaveVideoBtn" style="display:none; padding:9px 14px;">⏹ Stop &amp; Save Video Now</button>
           <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
-          <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669;">🎥 Download Full Cycle Video</button>
         </div>
       </div>
 
@@ -1205,7 +1229,7 @@
         <svg id="walkOverlaySvg"></svg>
 
         <div class="hall-top-architecture">
-          <div class="entry-box">ENTRY (29 ft)[span_1](start_span)[span_1](end_span)</div>
+          <div class="entry-box">ENTRY (29 ft)</div>
 
           <div class="stage-cluster" id="stageCluster">
             <!-- Left Side Steps with explicit SVG treads -->
@@ -1221,7 +1245,7 @@
 
             <div class="stage-wrapper" id="stageWrapper">
               <div class="stage-main-rect" id="stageMainRect">
-                <div class="stage-header-pill">STAGE 54 ft LENGTH — 22 ft WIDE[span_2](start_span)[span_2](end_span)</div>
+                <div class="stage-header-pill">STAGE 54 ft LENGTH — 22 ft WIDE</div>
                 <div class="stage-led-tag">LED WALL</div>
 
                 <div class="stage-receptions-row" id="stationsRowContainer">
@@ -1264,10 +1288,10 @@
             </div>
           </div>
 
-          <div class="entry-box">ENTRY (29 ft)[span_3](start_span)[span_3](end_span)</div>
+          <div class="entry-box">ENTRY (29 ft)</div>
         </div>
 
-        <div class="front-area-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE[span_4](start_span)[span_4](end_span)</div>
+        <div class="front-area-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
 
         <div class="blocks-wrapper" id="blocksWrapper"></div>
       </div>
@@ -1528,6 +1552,7 @@
     let walkAnimFrame = null;
     let highlightCompletedActive = false;
     let activeAnimState = null;
+    let activeMediaRecorder = null;
 
     // Default 1x speed = 0.15 seconds per student at collection center!
     const STUDENT_SPACING_PX = 15;
@@ -1591,18 +1616,18 @@
     };
 
     const BRANCH_META = {
-      TOP:  { name: "Toppers (UG & PG)", color: "#d97706" },
-      PhD:  { name: "Doctoral Programmes (PhD)", color: "#7c3aed" },
-      EE:   { name: "Electrical & Electronics Engineering (EE)", color: "#2563eb" },
-      PTDC: { name: "Part-Time B.Tech (PTDC)", color: "#0891b2" },
-      CS:   { name: "Computer Science & Engineering (CS)", color: "#059669" },
-      MCA:  { name: "Master of Computer Applications (MCA)", color: "#65a30d" },
-      CE:   { name: "Civil Engineering (CE)", color: "#d97706" },
-      ME:   { name: "Mechanical Engineering (ME)", color: "#ea580c" },
-      Arch: { name: "Architecture (Arch)", color: "#dc2626" },
-      MBA:  { name: "Master of Business Administration (MBA)", color: "#c026d3" },
-      EC:   { name: "Electronics & Communication Engineering (EC)", color: "#4f46e5" },
-      FAC:  { name: "Faculty Member", color: "#64748b" }
+      TOP:  { name: "Toppers (UG & PG)", color: "#d97706", bg: "#fef3c7" },
+      PhD:  { name: "Doctoral Programmes (PhD)", color: "#7c3aed", bg: "#ede4ff" },
+      EE:   { name: "Electrical & Electronics Engineering (EE)", color: "#2563eb", bg: "#dceaff" },
+      PTDC: { name: "Part-Time B.Tech (PTDC)", color: "#0891b2", bg: "#d5f3f7" },
+      CS:   { name: "Computer Science & Engineering (CS)", color: "#059669", bg: "#d6f5e3" },
+      MCA:  { name: "Master of Computer Applications (MCA)", color: "#65a30d", bg: "#e4f8cc" },
+      CE:   { name: "Civil Engineering (CE)", color: "#d97706", bg: "#fef0c7" },
+      ME:   { name: "Mechanical Engineering (ME)", color: "#ea580c", bg: "#ffedd5" },
+      Arch: { name: "Architecture (Arch)", color: "#dc2626", bg: "#fee2e2" },
+      MBA:  { name: "Master of Business Administration (MBA)", color: "#c026d3", bg: "#fae8ff" },
+      EC:   { name: "Electronics & Communication Engineering (EC)", color: "#4f46e5", bg: "#e0e7ff" },
+      FAC:  { name: "Faculty Member", color: "#64748b", bg: "#64748b" }
     };
 
     const DEFAULT_LAYOUT = {
@@ -1648,7 +1673,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v24").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v25").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1671,7 +1696,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v24").set({
+      db.collection("cet2026").doc("seatingState_v25").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1821,7 +1846,6 @@
 
       const maxRows = 24;
 
-      // Left Row Numbers Column (Entry 6 removed as requested)
       const rowNumCol = document.createElement("div");
       rowNumCol.className = "row-numbers-col";
       for (let r = 1; r <= maxRows; r++) {
@@ -2189,7 +2213,6 @@
     /********************************************************************
      * 5. PURE MATHEMATICAL PATH ENGINE & SPLIT ENTRY / EXIT LINES
      ********************************************************************/
-    // Pure math point-at-distance calculator (never fails in detached SVG/Canvas video exports!)
     function getPointAtDistance(pts, cumDist, d) {
       const total = cumDist[cumDist.length - 1];
       if (d <= 0) return pts[0];
@@ -2260,7 +2283,6 @@
       const stgPos = toLocal(stageEl.getBoundingClientRect());
       const strPos = toLocal(stairsEl.getBoundingClientRect());
 
-      // Strictly separated Entry (outer) and Exit (inner) vertical aisles per block
       const outerAisleX = isLeft ? (bPos.x - 10) : (bPos.x + bPos.w + 10);
       const innerAisleX = isLeft ? (bPos.x + bPos.w + 10) : (bPos.x - 10);
 
@@ -2268,18 +2290,15 @@
       const rowInnerEdgeX = isLeft ? (bPos.x + bPos.w - 4) : (bPos.x + 16);
       const rowY = rPos.cy;
 
-      // Separated horizontal front corridors
       const blockOffset = (blockId <= 3 ? (3 - blockId) : (blockId - 4)) * 3.5;
       const outboundFrontY = stgPos.y + stgPos.h + 5 + blockOffset;
       const returnFrontY = strPos.y + strPos.h + 10 + blockOffset;
 
-      // Side assembly & entry through the EXACT CENTER of left/right stage steps
       const stepOuterApproachX = isLeft ? (stpPos.x - 8) : (stpPos.x + stpPos.w + 8);
       const stepCenterY = stpPos.cy;
       const stepInnerStageX = isLeft ? (stpPos.x + stpPos.w + 8) : (stpPos.x - 8);
 
       const stationBottomY = dskPos.y + dskPos.h + 5;
-      // Exact lane inside the widened 56px Central Return Steps so 100% of returnees descend through the central steps!
       const returnStairX = strPos.cx + (isLeft ? -12 : 12);
 
       let pts = [];
@@ -2292,18 +2311,18 @@
         const quarterPointX = returnStairX;
 
         pts = [
-          { x: rowOuterEdgeX, y: rowY },              // 0: Leave row
-          { x: outerAisleX, y: rowY },                // 1: Enter outer passage
-          { x: outerAisleX, y: outboundFrontY },      // 2: Walk up outer passage
-          { x: stepOuterApproachX, y: outboundFrontY },// 3: Move to side assembly line
-          { x: stepOuterApproachX, y: stepCenterY },  // 4: Assemble at side of stage (center of side steps)
-          { x: stepInnerStageX, y: stepCenterY },     // 5: Enter stage through center of side steps
-          { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Central Collection Point
-          { x: quarterPointX, y: stationBottomY },    // 7: QUARTER POINT OF CENTRAL STATION (Entry ends here; Exit starts here!)
-          { x: quarterPointX, y: returnFrontY },      // 8: Descend perpendicular straight through Central Return Steps!
-          { x: innerAisleX, y: returnFrontY },        // 9: Enter return passage
-          { x: innerAisleX, y: rowY },                // 10: Walk down return passage to row
-          { x: rowInnerEdgeX, y: rowY }               // 11: Re-enter row seat
+          { x: rowOuterEdgeX, y: rowY },
+          { x: outerAisleX, y: rowY },
+          { x: outerAisleX, y: outboundFrontY },
+          { x: stepOuterApproachX, y: outboundFrontY },
+          { x: stepOuterApproachX, y: stepCenterY },
+          { x: stepInnerStageX, y: stepCenterY },
+          { x: stepInnerStageX, y: stationBottomY },
+          { x: quarterPointX, y: stationBottomY },
+          { x: quarterPointX, y: returnFrontY },
+          { x: innerAisleX, y: returnFrontY },
+          { x: innerAisleX, y: rowY },
+          { x: rowInnerEdgeX, y: rowY }
         ];
         idxStepOfStage = 4;
         idxStageEntry = 5;
@@ -2314,20 +2333,20 @@
         const stationCenterX = dskPos.cx;
 
         pts = [
-          { x: rowOuterEdgeX, y: rowY },              // 0: Leave row
-          { x: outerAisleX, y: rowY },                // 1: Enter outer passage
-          { x: outerAisleX, y: outboundFrontY },      // 2: Walk up outer passage
-          { x: stepOuterApproachX, y: outboundFrontY },// 3: Move to side assembly line
-          { x: stepOuterApproachX, y: stepCenterY },  // 4: Step of stage
-          { x: stepInnerStageX, y: stepCenterY },     // 5: Enter stage
-          { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Station
-          { x: stationStartX, y: stationBottomY },    // 7: Start of Station bottom edge
-          { x: stationCenterX, y: stationBottomY },   // 8: CERTIFICATE STATION (Entry ends here! Exit starts here!)
-          { x: returnStairX, y: stationBottomY },     // 9: Top of Central Return Steps (Stage Exit)
-          { x: returnStairX, y: returnFrontY },       // 10: Descend strictly through Central Return Steps
-          { x: innerAisleX, y: returnFrontY },        // 11: Enter return passage
-          { x: innerAisleX, y: rowY },                // 12: Walk down return passage to row
-          { x: rowInnerEdgeX, y: rowY }               // 13: Re-enter row seat
+          { x: rowOuterEdgeX, y: rowY },
+          { x: outerAisleX, y: rowY },
+          { x: outerAisleX, y: outboundFrontY },
+          { x: stepOuterApproachX, y: outboundFrontY },
+          { x: stepOuterApproachX, y: stepCenterY },
+          { x: stepInnerStageX, y: stepCenterY },
+          { x: stepInnerStageX, y: stationBottomY },
+          { x: stationStartX, y: stationBottomY },
+          { x: stationCenterX, y: stationBottomY },
+          { x: returnStairX, y: stationBottomY },
+          { x: returnStairX, y: returnFrontY },
+          { x: innerAisleX, y: returnFrontY },
+          { x: innerAisleX, y: rowY },
+          { x: rowInnerEdgeX, y: rowY }
         ];
         idxStepOfStage = 4;
         idxStageEntry = 5;
@@ -2951,53 +2970,137 @@
     }
 
     /********************************************************************
-     * 6. RELIABLE PLAYABLE VIDEO EXPORT FOR ALL MODES (FIRST WAVE & FULL WAVE)
+     * 6. DIRECT NATIVE 2D CANVAS HALL RENDERER & RELIABLE VIDEO EXPORTER
+     * (Never uses html2canvas for video frames — zero memory crash, works 100% on Full Wave & First Wave)
      ********************************************************************/
-    function drawStageStepsOnCanvas(ctx, canvasEl, headerHeight) {
+    function createDirectHallBackgroundCanvas(canvasEl, isCentralMode) {
       const cRect = canvasEl.getBoundingClientRect();
+      const w = Math.round(cRect.width / currentZoom);
+      const h = Math.round(cRect.height / currentZoom);
+
+      const bgCanvas = document.createElement("canvas");
+      bgCanvas.width = w;
+      bgCanvas.height = h;
+      const ctx = bgCanvas.getContext("2d");
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, w, h);
+
       const toLocal = (el) => {
+        if (!el) return null;
         const r = el.getBoundingClientRect();
         return {
-          x: r.left - cRect.left,
-          y: r.top - cRect.top + headerHeight,
-          w: r.width,
-          h: r.height
+          x: (r.left - cRect.left) / currentZoom,
+          y: (r.top - cRect.top) / currentZoom,
+          w: r.width / currentZoom,
+          h: r.height / currentZoom,
+          cx: (r.left - cRect.left + r.width / 2) / currentZoom,
+          cy: (r.top - cRect.top + r.height / 2) / currentZoom
         };
       };
 
-      const leftStp = document.getElementById("leftStageSteps");
-      const rightStp = document.getElementById("rightStageSteps");
-      const retStp = document.getElementById("centerReturnStairs");
+      // 1. Draw Main Stage
+      const stg = toLocal(document.getElementById("stageMainRect"));
+      if (stg) {
+        ctx.fillStyle = "#192a48";
+        ctx.fillRect(stg.x, stg.y, stg.w, stg.h);
+        ctx.fillStyle = "#e6b333";
+        ctx.font = "bold 11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("STAGE 54 ft LENGTH — 22 ft WIDE", stg.cx, stg.y + 16);
+        ctx.fillStyle = "#b0bfd8";
+        ctx.font = "bold 9px sans-serif";
+        ctx.fillText("MAIN STAGE", stg.cx, stg.y + stg.h - 8);
+      }
 
-      [leftStp, rightStp].forEach(el => {
-        if (!el) return;
-        const p = toLocal(el);
-        ctx.fillStyle = "#dce4ee";
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-        ctx.strokeStyle = "#7f97b2";
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(p.x, p.y, p.w, p.h);
-        for (let x = p.x + 5; x < p.x + p.w; x += 5) {
-          ctx.beginPath();
-          ctx.moveTo(x, p.y);
-          ctx.lineTo(x, p.y + p.h);
-          ctx.stroke();
+      // 2. Draw Active Certificate Stations
+      const deskIds = isCentralMode ? ["centralStationDesk"] : ["station1Desk", "station2Desk"];
+      deskIds.forEach(id => {
+        const dsk = toLocal(document.getElementById(id));
+        if (dsk && dsk.w > 0) {
+          ctx.fillStyle = "#fef9c3";
+          ctx.fillRect(dsk.x, dsk.y, dsk.w, dsk.h);
+          ctx.strokeStyle = "#eab308";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(dsk.x, dsk.y, dsk.w, dsk.h);
+          ctx.fillStyle = "#854d0e";
+          ctx.font = "bold 8px sans-serif";
+          ctx.textAlign = "center";
+          const title = id === "centralStationDesk" ? "CENTRAL STATION" : (id === "station1Desk" ? "STATION 1" : "STATION 2");
+          ctx.fillText(title, dsk.cx, dsk.cy + 3);
         }
       });
 
+      // 3. Draw Left/Right Side Steps & Widened Center Return Steps
+      ["leftStageSteps", "rightStageSteps"].forEach(id => {
+        const p = toLocal(document.getElementById(id));
+        if (p) {
+          ctx.fillStyle = "#dce4ee";
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.strokeStyle = "#7f97b2";
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          for (let x = p.x + 5; x < p.x + p.w; x += 5) {
+            ctx.beginPath(); ctx.moveTo(x, p.y); ctx.lineTo(x, p.y + p.h); ctx.stroke();
+          }
+        }
+      });
+
+      const retStp = toLocal(document.getElementById("centerReturnStairs"));
       if (retStp) {
-        const p = toLocal(retStp);
         ctx.fillStyle = "#dce4ee";
-        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.fillRect(retStp.x, retStp.y, retStp.w, retStp.h);
         ctx.strokeStyle = "#7f97b2";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(p.x, p.y, p.w, p.h);
-        for (let y = p.y + 5; y < p.y + p.h; y += 5) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, y);
-          ctx.lineTo(p.x + p.w, y);
-          ctx.stroke();
+        ctx.strokeRect(retStp.x, retStp.y, retStp.w, retStp.h);
+        for (let y = retStp.y + 5; y < retStp.y + retStp.h; y += 5) {
+          ctx.beginPath(); ctx.moveTo(retStp.x, y); ctx.lineTo(retStp.x + retStp.w, y); ctx.stroke();
         }
+      }
+
+      // 4. Draw Passages & Block Headers
+      document.querySelectorAll(".passage-col").forEach(el => {
+        const p = toLocal(el);
+        if (p) {
+          ctx.fillStyle = el.classList.contains("center-6ft") ? "#ede8da" : "#f4f1e8";
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+        }
+      });
+
+      document.querySelectorAll(".block-header").forEach(el => {
+        const p = toLocal(el);
+        if (p) {
+          ctx.fillStyle = "#1e293b";
+          ctx.font = "bold 10px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(el.textContent, p.cx, p.cy + 3);
+        }
+      });
+
+      // 5. Draw All Seats Directly from DOM Coordinates
+      ctx.font = "bold 5.5px sans-serif";
+      ctx.textAlign = "center";
+      Object.values(seatsByCoord).forEach(sObj => {
+        if (sObj.type === "empty" || sObj.statusOverride === "empty") return;
+        const el = document.getElementById(`seat-${sObj.coordKey}`);
+        const p = toLocal(el);
+        if (!p) return;
+
+        const meta = BRANCH_META[sObj.dept] || { color: "#64748b", bg: "#e2e8f0" };
+        ctx.fillStyle = sObj.type === "faculty" ? meta.color : meta.bg;
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+
+        ctx.fillStyle = sObj.type === "faculty" ? "#ffffff" : "#1e293b";
+        const txt = sObj.label || sObj.num || "";
+        ctx.fillText(txt, p.cx, p.cy + 2);
+      });
+
+      return bgCanvas;
+    }
+
+    function finishVideoRecordingEarly() {
+      if (activeMediaRecorder && activeMediaRecorder.state === "recording") {
+        activeMediaRecorder.stop();
       }
     }
 
@@ -3007,44 +3110,38 @@
         return;
       }
 
+      const secPerStudent = parseFloat(document.getElementById("videoSecPerStudentSelect")?.value || "0.15");
       const btn = document.getElementById("downloadVideoBtn");
+      const stopSaveBtn = document.getElementById("stopSaveVideoBtn");
       const origText = btn.textContent;
-      btn.textContent = "⏳ Preparing Video (0%)...";
+      btn.textContent = "⏳ Recording (0%)...";
       btn.disabled = true;
+      if (stopSaveBtn) stopSaveBtn.style.display = "inline-flex";
 
       const canvasEl = document.getElementById("hallCanvas");
-      const svg = document.getElementById("walkOverlaySvg");
-      const prevSvgDisplay = svg.style.display;
-      const prevZoom = currentZoom;
-      canvasEl.style.transform = "scale(1)";
-      svg.style.display = "none";
-
       setCentralStationMode(Boolean(activeAnimState.isCentralMode));
 
       try {
         const headerHeight = 92;
-        const bgCanvas = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
-
-        const bgCtx = bgCanvas.getContext("2d");
-        drawStageStepsOnCanvas(bgCtx, canvasEl, 0);
-
-        svg.style.display = prevSvgDisplay;
-        canvasEl.style.transform = `scale(${prevZoom})`;
+        // Instant native 2D canvas background build (zero html2canvas lag or crash!)
+        const bgCanvas = createDirectHallBackgroundCanvas(canvasEl, Boolean(activeAnimState.isCentralMode));
 
         const recCanvas = document.createElement("canvas");
         recCanvas.width = bgCanvas.width;
         recCanvas.height = bgCanvas.height + headerHeight;
         const ctx = recCanvas.getContext("2d");
 
-        const stream = recCanvas.captureStream(30);
+        const fps = 30;
+        const stream = recCanvas.captureStream(fps);
         const mimeTypes = [
-          "video/webm;codecs=vp9",
           "video/webm;codecs=vp8",
+          "video/webm;codecs=vp9",
           "video/webm",
           "video/mp4"
         ];
         const supportedMime = mimeTypes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
         const recorder = supportedMime ? new MediaRecorder(stream, { mimeType: supportedMime }) : new MediaRecorder(stream);
+        activeMediaRecorder = recorder;
 
         const chunks = [];
         recorder.ondataavailable = (e) => {
@@ -3052,39 +3149,47 @@
         };
 
         recorder.onstop = () => {
+          activeMediaRecorder = null;
+          if (stopSaveBtn) stopSaveBtn.style.display = "none";
           const ext = supportedMime.includes("mp4") ? "mp4" : "webm";
           const blob = new Blob(chunks, { type: supportedMime || "video/webm" });
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `CET_2026_${activeAnimState.mode}_Complete.${ext}`;
+          a.download = `CET_2026_${activeAnimState.mode}_${secPerStudent}s_per_student.${ext}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(url), 8000);
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
           btn.textContent = origText;
           btn.disabled = false;
         };
 
-        // Start recording with 200ms timeslice so data chunks flush reliably for all waves
         recorder.start(200);
 
         const convoys = activeAnimState.convoys;
         const spacing = STUDENT_SPACING_PX;
         const maxDist = Math.max(...convoys.map(c => c.finishDist)) + 20;
-        const totalFrames = convoys.length > 25 ? 360 : (convoys.length > 4 ? 240 : 150);
+
+        // Calculate exact distance step per frame based on user's selected seconds-per-student (0.15s to 3.0s)
+        const pxPerSecondForVideo = spacing / secPerStudent;
+        const distStepPerFrame = pxPerSecondForVideo / fps;
+        const totalFrames = Math.max(60, Math.ceil(maxDist / distStepPerFrame));
         let frame = 0;
 
         function renderNextFrame() {
+          if (!activeMediaRecorder || activeMediaRecorder.state !== "recording") {
+            return;
+          }
           if (frame > totalFrames) {
-            if (recorder.state === "recording") recorder.stop();
+            activeMediaRecorder.stop();
             return;
           }
 
-          const pct = Math.round((frame / totalFrames) * 100);
-          btn.textContent = `⏳ Recording Video (${pct}%)...`;
+          const pct = Math.min(100, Math.round((frame / totalFrames) * 100));
+          btn.textContent = `⏳ Recording (${pct}%)...`;
 
-          const simDist = (frame / totalFrames) * maxDist;
+          const simDist = frame * distStepPerFrame;
 
           const onStageList = [];
           const upNextList = [];
@@ -3102,7 +3207,8 @@
 
           ctx.fillStyle = "#e6b333";
           ctx.font = "bold 14px sans-serif";
-          ctx.fillText(`CET GRADUATION DAY 2026 — ${activeAnimState.mode.replace(/_/g, " ").toUpperCase()} (${pct}% COMPLETE)`, 24, 22);
+          ctx.textAlign = "left";
+          ctx.fillText(`CET GRADUATION DAY 2026 — ${activeAnimState.mode.replace(/_/g, " ").toUpperCase()} (${secPerStudent}s/student · ${pct}%)`, 24, 22);
 
           ctx.fillStyle = "#86efac";
           ctx.font = "bold 12.5px sans-serif";
@@ -3122,7 +3228,7 @@
           // 2. Draw hall map below the header bar
           ctx.drawImage(bgCanvas, 0, headerHeight);
 
-          // 3. Draw clipped Entry (up to Station) or Exit (from Station) path line and moving students using pure math
+          // 3. Draw clipped Entry (up to Station) or Exit (from Station) path line and moving students
           convoys.forEach(c => {
             const localHead = simDist - c.startDist;
             const tail = localHead - (c.studentCount - 1) * spacing;
@@ -3135,8 +3241,8 @@
 
               if (activePts.length >= 2) {
                 ctx.save();
-                ctx.strokeStyle = isEntryPhase ? "rgba(37, 99, 235, 0.75)" : "rgba(22, 163, 74, 0.75)";
-                ctx.lineWidth = 1.6;
+                ctx.strokeStyle = isEntryPhase ? "rgba(37, 99, 235, 0.8)" : "rgba(22, 163, 74, 0.8)";
+                ctx.lineWidth = 1.8;
                 ctx.setLineDash([4, 4]);
                 ctx.beginPath();
                 activePts.forEach((p, idx) => {
@@ -3164,13 +3270,12 @@
           });
 
           frame++;
-          setTimeout(renderNextFrame, 30);
+          setTimeout(renderNextFrame, 33);
         }
 
         renderNextFrame();
       } catch (err) {
-        svg.style.display = prevSvgDisplay;
-        canvasEl.style.transform = `scale(${prevZoom})`;
+        if (stopSaveBtn) stopSaveBtn.style.display = "none";
         btn.textContent = origText;
         btn.disabled = false;
         alert("Video generation error: " + err.message);
