@@ -13,7 +13,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <style>
     :root {
       --bg-cream: #f8f6f0;
@@ -25,9 +24,7 @@
       --border-light: #e6e2d8;
       --card-bg: #ffffff;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background-color: var(--bg-cream);
       color: var(--text-main);
@@ -35,11 +32,7 @@
       line-height: 1.5;
       padding-bottom: 60px;
     }
-
-    h1, h2, h3, .serif-title {
-      font-family: 'Fraunces', Georgia, serif;
-    }
-
+    h1, h2, h3, .serif-title { font-family: 'Fraunces', Georgia, serif; }
     .navbar {
       background-color: var(--navy-dark);
       color: #fff;
@@ -54,695 +47,248 @@
       z-index: 100;
       box-shadow: 0 2px 10px rgba(0,0,0,0.12);
     }
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
     .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background-color: var(--gold);
-      color: var(--navy-dark);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 50%;
+      background-color: var(--gold); color: var(--navy-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; flex-shrink: 0;
     }
-    .brand-title {
-      font-family: 'Fraunces', serif;
-      font-size: 17px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-    .brand-sub {
-      font-size: 12px;
-      color: #b0bfd8;
-    }
-    .nav-tabs {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+    .brand-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .brand-sub { font-size: 12px; color: #b0bfd8; }
+    .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .nav-tab {
-      background: transparent;
-      color: #d1dbed;
+      background: transparent; color: #d1dbed;
       border: 1px solid rgba(255,255,255,0.12);
-      padding: 7px 12px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.18s;
-      text-align: center;
+      padding: 7px 12px; border-radius: 10px;
+      font-size: 12.5px; font-weight: 600; cursor: pointer;
     }
     .nav-tab.active {
-      background-color: var(--gold);
-      color: var(--navy-dark);
-      border-color: var(--gold);
-      font-weight: 700;
+      background-color: var(--gold); color: var(--navy-dark);
+      border-color: var(--gold); font-weight: 700;
     }
-
-    .container {
-      max-width: 1420px;
-      margin: 0 auto;
-      padding: 20px 16px;
-    }
-
+    .container { max-width: 1420px; margin: 0 auto; padding: 20px 16px; }
     .live-progress-banner {
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-left: 6px solid var(--navy-dark);
-      border-radius: 14px;
-      padding: 14px 18px;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      background: #ffffff; border: 1.5px solid #cbd5e1;
+      border-left: 6px solid var(--navy-dark); border-radius: 14px;
+      padding: 14px 18px; margin-bottom: 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
     }
-    .progress-pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
+    .progress-pills-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .prog-chip {
-      font-size: 11.5px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: #f1f5f9;
-      color: #475569;
+      font-size: 11.5px; font-weight: 700; padding: 4px 10px;
+      border-radius: 999px; background: #f1f5f9; color: #475569;
       border: 1px solid #e2e8f0;
     }
-    .prog-chip.completed {
-      background: #dcfce7;
-      color: #166534;
-      border-color: #86efac;
-    }
-    .prog-chip.in-progress {
-      background: #fef9c3;
-      color: #854d0e;
-      border-color: #fde047;
-    }
-
+    .prog-chip.completed { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .prog-chip.in-progress { background: #fef9c3; color: #854d0e; border-color: #fde047; }
     .eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 700; margin-bottom: 6px;
     }
-    .hero-title {
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--text-main);
-      line-height: 1.15;
-      margin-bottom: 8px;
-    }
-    .hero-desc {
-      font-size: 14.5px;
-      color: var(--text-muted);
-      max-width: 780px;
-      margin-bottom: 16px;
-    }
-
+    .hero-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .hero-desc { font-size: 14px; color: var(--text-muted); max-width: 780px; margin-bottom: 16px; }
     .search-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; justify-content: space-between; margin-bottom: 16px;
     }
-    .search-box {
-      position: relative;
-      flex: 1;
-      min-width: 280px;
-      max-width: 560px;
-    }
+    .search-box { position: relative; flex: 1; min-width: 260px; max-width: 560px; }
     .search-box input {
-      width: 100%;
-      padding: 13px 42px;
-      border-radius: 999px;
-      border: 1px solid #dcd7cc;
-      background: #ffffff;
-      font-size: 14.5px;
-      color: var(--text-main);
-      outline: none;
+      width: 100%; padding: 12px 40px; border-radius: 999px;
+      border: 1px solid #dcd7cc; background: #ffffff; font-size: 14px; outline: none;
     }
-    .search-box input:focus {
-      border-color: var(--navy-dark);
-      box-shadow: 0 0 0 3px rgba(21, 37, 66, 0.1);
-    }
-    .search-icon {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #7c8898;
-      pointer-events: none;
-    }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
     .clear-btn {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #eeeae0;
-      border: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      font-size: 12px;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: #eeeae0; border: none; width: 24px; height: 24px;
+      border-radius: 50%; font-size: 12px; cursor: pointer; display: none;
+      align-items: center; justify-content: center;
     }
-
     .legend-card {
-      background: #fdfcf9;
-      border-top: 1px solid var(--border-light);
-      border-bottom: 1px solid var(--border-light);
-      padding: 10px 0;
-      margin-bottom: 12px;
+      background: #fdfcf9; border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light); padding: 10px 0; margin-bottom: 12px;
     }
-    .legend-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 16px;
-      align-items: center;
-      font-size: 12.5px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .rect-indicator {
-      width: 14px;
-      height: 8px;
-      border-radius: 2px;
-      display: inline-block;
-    }
+    .legend-grid { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    .rect-indicator { width: 14px; height: 8px; border-radius: 2px; display: inline-block; }
     .rect-indicator.filled { background-color: #16a34a; }
     .rect-indicator.unoccupied { background-color: #ef4444; }
     .rect-indicator.absent { background-color: #f97316; }
-
     .dot-defective {
-      background: #374151;
-      color: #fff;
-      font-size: 8px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      background: #374151; color: #fff; font-size: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
     }
-
     .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 12px 0;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin: 12px 0;
     }
-    .zoom-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .zoom-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .zoom-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      border: 1px solid #dcd7cc;
-      background: #fff;
-      font-size: 17px;
-      cursor: pointer;
+      width: 34px; height: 34px; border-radius: 9px;
+      border: 1px solid #dcd7cc; background: #fff;
+      font-size: 18px; font-weight: 700; cursor: pointer;
     }
-    .zoom-label {
-      font-size: 13px;
-      font-weight: 600;
-      min-width: 44px;
-      text-align: center;
+    .zoom-fit-btn {
+      padding: 0 10px; height: 34px; border-radius: 9px;
+      border: 1px solid #cbd5e1; background: #f8fafc;
+      font-size: 11.5px; font-weight: 700; color: var(--navy-dark); cursor: pointer;
     }
-    .ceremony-bar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+    .zoom-label { font-size: 13px; font-weight: 700; min-width: 44px; text-align: center; }
+    .ceremony-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .wave-pill {
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1px solid #d5cfc2;
-      background: #fff;
-      cursor: pointer;
-      transition: all 0.15s;
+      padding: 6px 10px; border-radius: 8px; font-size: 11px;
+      font-weight: 700; border: 1px solid #d5cfc2; background: #fff; cursor: pointer;
     }
-    .wave-pill:hover { background: #f1efe8; }
-    .wave-pill.active-wave {
-      background: var(--navy-dark);
-      color: #fff;
-      border-color: var(--navy-dark);
-    }
-    .wave-pill.first-wave-btn {
-      background: #d97706;
-      color: #fff;
-      border-color: #b45309;
-    }
-    .wave-pill.full-wave-btn {
-      background: #7c3aed;
-      color: #fff;
-      border-color: #7c3aed;
-    }
-    .wave-pill.block-wave-btn {
-      background: #eff6ff;
-      color: #1e40af;
-      border-color: #bfdbfe;
-    }
-
+    .wave-pill.active-wave { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
+    .wave-pill.first-wave-btn { background: #d97706; color: #fff; border-color: #b45309; }
+    .wave-pill.full-wave-btn { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+    .wave-pill.block-wave-btn { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
     .speed-controls {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #f4f1e8;
-      padding: 4px 8px;
-      border-radius: 10px;
-      border: 1px solid #dcd7cc;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f4f1e8; padding: 4px 8px; border-radius: 10px; border: 1px solid #dcd7cc;
     }
     .speed-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      border: 1px solid #d5cfc2;
-      background: #ffffff;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
+      width: 26px; height: 26px; border-radius: 6px;
+      border: 1px solid #d5cfc2; background: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;
     }
-    .speed-label {
-      font-size: 11.5px;
-      font-weight: 700;
-      min-width: 100px;
-      text-align: center;
-      color: var(--navy-dark);
-    }
+    .speed-label { font-size: 11.5px; font-weight: 700; min-width: 92px; text-align: center; color: var(--navy-dark); }
     .video-speed-select {
-      padding: 5px 8px;
-      border-radius: 7px;
-      border: 1px solid #cbd5e1;
-      background: #ffffff;
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--navy-dark);
-      cursor: pointer;
+      padding: 5px 8px; border-radius: 7px; border: 1px solid #cbd5e1;
+      background: #ffffff; font-size: 11.5px; font-weight: 700; color: var(--navy-dark); cursor: pointer;
     }
-
     .hall-viewport {
-      background: #ffffff;
-      border-radius: 20px;
-      border: 1px solid var(--border-light);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-      overflow: auto;
-      padding: 18px;
-      position: relative;
-      max-height: 84vh;
+      background: #ffffff; border-radius: 20px; border: 1px solid var(--border-light);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); overflow: auto;
+      padding: 12px; position: relative; max-height: 85vh; width: 100%;
     }
+    .hall-scale-wrapper { position: relative; overflow: hidden; margin: 0 auto; }
     .hall-canvas {
-      position: relative;
-      transform-origin: top left;
-      transition: transform 0.15s ease-out;
-      display: inline-block;
-      min-width: 1420px;
-      padding: 14px 24px 36px 24px;
-      background: #ffffff;
+      position: relative; transform-origin: top left;
+      width: 1420px; padding: 14px 24px 36px 24px; background: #ffffff;
     }
-
     .hall-top-architecture {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      position: relative;
-      height: 154px;
-      margin-bottom: 16px;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      position: relative; height: 154px; margin-bottom: 16px;
     }
     .entry-box {
-      background: #e9f2ec;
-      color: #2f5941;
-      border: 1px solid #c7dfd0;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      padding: 7px 40px;
-      border-radius: 4px;
-      text-transform: uppercase;
+      background: #e9f2ec; color: #2f5941; border: 1px solid #c7dfd0;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 7px 40px; border-radius: 4px; text-transform: uppercase;
     }
     .stage-cluster {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 2px;
-      display: flex;
-      align-items: center;
+      position: absolute; left: 50%; transform: translateX(-50%);
+      top: 2px; display: flex; align-items: center;
     }
     .stage-side-steps {
-      width: 26px;
-      height: 48px;
-      background: #dce4ee;
-      border: 1.5px solid #7f97b2;
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      width: 26px; height: 48px; background: #dce4ee;
+      border: 1.5px solid #7f97b2; z-index: 5;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
-    .stage-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
+    .stage-wrapper { display: flex; flex-direction: column; align-items: center; position: relative; }
     .stage-main-rect {
-      width: 720px;
-      height: 126px;
-      background: var(--navy-card);
-      border: 1.5px solid #152542;
-      border-radius: 8px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px 12px 24px;
-      box-shadow: 0 4px 14px rgba(21,37,66,0.18);
-      color: #fff;
+      width: 720px; height: 126px; background: var(--navy-card);
+      border: 1.5px solid #152542; border-radius: 8px; position: relative;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: space-between; padding: 0 24px 12px 24px; color: #fff;
     }
     .stage-header-pill {
-      background: var(--gold);
-      color: var(--navy-dark);
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      padding: 3px 28px;
-      border-radius: 0 0 6px 6px;
-      text-transform: uppercase;
+      background: var(--gold); color: var(--navy-dark); font-family: 'Fraunces', serif;
+      font-weight: 700; font-size: 11px; letter-spacing: 0.08em;
+      padding: 3px 28px; border-radius: 0 0 6px 6px; text-transform: uppercase;
     }
-    .stage-led-tag {
-      font-size: 8.5px;
-      letter-spacing: 0.14em;
-      color: #9ab0d4;
-      font-weight: 700;
-      margin-top: -8px;
-    }
+    .stage-led-tag { font-size: 8.5px; letter-spacing: 0.14em; color: #9ab0d4; font-weight: 700; margin-top: -8px; }
     .stage-receptions-row {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 64px;
-      margin-top: -12px;
-      position: relative;
+      width: 100%; display: flex; justify-content: space-between;
+      align-items: center; padding: 0 64px; margin-top: -12px; position: relative;
     }
     .reception-desk {
-      border: 2px solid #fef08a;
-      background: #fef9c3;
-      border-radius: 6px;
-      padding: 4px 16px;
-      text-align: center;
-      transition: opacity 0.25s;
+      border: 2px solid #fef08a; background: #fef9c3;
+      border-radius: 6px; padding: 4px 16px; text-align: center; transition: opacity 0.25s;
     }
-    .reception-desk.hidden-station {
-      opacity: 0;
-      pointer-events: none;
-    }
+    .reception-desk.hidden-station { opacity: 0; pointer-events: none; }
     .reception-desk-title {
-      font-size: 8px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: #854d0e;
-      text-transform: uppercase;
-      line-height: 1.2;
+      font-size: 8px; font-weight: 800; letter-spacing: 0.08em;
+      color: #854d0e; text-transform: uppercase; line-height: 1.2;
     }
     .central-collection-desk {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border: 2px solid #fef08a;
-      background: #fef9c3;
-      border-radius: 6px;
-      padding: 4px 18px;
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 20;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      transition: opacity 0.25s;
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      border: 2px solid #fef08a; background: #fef9c3; border-radius: 6px;
+      padding: 4px 18px; text-align: center; opacity: 0; pointer-events: none; z-index: 20;
     }
-    .central-collection-desk.visible-central {
-      opacity: 1;
-    }
-    .stage-floor-label {
-      font-size: 8.5px;
-      letter-spacing: 0.1em;
-      color: #b0bfd8;
-      font-weight: 700;
-    }
-    /* Widened Central Return Steps (56px wide) */
+    .central-collection-desk.visible-central { opacity: 1; }
+    .stage-floor-label { font-size: 8.5px; letter-spacing: 0.1em; color: #b0bfd8; font-weight: 700; }
     .center-return-stairs {
-      width: 56px;
-      height: 22px;
-      background: #dce4ee;
-      border: 1.5px solid #7f97b2;
-      border-top: none;
-      position: absolute;
-      top: 126px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 56px; height: 22px; background: #dce4ee;
+      border: 1.5px solid #7f97b2; border-top: none;
+      position: absolute; top: 126px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: center;
     }
     .return-stairs-label {
-      position: absolute;
-      left: 62px;
-      top: 4px;
-      font-size: 8px;
-      font-weight: 700;
-      color: #5c708a;
-      white-space: nowrap;
+      position: absolute; left: 62px; top: 4px; font-size: 8px;
+      font-weight: 700; color: #5c708a; white-space: nowrap;
     }
     .front-area-banner {
-      text-align: center;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #5e6b7c;
-      margin-bottom: 10px;
-      text-transform: uppercase;
+      text-align: center; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; color: #5e6b7c; margin-bottom: 10px; text-transform: uppercase;
     }
-
-    .blocks-wrapper {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 0;
-      position: relative;
-    }
-    .row-numbers-col {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      padding-top: 34px;
-      margin-right: 6px;
-    }
+    .blocks-wrapper { display: flex; align-items: flex-start; justify-content: center; gap: 0; position: relative; }
+    .row-numbers-col { display: flex; flex-direction: column; gap: 3px; padding-top: 34px; margin-right: 6px; }
     .row-num-label {
-      height: 20px;
-      font-size: 9px;
-      font-weight: 700;
-      color: #64748b;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 4px;
+      height: 20px; font-size: 9px; font-weight: 700; color: #64748b;
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 4px;
     }
-    .row-cross-gap {
-      height: 36px;
-    }
-
-    .seating-block {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      transition: all 0.25s;
-      border-radius: 8px;
-      padding: 2px;
-    }
-    .seating-block.block-completed-highlight {
-      background: rgba(22, 163, 74, 0.12);
-      outline: 2.5px solid #16a34a;
-    }
-    .block-col-spec {
-      text-align: center;
-      font-size: 8.5px;
-      color: #64748b;
-      font-weight: 600;
-      height: 14px;
-    }
+    .row-cross-gap { height: 36px; }
+    .seating-block { display: flex; flex-direction: column; position: relative; border-radius: 8px; padding: 2px; }
+    .seating-block.block-completed-highlight { background: rgba(22, 163, 74, 0.12); outline: 2.5px solid #16a34a; }
+    .block-col-spec { text-align: center; font-size: 8.5px; color: #64748b; font-weight: 600; height: 14px; }
     .block-header {
-      text-align: center;
-      font-size: 9.5px;
-      letter-spacing: 0.06em;
-      color: #1e293b;
-      font-weight: 800;
-      margin-bottom: 4px;
-      height: 16px;
-      text-transform: uppercase;
+      text-align: center; font-size: 9.5px; letter-spacing: 0.06em;
+      color: #1e293b; font-weight: 800; margin-bottom: 4px; height: 16px; text-transform: uppercase;
     }
-    .block-body {
-      display: flex;
-      position: relative;
-    }
-
-    .branch-bars-col {
-      width: 14px;
-      position: relative;
-      margin-right: 2px;
-    }
-    .branch-bar {
-      position: absolute;
-      left: 9px;
-      width: 3px;
-      border-radius: 2px;
-    }
+    .block-body { display: flex; position: relative; }
+    .branch-bars-col { width: 14px; position: relative; margin-right: 2px; }
+    .branch-bar { position: absolute; left: 9px; width: 3px; border-radius: 2px; }
     .branch-bar-label {
-      position: absolute;
-      right: 4px;
-      top: 50%;
-      transform: translateY(-50%) rotate(-90deg);
-      transform-origin: center;
-      font-size: 7px;
-      font-weight: 700;
-      white-space: nowrap;
-      letter-spacing: 0.02em;
+      position: absolute; right: 4px; top: 50%;
+      transform: translateY(-50%) rotate(-90deg); transform-origin: center;
+      font-size: 7px; font-weight: 700; white-space: nowrap;
     }
-
-    .rows-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .seat-row {
-      display: flex;
-      gap: 3px;
-      height: 20px;
-    }
-
+    .rows-stack { display: flex; flex-direction: column; gap: 3px; }
+    .seat-row { display: flex; gap: 3px; height: 20px; }
     .mid-cross-passage {
-      height: 36px;
-      background: #f4f1e8;
-      border-top: 1px dashed #cbd5e1;
-      border-bottom: 1px dashed #cbd5e1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 8px;
-      font-size: 8.5px;
-      font-weight: 700;
-      color: #475569;
-      margin: 2px 0;
-      border-radius: 4px;
-      position: relative;
+      height: 36px; background: #f4f1e8;
+      border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 8px; font-size: 8.5px; font-weight: 700; color: #475569;
+      margin: 2px 0; border-radius: 4px;
     }
-
     .camera-box-3x3 {
-      width: 42px;
-      height: 32px;
-      background: #f8fafc;
-      color: #0f172a;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 6px;
-      font-weight: 800;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      z-index: 12;
-      flex-shrink: 0;
-      padding: 1px 2px;
+      width: 42px; height: 32px; background: #f8fafc; color: #0f172a;
+      border: 1px solid #cbd5e1; border-radius: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 6px; font-weight: 800; flex-shrink: 0; padding: 1px 2px;
     }
-    .camera-box-3x3 span.cam-icon {
-      font-size: 8px;
-      line-height: 1;
-    }
-    .camera-box-3x3 span.cam-label {
-      font-size: 5.2px;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
-      font-weight: 800;
-    }
-
+    .camera-box-3x3 span.cam-icon { font-size: 8px; line-height: 1; }
+    .camera-box-3x3 span.cam-label { font-size: 5.2px; white-space: nowrap; font-weight: 800; }
     .seat-box {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      font-size: 5px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.12s, box-shadow 0.12s;
-      position: relative;
-      border: 1px solid transparent;
-      white-space: nowrap;
-      overflow: hidden;
+      width: 20px; height: 20px; border-radius: 4px; font-size: 5px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      user-select: none; position: relative; border: 1px solid transparent; white-space: nowrap; overflow: hidden;
     }
-    .seat-box:hover {
-      transform: scale(1.25);
-      z-index: 15;
-    }
+    .seat-box:hover { transform: scale(1.25); z-index: 15; }
     .seat-selected {
-      outline: 2.5px solid #152542 !important;
-      outline-offset: 1px;
-      box-shadow: 0 0 0 4px rgba(230, 179, 51, 0.65);
-      z-index: 20;
-      transform: scale(1.2);
+      outline: 2.5px solid #152542 !important; outline-offset: 1px;
+      box-shadow: 0 0 0 4px rgba(230, 179, 51, 0.65); z-index: 20; transform: scale(1.2);
     }
-
     .occ-rect {
-      position: absolute;
-      bottom: 0.5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 10px;
-      height: 2px;
-      border-radius: 1px;
-      pointer-events: none;
+      position: absolute; bottom: 0.5px; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 2px; border-radius: 1px; pointer-events: none;
     }
     .occ-rect.filled { background-color: #16a34a; }
     .occ-rect.unoccupied { background-color: #ef4444; }
     .occ-rect.absent { background-color: #f97316; }
-
     .seat-FAC { background: #64748b; color: #fff; font-size: 5px; }
     .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 4.8px; }
     .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 4.6px; }
@@ -755,314 +301,96 @@
     .seat-Arch{ background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
     .seat-MBA { background: #fae8ff; color: #86198f; border-color: #f0abfc; }
     .seat-EC  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
-
-    .seat-empty-slot {
-      background: transparent !important;
-      border: 1.5px dashed #cbd5e1 !important;
-      color: transparent !important;
-    }
-    .seat-defective-slot {
-      background: #374151 !important;
-      border-color: #1f2937 !important;
-      color: #ffffff !important;
-    }
-    .seat-absent-slot {
-      opacity: 0.55;
-      border: 1.5px solid #f97316 !important;
-    }
-
+    .seat-empty-slot { background: transparent !important; border: 1.5px dashed #cbd5e1 !important; color: transparent !important; }
+    .seat-defective-slot { background: #374151 !important; border-color: #1f2937 !important; color: #ffffff !important; }
+    .seat-absent-slot { opacity: 0.55; border: 1.5px solid #f97316 !important; }
     .passage-col {
-      width: 20px;
-      background: #f4f1e8;
-      align-self: stretch;
-      border-radius: 3px;
-      position: relative;
-      margin: 34px 5px 0 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 20px; background: #f4f1e8; align-self: stretch;
+      border-radius: 3px; position: relative; margin: 34px 5px 0 5px;
+      display: flex; align-items: center; justify-content: center;
     }
     .passage-col.center-6ft {
-      width: 36px;
-      background: #ede8da;
-      border-left: 1.5px dashed #94a3b8;
-      border-right: 1.5px dashed #94a3b8;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 18px 0 0 0;
+      width: 36px; background: #ede8da;
+      border-left: 1.5px dashed #94a3b8; border-right: 1.5px dashed #94a3b8;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 0 0;
     }
     .passage-vertical-text {
-      transform: rotate(-90deg);
-      white-space: nowrap;
-      font-size: 8px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #7c8898;
-      text-transform: uppercase;
+      transform: rotate(-90deg); white-space: nowrap;
+      font-size: 8px; font-weight: 700; letter-spacing: 0.08em; color: #7c8898; text-transform: uppercase;
     }
     .central-door-box {
-      width: 100%;
-      height: 30px;
-      background: #cbd5e1;
-      border-top: 2px solid #475569;
-      color: #1e293b;
-      font-size: 7.5px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      width: 100%; height: 30px; background: #cbd5e1; border-top: 2px solid #475569;
+      color: #1e293b; font-size: 7.5px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; text-transform: uppercase;
     }
-
-    #walkOverlaySvg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 35;
-    }
-
+    #walkOverlaySvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 35; }
     .info-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-light);
-      border-radius: 18px;
-      padding: 22px;
-      margin-top: 18px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+      background: var(--card-bg); border: 1px solid var(--border-light);
+      border-radius: 18px; padding: 22px; margin-top: 18px;
     }
-    .info-card-empty {
-      text-align: center;
-      padding: 28px 20px;
-    }
-    .seat-detail-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
+    .info-card-empty { text-align: center; padding: 28px 20px; }
+    .seat-detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
     .seat-badge-lg {
-      width: 54px;
-      height: 54px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Fraunces', serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      flex-shrink: 0;
+      width: 54px; height: 54px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
     }
-    .assigned-label {
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .assigned-name {
-      font-family: 'Fraunces', serif;
-      font-size: 21px;
-      font-weight: 700;
-    }
-    .meta-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-    .meta-item-label {
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .meta-item-val {
-      font-size: 14.5px;
-      font-weight: 600;
-    }
-    .meta-item-sub {
-      font-size: 12.5px;
-      color: var(--text-muted);
-    }
-    .card-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    .assigned-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .assigned-name { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 700; }
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .meta-item-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
+    .meta-item-val { font-size: 14.5px; font-weight: 600; }
+    .meta-item-sub { font-size: 12.5px; color: var(--text-muted); }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 10px; }
     .btn-outline {
-      padding: 9px 16px;
-      border-radius: 10px;
-      border: 1px solid #d5cfc2;
-      background: #fff;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      color: var(--text-main);
+      padding: 9px 16px; border-radius: 10px; border: 1px solid #d5cfc2;
+      background: #fff; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-main);
     }
     .btn-primary {
-      padding: 9px 18px;
-      border-radius: 10px;
-      border: none;
-      background: var(--navy-dark);
-      color: #fff;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      padding: 9px 18px; border-radius: 10px; border: none;
+      background: var(--navy-dark); color: #fff; font-weight: 600; font-size: 13px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
     .btn-danger {
-      padding: 9px 18px;
-      border-radius: 10px;
-      border: none;
-      background: #dc2626;
-      color: #fff;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
+      padding: 9px 18px; border-radius: 10px; border: none;
+      background: #dc2626; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;
     }
-
     .walk-banner-card {
-      border: 2px solid #94a3b8;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 16px 20px;
-      margin-top: 14px;
-      display: none;
+      border: 2px solid #94a3b8; background: #ffffff;
+      border-radius: 16px; padding: 16px 20px; margin-top: 14px; display: none;
     }
-    .walk-eyebrow {
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: #64748b;
-      text-transform: uppercase;
-      margin-bottom: 3px;
-    }
+    .walk-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
     .stage-queue-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #e2e8f0;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;
     }
     .queue-box {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-left: 4px solid var(--navy-dark);
-      border-radius: 8px;
-      padding: 6px 12px;
-      display: flex;
-      flex-direction: column;
+      background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid var(--navy-dark);
+      border-radius: 8px; padding: 6px 12px; display: flex; flex-direction: column;
     }
-    .queue-box.next-box {
-      border-left-color: #d97706;
-      background: #fffbeb;
-    }
-    .queue-box-label {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #64748b;
-    }
-    .queue-box-val {
-      font-size: 13px;
-      font-weight: 700;
-      color: #1e293b;
-    }
+    .queue-box.next-box { border-left-color: #d97706; background: #fffbeb; }
+    .queue-box-label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; }
+    .queue-box-val { font-size: 13px; font-weight: 700; color: #1e293b; }
     .station-live-log-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed #e2e8f0;
-      font-size: 12px;
-      font-weight: 700;
+      display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;
+      padding-top: 8px; border-top: 1px dashed #e2e8f0; font-size: 12px; font-weight: 700;
     }
-    .station-log-pill {
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      color: #1e293b;
-    }
-
+    .station-log-pill { padding: 4px 10px; border-radius: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; }
     .role-view { display: none; }
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 18px;
-      margin-top: 18px;
-    }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-top: 18px; }
     .form-group { margin-bottom: 12px; }
-    .form-group label {
-      display: block;
-      font-size: 11.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-    }
-    .form-control {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid #d5cfc2;
-      font-size: 13.5px;
-    }
-    .dept-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-    .dept-pill-btn {
-      padding: 6px 11px;
-      border-radius: 7px;
-      border: 1px solid #d5cfc2;
-      background: #f9f7f2;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .dept-pill-btn.active {
-      background: var(--navy-dark);
-      color: #fff;
-      border-color: var(--navy-dark);
-    }
-    .config-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-      margin-bottom: 12px;
-    }
-    .config-table th, .config-table td {
-      padding: 7px 6px;
-      border-bottom: 1px solid var(--border-light);
-      text-align: left;
-    }
-    .config-table input[type="number"], .config-table input[type="text"] {
-      width: 80px;
-      padding: 4px 6px;
-      border: 1px solid #cbd5e1;
-      border-radius: 5px;
-      font-size: 12.5px;
-    }
+    .form-group label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+    .form-control { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid #d5cfc2; font-size: 13.5px; }
+    .dept-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .dept-pill-btn { padding: 6px 11px; border-radius: 7px; border: 1px solid #d5cfc2; background: #f9f7f2; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .dept-pill-btn.active { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
+    .config-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 12px; }
+    .config-table th, .config-table td { padding: 7px 6px; border-bottom: 1px solid var(--border-light); text-align: left; }
+    .config-table input[type="number"], .config-table input[type="text"] { width: 80px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12.5px; }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
   <header class="navbar">
     <div class="nav-brand">
       <div class="brand-icon">🎓</div>
@@ -1079,9 +407,7 @@
     </div>
   </header>
 
-  <!-- 1. MAIN STUDENT SEATING & MOVEMENT VIEW -->
   <main id="seatView" class="container">
-
     <div class="live-progress-banner">
       <div>
         <div class="eyebrow" style="margin-bottom:2px; color:#152542;">📡 LIVE CONVOCATION PROGRESS LOG</div>
@@ -1098,10 +424,9 @@
     <div class="eyebrow">CERTIFICATE DISTRIBUTION · CENTRAL &amp; DUAL STATIONS</div>
     <h1 class="hero-title">Find your seat for Graduation Day</h1>
     <p class="hero-desc">
-      Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left (with Row 1 Faculty and Row 2 UG/PhD Left-to-Right).
+      Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left. Tap <strong>Fit All Seats</strong> or <strong>−</strong> to zoom out and view the entire hall layout on one screen.
     </p>
 
-    <!-- Search & Export Row -->
     <div class="search-row">
       <div class="search-box">
         <span class="search-icon">🔍</span>
@@ -1114,7 +439,6 @@
       </div>
     </div>
 
-    <!-- Legend -->
     <div class="legend-card">
       <div class="legend-grid">
         <div class="legend-item"><span class="dot" style="background:#d97706"></span> TOP UG / TOP PG</div>
@@ -1136,13 +460,14 @@
       </div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
       <div class="zoom-controls">
-        <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
+        <button class="zoom-btn" title="Zoom Out" onclick="adjustZoom(-0.1)">−</button>
         <span id="zoomLabel" class="zoom-label">100%</span>
-        <button class="zoom-btn" onclick="adjustZoom(0.1)">+</button>
-        <span id="seatedCounter" style="font-size:12.5px; color:var(--text-muted); margin-left:6px;">0 students seated</span>
+        <button class="zoom-btn" title="Zoom In" onclick="adjustZoom(0.1)">+</button>
+        <button class="zoom-fit-btn" onclick="fitEntireHallToScreen()">🔍 Fit All Seats</button>
+        <button class="zoom-fit-btn" onclick="resetZoom100()">100%</button>
+        <span id="seatedCounter" style="font-size:12.5px; color:var(--text-muted); margin-left:4px;">0 students seated</span>
       </div>
 
       <div class="ceremony-bar" id="deptWaveBar">
@@ -1166,7 +491,6 @@
       </div>
     </div>
 
-    <!-- Active Walk Simulation Status Banner -->
     <div id="walkStatusCard" class="walk-banner-card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
         <div>
@@ -1175,7 +499,7 @@
             Entry path stops at Certificate Station; Exit path starts from Station &amp; descends Central Steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            Default speed: 0.15 sec per student. Choose your desired video pace (up to 3 sec/student) next to Download.
+            WhatsApp-compatible MP4 video export with unique descriptive filenames.
           </div>
         </div>
 
@@ -1205,7 +529,6 @@
         </div>
       </div>
 
-      <!-- Non-Obstructing "On Stage Now" & "Up Next" Indicator -->
       <div class="stage-queue-bar">
         <div class="queue-box">
           <span class="queue-box-label">🎭 ON STAGE NOW</span>
@@ -1223,88 +546,83 @@
       </div>
     </div>
 
-    <!-- Hall Map Viewport -->
     <div class="hall-viewport" id="hallViewport">
-      <div class="hall-canvas" id="hallCanvas">
-        <svg id="walkOverlaySvg"></svg>
+      <div class="hall-scale-wrapper" id="hallScaleWrapper">
+        <div class="hall-canvas" id="hallCanvas">
+          <svg id="walkOverlaySvg"></svg>
 
-        <div class="hall-top-architecture">
-          <div class="entry-box">ENTRY (29 ft)</div>
+          <div class="hall-top-architecture">
+            <div class="entry-box">ENTRY (29 ft)</div>
 
-          <div class="stage-cluster" id="stageCluster">
-            <!-- Left Side Steps with explicit SVG treads -->
-            <div class="stage-side-steps" id="leftStageSteps">
-              <svg width="26" height="48" viewBox="0 0 26 48">
-                <rect width="26" height="48" fill="#dce4ee" />
-                <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-              </svg>
-            </div>
-
-            <div class="stage-wrapper" id="stageWrapper">
-              <div class="stage-main-rect" id="stageMainRect">
-                <div class="stage-header-pill">STAGE 54 ft LENGTH — 22 ft WIDE</div>
-                <div class="stage-led-tag">LED WALL</div>
-
-                <div class="stage-receptions-row" id="stationsRowContainer">
-                  <div class="reception-desk" id="station1Desk">
-                    <div class="reception-desk-title">CERTIFICATE<br>STATION 1</div>
-                  </div>
-                  <!-- Central Collection Point -->
-                  <div class="central-collection-desk" id="centralStationDesk">
-                    <div class="reception-desk-title">CENTRAL<br>COLLECTION POINT</div>
-                  </div>
-                  <div class="reception-desk" id="station2Desk">
-                    <div class="reception-desk-title">CERTIFICATE<br>STATION 2</div>
-                  </div>
-                </div>
-
-                <div class="stage-floor-label">MAIN STAGE</div>
-              </div>
-              <!-- Widened Center Return Steps (56px wide) -->
-              <div class="center-return-stairs" id="centerReturnStairs">
-                <svg width="56" height="22" viewBox="0 0 56 22">
-                  <rect width="56" height="22" fill="#dce4ee" />
-                  <line x1="0" y1="5" x2="56" y2="5" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="0" y1="10" x2="56" y2="10" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="0" y1="15" x2="56" y2="15" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="0" y1="20" x2="56" y2="20" stroke="#7f97b2" stroke-width="1.5" />
+            <div class="stage-cluster" id="stageCluster">
+              <div class="stage-side-steps" id="leftStageSteps">
+                <svg width="26" height="48" viewBox="0 0 26 48">
+                  <rect width="26" height="48" fill="#dce4ee" />
+                  <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
                 </svg>
-                <span class="return-stairs-label">RETURN STEPS</span>
+              </div>
+
+              <div class="stage-wrapper" id="stageWrapper">
+                <div class="stage-main-rect" id="stageMainRect">
+                  <div class="stage-header-pill">STAGE 54 ft LENGTH — 22 ft WIDE</div>
+                  <div class="stage-led-tag">LED WALL</div>
+
+                  <div class="stage-receptions-row" id="stationsRowContainer">
+                    <div class="reception-desk" id="station1Desk">
+                      <div class="reception-desk-title">CERTIFICATE<br>STATION 1</div>
+                    </div>
+                    <div class="central-collection-desk" id="centralStationDesk">
+                      <div class="reception-desk-title">CENTRAL<br>COLLECTION POINT</div>
+                    </div>
+                    <div class="reception-desk" id="station2Desk">
+                      <div class="reception-desk-title">CERTIFICATE<br>STATION 2</div>
+                    </div>
+                  </div>
+
+                  <div class="stage-floor-label">MAIN STAGE</div>
+                </div>
+                <div class="center-return-stairs" id="centerReturnStairs">
+                  <svg width="56" height="22" viewBox="0 0 56 22">
+                    <rect width="56" height="22" fill="#dce4ee" />
+                    <line x1="0" y1="5" x2="56" y2="5" stroke="#7f97b2" stroke-width="1.5" />
+                    <line x1="0" y1="10" x2="56" y2="10" stroke="#7f97b2" stroke-width="1.5" />
+                    <line x1="0" y1="15" x2="56" y2="15" stroke="#7f97b2" stroke-width="1.5" />
+                    <line x1="0" y1="20" x2="56" y2="20" stroke="#7f97b2" stroke-width="1.5" />
+                  </svg>
+                  <span class="return-stairs-label">RETURN STEPS</span>
+                </div>
+              </div>
+
+              <div class="stage-side-steps" id="rightStageSteps">
+                <svg width="26" height="48" viewBox="0 0 26 48">
+                  <rect width="26" height="48" fill="#dce4ee" />
+                  <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
+                </svg>
               </div>
             </div>
 
-            <!-- Right Side Steps with explicit SVG treads -->
-            <div class="stage-side-steps" id="rightStageSteps">
-              <svg width="26" height="48" viewBox="0 0 26 48">
-                <rect width="26" height="48" fill="#dce4ee" />
-                <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-              </svg>
-            </div>
+            <div class="entry-box">ENTRY (29 ft)</div>
           </div>
 
-          <div class="entry-box">ENTRY (29 ft)</div>
+          <div class="front-area-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
+
+          <div class="blocks-wrapper" id="blocksWrapper"></div>
         </div>
-
-        <div class="front-area-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
-
-        <div class="blocks-wrapper" id="blocksWrapper"></div>
       </div>
     </div>
 
-    <!-- Selected Seat Details Card -->
     <div id="seatInfoCard" class="info-card info-card-empty">
       <h3 class="serif-title">Tap any seat</h3>
       <p>See the student's name, branch, registration status, or pre-assigned Faculty designation, and preview or download their path video to the stage.</p>
     </div>
   </main>
 
-  <!-- 2. FACULTY LOGIN VIEW (Password Kept Secret) -->
   <section id="facultyView" class="container role-view">
     <div id="facultyGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
       <div class="eyebrow">CONVOCATION PROGRESS TRACKING</div>
@@ -1329,9 +647,6 @@
       </div>
 
       <div class="info-card">
-        <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px;">
-          Update the status and approximate completion time for each block. These logs are displayed live at the top of the main seating map.
-        </p>
         <table class="config-table" id="facultyProgressTable">
           <thead>
             <tr>
@@ -1351,7 +666,6 @@
     </div>
   </section>
 
-  <!-- 3. REGISTRATION LOGIN VIEW (Password Kept Secret) -->
   <section id="registrationView" class="container role-view">
     <div id="regGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
       <div class="eyebrow">REGISTRATION DESK</div>
@@ -1417,7 +731,6 @@
     </div>
   </section>
 
-  <!-- 4. ADMIN LOGIN VIEW (Password Kept Secret) -->
   <section id="adminView" class="container role-view">
     <div id="adminGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
       <div class="eyebrow">SYSTEM ADMINISTRATION</div>
@@ -1444,9 +757,6 @@
       <div class="admin-grid">
         <div class="info-card" style="margin-top:0;">
           <h3 class="serif-title" style="font-size:18px; margin-bottom:8px;">1. Student Excel Template &amp; Upload</h3>
-          <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
-            Select a category/department to download its Excel template, fill student details, and upload to sync globally.
-          </p>
           <div class="dept-pills" id="deptButtonsContainer"></div>
           <button class="btn-outline" style="width:100%; margin-bottom:14px;" onclick="downloadBranchExcel()">
             ⬇ Download Selected Excel Template
@@ -1477,7 +787,6 @@
           <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:16px;" onclick="applySeatStatusByInput()">
             Update Seat Status
           </button>
-
           <div style="border-top:1px dashed #cbd5e1; padding-top:14px;">
             <button class="btn-danger" style="width:100%; justify-content:center;" onclick="clearAllStudents()">
               🗑 Clear All Students From Seats
@@ -1491,11 +800,7 @@
             <div>
               <table class="config-table" id="blockConfigTable">
                 <thead>
-                  <tr>
-                    <th>Block</th>
-                    <th>Total Rows</th>
-                    <th>Seats / Row</th>
-                  </tr>
+                  <tr><th>Block</th><th>Total Rows</th><th>Seats / Row</th></tr>
                 </thead>
                 <tbody></tbody>
               </table>
@@ -1503,11 +808,7 @@
             <div>
               <table class="config-table" id="deptConfigTable">
                 <thead>
-                  <tr>
-                    <th>Dept / Group</th>
-                    <th>Block</th>
-                    <th>Total Seats</th>
-                  </tr>
+                  <tr><th>Dept / Group</th><th>Block</th><th>Total Seats</th></tr>
                 </thead>
                 <tbody></tbody>
               </table>
@@ -1523,9 +824,6 @@
   </section>
 
   <script>
-    /********************************************************************
-     * 1. FIREBASE & PASSWORDS CONFIGURATION
-     ********************************************************************/
     const firebaseConfig = {
       apiKey: "AIzaSyAznnh1G0U6gC9M8hAA9cJtCQXHq0ts8k4",
       authDomain: "cet-graduation-2026.firebaseapp.com",
@@ -1554,12 +852,11 @@
     let activeAnimState = null;
     let activeMediaRecorder = null;
 
-    // Default 1x speed = 0.15 seconds per student at collection center!
     const STUDENT_SPACING_PX = 15;
     const ENTRY_TAIL_GAP_PX = 18;
-    const BASE_PX_PER_SECOND = STUDENT_SPACING_PX / 0.15; // 100 px/s (0.15 sec/student)
+    const BASE_PX_PER_SECOND = STUDENT_SPACING_PX / 0.15;
     const SPEED_STEPS = [0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.5, 2];
-    let currentSpeedIndex = 5; // Index 5 is 1x (0.15s/student)
+    let currentSpeedIndex = 5;
     let animSpeedMultiplier = 1;
 
     function changeAnimSpeed(delta) {
@@ -1582,37 +879,32 @@
     }
 
     const FACULTY_DESIGNATIONS = {
-      F1: { title: "HoD - CE", dept: "CE" },
-      F2: { title: "HoD - Arch", dept: "Arch" },
-      F3: { title: "HoD - CS", dept: "CS" },
-      F4: { title: "HoD - EC", dept: "EC" },
-      F5: { title: "HoD - EE", dept: "EE" },
-      F6: { title: "HoD - ME", dept: "ME" },
-      F7: { title: "HoD - MBA", dept: "MBA" },
-      F8: { title: "HoD - MCA", dept: "MCA" },
-      F9: { title: "HoD - PTDC", dept: "PTDC" },
-      F10: { title: "CE - Advisor 1", dept: "CE" }, F11: { title: "CE - Advisor 2", dept: "CE" },
-      F12: { title: "Arch - Advisor 1", dept: "Arch" }, F13: { title: "AE - Advisor 1", dept: "EE" },
-      F14: { title: "CS - Advisor 1", dept: "CS" }, F15: { title: "CS - Advisor 2", dept: "CS" },
-      F16: { title: "EC - Advisor 1", dept: "EC" }, F17: { title: "EE - Advisor 1", dept: "EE" },
-      F18: { title: "EE - Advisor 2", dept: "EE" }, F19: { title: "IE - Advisor", dept: "EE" },
-      F20: { title: "ME - Advisor", dept: "ME" }, F21: { title: "M.Arch (ED)", dept: "Arch" },
-      F22: { title: "M.Arch (UD)", dept: "Arch" }, F23: { title: "M.Plan", dept: "Arch" },
-      F24: { title: "CE - EE", dept: "CE" }, F25: { title: "CE - GI", dept: "CE" },
-      F26: { title: "CE - GT", dept: "CE" }, F27: { title: "CE - HE", dept: "CE" },
-      F28: { title: "CE - SE", dept: "CE" }, F29: { title: "CE - TE", dept: "CE" },
-      F30: { title: "CS - AI", dept: "CS" }, F31: { title: "CS - CS", dept: "CS" },
-      F32: { title: "CS - IS", dept: "CS" }, F33: { title: "EC - AEI", dept: "EC" },
-      F34: { title: "EC - MNE", dept: "EC" }, F35: { title: "EC - CS", dept: "EC" },
-      F36: { title: "EC - RA", dept: "EC" }, F37: { title: "EC - SP", dept: "EC" },
-      F38: { title: "EE - CS", dept: "EE" }, F39: { title: "EE - EM", dept: "EE" },
-      F40: { title: "EE - GNC", dept: "EE" }, F41: { title: "EE - PE", dept: "EE" },
-      F42: { title: "EE - PS", dept: "EE" }, F43: { title: "ME - FE", dept: "ME" },
-      F44: { title: "ME - IE", dept: "ME" }, F45: { title: "ME - MD", dept: "ME" },
-      F46: { title: "ME - MA", dept: "ME" }, F47: { title: "ME - PE", dept: "ME" },
-      F48: { title: "ME - RE", dept: "ME" }, F49: { title: "ME - TS", dept: "ME" },
-      F50: { title: "MBA", dept: "MBA" }, F51: { title: "MCA", dept: "MCA" },
-      F52: { title: "PTDC - Advisor", dept: "PTDC" }
+      F1: { title: "HoD - CE", dept: "CE" }, F2: { title: "HoD - Arch", dept: "Arch" },
+      F3: { title: "HoD - CS", dept: "CS" }, F4: { title: "HoD - EC", dept: "EC" },
+      F5: { title: "HoD - EE", dept: "EE" }, F6: { title: "HoD - ME", dept: "ME" },
+      F7: { title: "HoD - MBA", dept: "MBA" }, F8: { title: "HoD - MCA", dept: "MCA" },
+      F9: { title: "HoD - PTDC", dept: "PTDC" }, F10: { title: "CE - Advisor 1", dept: "CE" },
+      F11: { title: "CE - Advisor 2", dept: "CE" }, F12: { title: "Arch - Advisor 1", dept: "Arch" },
+      F13: { title: "AE - Advisor 1", dept: "EE" }, F14: { title: "CS - Advisor 1", dept: "CS" },
+      F15: { title: "CS - Advisor 2", dept: "CS" }, F16: { title: "EC - Advisor 1", dept: "EC" },
+      F17: { title: "EE - Advisor 1", dept: "EE" }, F18: { title: "EE - Advisor 2", dept: "EE" },
+      F19: { title: "IE - Advisor", dept: "EE" }, F20: { title: "ME - Advisor", dept: "ME" },
+      F21: { title: "M.Arch (ED)", dept: "Arch" }, F22: { title: "M.Arch (UD)", dept: "Arch" },
+      F23: { title: "M.Plan", dept: "Arch" }, F24: { title: "CE - EE", dept: "CE" },
+      F25: { title: "CE - GI", dept: "CE" }, F26: { title: "CE - GT", dept: "CE" },
+      F27: { title: "CE - HE", dept: "CE" }, F28: { title: "CE - SE", dept: "CE" },
+      F29: { title: "CE - TE", dept: "CE" }, F30: { title: "CS - AI", dept: "CS" },
+      F31: { title: "CS - CS", dept: "CS" }, F32: { title: "CS - IS", dept: "CS" },
+      F33: { title: "EC - AEI", dept: "EC" }, F34: { title: "EC - MNE", dept: "EC" },
+      F35: { title: "EC - CS", dept: "EC" }, F36: { title: "EC - RA", dept: "EC" },
+      F37: { title: "EC - SP", dept: "EC" }, F38: { title: "EE - CS", dept: "EE" },
+      F39: { title: "EE - EM", dept: "EE" }, F40: { title: "EE - GNC", dept: "EE" },
+      F41: { title: "EE - PE", dept: "EE" }, F42: { title: "EE - PS", dept: "EE" },
+      F43: { title: "ME - FE", dept: "ME" }, F44: { title: "ME - IE", dept: "ME" },
+      F45: { title: "ME - MD", dept: "ME" }, F46: { title: "ME - MA", dept: "ME" },
+      F47: { title: "ME - PE", dept: "ME" }, F48: { title: "ME - RE", dept: "ME" },
+      F49: { title: "ME - TS", dept: "ME" }, F50: { title: "MBA", dept: "MBA" },
+      F51: { title: "MCA", dept: "MCA" }, F52: { title: "PTDC - Advisor", dept: "PTDC" }
     };
 
     const BRANCH_META = {
@@ -1655,12 +947,9 @@
     };
 
     const DEFAULT_PROGRESS = {
-      1: { status: "Pending", time: "" },
-      2: { status: "Pending", time: "" },
-      3: { status: "Pending", time: "" },
-      4: { status: "Pending", time: "" },
-      5: { status: "Pending", time: "" },
-      6: { status: "Pending", time: "" }
+      1: { status: "Pending", time: "" }, 2: { status: "Pending", time: "" },
+      3: { status: "Pending", time: "" }, 4: { status: "Pending", time: "" },
+      5: { status: "Pending", time: "" }, 6: { status: "Pending", time: "" }
     };
 
     let layoutConfig = JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
@@ -1673,7 +962,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v25").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v27").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1696,7 +985,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v25").set({
+      db.collection("cet2026").doc("seatingState_v27").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1707,12 +996,8 @@
       });
     }
 
-    /********************************************************************
-     * 2. COMPLETE ALLOCATION & SEAT NUMBERING
-     ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
-
       if (rowNum === 1) {
         let fNums = [];
         if (blockId === 1) fNums = [19,20,21,22,23,24,25,26];
@@ -1821,7 +1106,6 @@
           for (let i = 1; i <= cols; i++) items.push({ type: "faculty", dept: "FAC", num: "Fac", code: `FAC_B6_R${rowNum}_${i}`, designation: "Faculty" });
         }
       }
-
       return items;
     }
 
@@ -1837,6 +1121,14 @@
       stairsEl.style.left = `${centerOffsetPx.toFixed(1)}px`;
     }
 
+    function updateScaleWrapperBounds() {
+      const canvasEl = document.getElementById("hallCanvas");
+      const scaleWrapper = document.getElementById("hallScaleWrapper");
+      if (!canvasEl || !scaleWrapper) return;
+      scaleWrapper.style.width = `${Math.ceil(1420 * currentZoom)}px`;
+      scaleWrapper.style.height = `${Math.ceil(canvasEl.offsetHeight * currentZoom)}px`;
+    }
+
     function buildAndRenderMap() {
       seatsByCoord = {};
       seatsByCode = {};
@@ -1845,7 +1137,6 @@
       wrapper.innerHTML = "";
 
       const maxRows = 24;
-
       const rowNumCol = document.createElement("div");
       rowNumCol.className = "row-numbers-col";
       for (let r = 1; r <= maxRows; r++) {
@@ -1860,7 +1151,6 @@
         }
       }
       wrapper.appendChild(rowNumCol);
-
       wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, "passage-left-outer"));
 
       layoutConfig.blocks.forEach((blk, idx) => {
@@ -1906,17 +1196,10 @@
             const item = orderedItems[c - 1];
             const coordKey = `B${blk.id}-R${r}-C${c}`;
             const seatObj = {
-              coordKey,
-              block: blk.id,
-              row: r,
-              col: c,
-              type: item.type,
-              dept: item.dept,
-              subType: item.subType || null,
-              label: item.label,
-              code: item.code,
-              designation: item.designation || null,
-              num: item.num || null
+              coordKey, block: blk.id, row: r, col: c,
+              type: item.type, dept: item.dept, subType: item.subType || null,
+              label: item.label, code: item.code,
+              designation: item.designation || null, num: item.num || null
             };
 
             if (seatObj.type === "student" && seatObj.dept) {
@@ -1952,18 +1235,11 @@
             if (blk.id === 1 || blk.id === 2 || blk.id === 6) {
               midBar.innerHTML = `<span>Passage (6 ft)</span>`;
             } else if (blk.id === 3) {
-              midBar.innerHTML = `
-                <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div>
-                <span>Passage (6 ft)</span>
-              `;
+              midBar.innerHTML = `<div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div><span>Passage (6 ft)</span>`;
             } else if (blk.id === 4) {
-              midBar.innerHTML = `
-                <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 1</span></div>
-              `;
+              midBar.innerHTML = `<div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 1</span></div>`;
             } else if (blk.id === 5) {
-              midBar.innerHTML = `
-                <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div>
-              `;
+              midBar.innerHTML = `<div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div>`;
             }
             rowsStack.appendChild(midBar);
           }
@@ -1982,10 +1258,7 @@
           const barLbl = document.createElement("div");
           barLbl.className = "branch-bar-label";
           barLbl.style.color = BRANCH_META[span.dept]?.color || "#333";
-
-          if (span.dept === "TOP") barLbl.textContent = "Topper";
-          else if (span.dept === "PhD") barLbl.textContent = "PhD";
-          else barLbl.textContent = span.dept;
+          barLbl.textContent = span.dept === "TOP" ? "Topper" : (span.dept === "PhD" ? "PhD" : span.dept);
 
           bar.appendChild(barLbl);
           barsCol.appendChild(bar);
@@ -2006,16 +1279,17 @@
           `;
           wrapper.appendChild(centerPassage);
         } else if (idx < layoutConfig.blocks.length - 1) {
-          wrapper.appendChild(
-            createPassageDOM("Passage (3 ft)", false, `passage-after-${blk.id}`)
-          );
+          wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, `passage-after-${blk.id}`));
         }
       });
 
       wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, "passage-right-outer"));
 
       updateSeatedCount();
-      requestAnimationFrame(alignExitStepsWithCentralPassage);
+      requestAnimationFrame(() => {
+        alignExitStepsWithCentralPassage();
+        updateScaleWrapperBounds();
+      });
       if (selectedSeatKey && seatsByCoord[selectedSeatKey]) {
         renderSeatDetailCard(seatsByCoord[selectedSeatKey]);
       }
@@ -2055,7 +1329,6 @@
 
         if (isFilled) el.classList.add("seat-assigned");
         if (isAbsent) el.classList.add("seat-absent-slot");
-
         el.textContent = seatObj.label;
 
         const rectInd = document.createElement("span");
@@ -2074,8 +1347,7 @@
     function updateSeatedCount() {
       const count = Object.keys(studentRoster).filter(k => studentRoster[k]?.name && !studentRoster[k]?.absent).length;
       const absentCount = Object.keys(studentRoster).filter(k => studentRoster[k]?.absent).length;
-      document.getElementById("seatedCounter").textContent =
-        `${count} students registered · ${absentCount} absent`;
+      document.getElementById("seatedCounter").textContent = `${count} students registered · ${absentCount} absent`;
     }
 
     function renderLiveProgressBanner() {
@@ -2178,7 +1450,6 @@
             ${assignedData?.regNo ? `<div style="font-size:13px; color:var(--text-muted);">Reg No: ${assignedData.regNo}</div>` : ""}
           </div>
         </div>
-
         <div class="meta-grid">
           <div>
             <div class="meta-item-label">🎖 BRANCH / GROUP</div>
@@ -2200,7 +1471,6 @@
             <div class="meta-item-val">${stationDisplay} · ${regBadge}</div>
           </div>` : ""}
         </div>
-
         <div class="card-actions">${actionButtonsHTML}</div>
       `;
     }
@@ -2210,9 +1480,6 @@
       if (el) el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
 
-    /********************************************************************
-     * 5. PURE MATHEMATICAL PATH ENGINE & SPLIT ENTRY / EXIT LINES
-     ********************************************************************/
     function getPointAtDistance(pts, cumDist, d) {
       const total = cumDist[cumDist.length - 1];
       if (d <= 0) return pts[0];
@@ -2309,7 +1576,6 @@
 
       if (useCentralStation) {
         const quarterPointX = returnStairX;
-
         pts = [
           { x: rowOuterEdgeX, y: rowY },
           { x: outerAisleX, y: rowY },
@@ -2385,21 +1651,13 @@
       const rangeText = firstSeatLabel && lastSeatLabel ? `${firstSeatLabel}–${lastSeatLabel}` : `R${rowNum}`;
 
       return {
-        pts,
-        cumDist,
-        entryPts,
-        entryCumDist,
-        exitPts,
-        d,
-        entryD,
-        exitD,
+        pts, cumDist, entryPts, entryCumDist, exitPts, d, entryD, exitD,
         deptLabel: rowDept,
         displayTitle: `${rowDept} · Block ${blockId} Row ${rowNum} (${rangeText})`,
         stationNum: useCentralStation ? 0 : (isLeft ? 1 : 2),
         useCentralStation,
         studentCount: Math.max(1, studentCount),
-        blockId,
-        rowNum,
+        blockId, rowNum,
         distToStepOfStage: cumDist[idxStepOfStage],
         distToStageEntry: cumDist[idxStageEntry],
         distToCollectionCenter: cumDist[idxCollectionCenter],
@@ -2430,13 +1688,8 @@
 
       upNextList.sort((a, b) => a.eta - b.eta);
 
-      onStageEl.textContent = onStageList.length
-        ? onStageList.slice(0, 2).join("  |  ")
-        : "Transitioning between rows...";
-
-      upNextEl.textContent = upNextList.length
-        ? upNextList.slice(0, 2).map(x => x.title).join("  |  ")
-        : "No further rows queued";
+      onStageEl.textContent = onStageList.length ? onStageList.slice(0, 2).join("  |  ") : "Transitioning between rows...";
+      upNextEl.textContent = upNextList.length ? upNextList.slice(0, 2).map(x => x.title).join("  |  ") : "No further rows queued";
     }
 
     function animateSingleStudentPath(blockId, rowNum, colNum, highlightCoordKey) {
@@ -2482,6 +1735,13 @@
       document.getElementById("walkEyebrow").textContent =
         `INDIVIDUAL STUDENT PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW ${rowNum}`}`;
 
+      const studentNameClean = seatObj && studentRoster[seatObj.code]?.name
+        ? "_" + studentRoster[seatObj.code].name.replace(/[^a-zA-Z0-9]/g, "_")
+        : "";
+      const seatLabelClean = seatObj && seatObj.code
+        ? seatObj.code.replace(/[^a-zA-Z0-9]/g, "_")
+        : `Block${blockId}_Row${rowNum}_Col${colNum}`;
+
       const singleConvoy = {
         ...pInfo,
         displayTitle: seatObj ? `${seatObj.code} (Block ${blockId} Row ${rowNum})` : pInfo.displayTitle,
@@ -2490,7 +1750,7 @@
         finishDist: pInfo.totalLength
       };
       activeAnimState = {
-        mode: `Student_${seatObj ? seatObj.code.replace(/\s+/g, '_') : 'Walk'}`,
+        mode: `Student_${seatLabelClean}_Block${blockId}_Row${rowNum}${studentNameClean}`,
         isCentralMode: Boolean(isCentralPerson),
         convoys: [singleConvoy]
       };
@@ -2510,13 +1770,11 @@
           entryPathEl.setAttribute("d", ptsToSvgPath(clippedPts));
           entryPathEl.style.opacity = clippedPts.length >= 2 ? "0.85" : "0";
           exitPathEl.style.opacity = "0";
-          document.getElementById("walkStepTitle").textContent =
-            "Walking to Certificate Station (Entry path up to station)...";
+          document.getElementById("walkStepTitle").textContent = "Walking to Certificate Station (Entry path up to station)...";
         } else {
           entryPathEl.style.opacity = "0";
           exitPathEl.style.opacity = "0.85";
-          document.getElementById("walkStepTitle").textContent =
-            "Certificate Collected — Exiting from Station via Central Return Steps...";
+          document.getElementById("walkStepTitle").textContent = "Certificate Collected — Exiting from Station via Central Return Steps...";
         }
 
         const pt = getPointAtDistance(pInfo.pts, pInfo.cumDist, dist);
@@ -2653,7 +1911,7 @@
         q.finishDist -= minStart;
       });
 
-      activeAnimState = { mode: "First_Wave_Toppers_PhD", isCentralMode: true, convoys: queue };
+      activeAnimState = { mode: "First_Wave_Toppers_And_PhD", isCentralMode: true, convoys: queue };
 
       const maxGlobalDist = Math.max(...queue.map(c => c.finishDist));
       let globalDist = 0;
@@ -2713,12 +1971,16 @@
       const canvas = document.getElementById("hallCanvas");
       const cRect = canvas.getBoundingClientRect();
       const configs = [];
+      const deptsInBlock = new Set();
 
       for (let r = 3; r <= 24; r++) {
         let hasStudents = false;
         for (let c = 1; c <= 9; c++) {
           const s = seatsByCoord[`B${blockId}-R${r}-C${c}`];
-          if (s && s.type === "student") hasStudents = true;
+          if (s && s.type === "student") {
+            hasStudents = true;
+            if (s.dept) deptsInBlock.add(s.dept);
+          }
         }
         if (hasStudents) {
           const p = buildNonIntersectingRowPath(blockId, r, cRect, false);
@@ -2728,14 +1990,15 @@
 
       if (!configs.length) return;
 
+      const deptSuffix = Array.from(deptsInBlock).join("_");
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      document.getElementById("walkEyebrow").textContent = `BLOCK ${blockId} WAVE (EXCLUDING TOPPERS & PhD ROW)`;
+      document.getElementById("walkEyebrow").textContent = `BLOCK ${blockId} WAVE (${Array.from(deptsInBlock).join(" & ")})`;
       document.getElementById("walkSubtext").textContent =
         `Entry path stops at Station & trails last student of row; Exit path starts from Station & descends Central Steps.`;
 
-      if (blockId <= 3) runContinuousDualWingAnimation(configs, [], `Block_${blockId}`);
-      else runContinuousDualWingAnimation([], configs, `Block_${blockId}`);
+      if (blockId <= 3) runContinuousDualWingAnimation(configs, [], `Block_${blockId}_Wave_${deptSuffix}`);
+      else runContinuousDualWingAnimation([], configs, `Block_${blockId}_Wave_${deptSuffix}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -2766,7 +2029,7 @@
       document.getElementById("walkSubtext").textContent =
         `Entry path stops at Station & trails last student of row; Exit path starts from Station & descends Central Steps.`;
 
-      runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Department_${deptCode}`);
+      runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Department_Wave_${deptCode}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -2807,7 +2070,7 @@
       document.getElementById("walkSubtext").textContent =
         "Entry path stops at Station & trails last student of row; Exit path starts from Station & descends Central Steps.";
 
-      runContinuousDualWingAnimation(st1Configs, st2Configs, "Full_Wave");
+      runContinuousDualWingAnimation(st1Configs, st2Configs, "Full_Wave_All_Blocks_1_To_6");
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -2969,10 +2232,6 @@
       document.querySelectorAll(".wave-pill").forEach(btn => btn.classList.remove("active-wave"));
     }
 
-    /********************************************************************
-     * 6. DIRECT NATIVE 2D CANVAS HALL RENDERER & RELIABLE VIDEO EXPORTER
-     * (Never uses html2canvas for video frames — zero memory crash, works 100% on Full Wave & First Wave)
-     ********************************************************************/
     function createDirectHallBackgroundCanvas(canvasEl, isCentralMode) {
       const cRect = canvasEl.getBoundingClientRect();
       const w = Math.round(cRect.width / currentZoom);
@@ -2999,7 +2258,6 @@
         };
       };
 
-      // 1. Draw Main Stage
       const stg = toLocal(document.getElementById("stageMainRect"));
       if (stg) {
         ctx.fillStyle = "#192a48";
@@ -3013,7 +2271,6 @@
         ctx.fillText("MAIN STAGE", stg.cx, stg.y + stg.h - 8);
       }
 
-      // 2. Draw Active Certificate Stations
       const deskIds = isCentralMode ? ["centralStationDesk"] : ["station1Desk", "station2Desk"];
       deskIds.forEach(id => {
         const dsk = toLocal(document.getElementById(id));
@@ -3031,7 +2288,6 @@
         }
       });
 
-      // 3. Draw Left/Right Side Steps & Widened Center Return Steps
       ["leftStageSteps", "rightStageSteps"].forEach(id => {
         const p = toLocal(document.getElementById(id));
         if (p) {
@@ -3058,7 +2314,6 @@
         }
       }
 
-      // 4. Draw Passages & Block Headers
       document.querySelectorAll(".passage-col").forEach(el => {
         const p = toLocal(el);
         if (p) {
@@ -3077,7 +2332,6 @@
         }
       });
 
-      // 5. Draw All Seats Directly from DOM Coordinates
       ctx.font = "bold 5.5px sans-serif";
       ctx.textAlign = "center";
       Object.values(seatsByCoord).forEach(sObj => {
@@ -3121,26 +2375,66 @@
       const canvasEl = document.getElementById("hallCanvas");
       setCentralStationMode(Boolean(activeAnimState.isCentralMode));
 
+      let audioCtx = null;
+
       try {
         const headerHeight = 92;
-        // Instant native 2D canvas background build (zero html2canvas lag or crash!)
         const bgCanvas = createDirectHallBackgroundCanvas(canvasEl, Boolean(activeAnimState.isCentralMode));
 
-        const recCanvas = document.createElement("canvas");
-        recCanvas.width = bgCanvas.width;
-        recCanvas.height = bgCanvas.height + headerHeight;
-        const ctx = recCanvas.getContext("2d");
+        const rawW = bgCanvas.width;
+        const rawH = bgCanvas.height + headerHeight;
+        const scaleFactor = Math.min(1, 1280 / rawW);
+        const outW = Math.floor((rawW * scaleFactor) / 2) * 2;
+        const outH = Math.floor((rawH * scaleFactor) / 2) * 2;
+
+        const workCanvas = document.createElement("canvas");
+        workCanvas.width = rawW;
+        workCanvas.height = rawH;
+        const ctx = workCanvas.getContext("2d");
+
+        const outCanvas = document.createElement("canvas");
+        outCanvas.width = outW;
+        outCanvas.height = outH;
+        const outCtx = outCanvas.getContext("2d");
 
         const fps = 30;
-        const stream = recCanvas.captureStream(fps);
+        const videoStream = outCanvas.captureStream(fps);
+
+        const combinedTracks = [...videoStream.getVideoTracks()];
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+            const dst = audioCtx.createMediaStreamDestination();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.0001;
+            osc.connect(gain);
+            gain.connect(dst);
+            osc.start();
+            const audioTracks = dst.stream.getAudioTracks();
+            if (audioTracks.length) combinedTracks.push(audioTracks[0]);
+          }
+        } catch (audioErr) {}
+
+        const combinedStream = new MediaStream(combinedTracks);
+
         const mimeTypes = [
+          "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+          "video/mp4;codecs=avc1.42E01E",
+          "video/mp4;codecs=avc1",
+          "video/mp4",
+          "video/webm;codecs=h264",
           "video/webm;codecs=vp8",
           "video/webm;codecs=vp9",
-          "video/webm",
-          "video/mp4"
+          "video/webm"
         ];
         const supportedMime = mimeTypes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
-        const recorder = supportedMime ? new MediaRecorder(stream, { mimeType: supportedMime }) : new MediaRecorder(stream);
+        const recorderOptions = supportedMime
+          ? { mimeType: supportedMime, videoBitsPerSecond: 2500000 }
+          : { videoBitsPerSecond: 2500000 };
+
+        const recorder = new MediaRecorder(combinedStream, recorderOptions);
         activeMediaRecorder = recorder;
 
         const chunks = [];
@@ -3150,17 +2444,27 @@
 
         recorder.onstop = () => {
           activeMediaRecorder = null;
+          if (audioCtx) {
+            try { audioCtx.close(); } catch (e) {}
+          }
           if (stopSaveBtn) stopSaveBtn.style.display = "none";
-          const ext = supportedMime.includes("mp4") ? "mp4" : "webm";
-          const blob = new Blob(chunks, { type: supportedMime || "video/webm" });
+
+          const isMp4 = supportedMime.includes("mp4") || supportedMime.includes("h264");
+          const ext = isMp4 ? "mp4" : "webm";
+          const blobType = isMp4 ? "video/mp4" : (supportedMime || "video/webm");
+          const blob = new Blob(chunks, { type: blobType });
           const url = URL.createObjectURL(blob);
+
+          const now = new Date();
+          const timeStamp = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+          const paceTag = `${secPerStudent}s`;
           const a = document.createElement("a");
           a.href = url;
-          a.download = `CET_2026_${activeAnimState.mode}_${secPerStudent}s_per_student.${ext}`;
+          a.download = `CET_2026_${activeAnimState.mode}_${paceTag}_${timeStamp}.${ext}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(url), 10000);
+          setTimeout(() => URL.revokeObjectURL(url), 12000);
           btn.textContent = origText;
           btn.disabled = false;
         };
@@ -3171,10 +2475,11 @@
         const spacing = STUDENT_SPACING_PX;
         const maxDist = Math.max(...convoys.map(c => c.finishDist)) + 20;
 
-        // Calculate exact distance step per frame based on user's selected seconds-per-student (0.15s to 3.0s)
         const pxPerSecondForVideo = spacing / secPerStudent;
         const distStepPerFrame = pxPerSecondForVideo / fps;
-        const totalFrames = Math.max(60, Math.ceil(maxDist / distStepPerFrame));
+        const rawTotalFrames = Math.max(60, Math.ceil(maxDist / distStepPerFrame));
+        const totalFrames = Math.min(900, rawTotalFrames);
+        const effectiveDistStep = maxDist / totalFrames;
         let frame = 0;
 
         function renderNextFrame() {
@@ -3189,7 +2494,7 @@
           const pct = Math.min(100, Math.round((frame / totalFrames) * 100));
           btn.textContent = `⏳ Recording (${pct}%)...`;
 
-          const simDist = frame * distStepPerFrame;
+          const simDist = frame * effectiveDistStep;
 
           const onStageList = [];
           const upNextList = [];
@@ -3201,9 +2506,8 @@
           });
           upNextList.sort((a, b) => a.eta - b.eta);
 
-          // 1. Draw non-obstructing top status log bar
           ctx.fillStyle = "#152542";
-          ctx.fillRect(0, 0, recCanvas.width, headerHeight);
+          ctx.fillRect(0, 0, rawW, headerHeight);
 
           ctx.fillStyle = "#e6b333";
           ctx.font = "bold 14px sans-serif";
@@ -3225,10 +2529,8 @@
             ctx.fillText(`${getStationLogString(simDist, convoys, 1)}   •   ${getStationLogString(simDist, convoys, 2)}`, 24, 82);
           }
 
-          // 2. Draw hall map below the header bar
           ctx.drawImage(bgCanvas, 0, headerHeight);
 
-          // 3. Draw clipped Entry (up to Station) or Exit (from Station) path line and moving students
           convoys.forEach(c => {
             const localHead = simDist - c.startDist;
             const tail = localHead - (c.studentCount - 1) * spacing;
@@ -3269,12 +2571,17 @@
             }
           });
 
+          outCtx.drawImage(workCanvas, 0, 0, outW, outH);
+
           frame++;
           setTimeout(renderNextFrame, 33);
         }
 
         renderNextFrame();
       } catch (err) {
+        if (audioCtx) {
+          try { audioCtx.close(); } catch (e) {}
+        }
         if (stopSaveBtn) stopSaveBtn.style.display = "none";
         btn.textContent = origText;
         btn.disabled = false;
@@ -3354,12 +2661,31 @@
       stopWalkAnimation();
     }
 
-    function adjustZoom(delta) {
-      currentZoom = Math.min(1.6, Math.max(0.55, +(currentZoom + delta).toFixed(2)));
-      document.getElementById("hallCanvas").style.transform = `scale(${currentZoom})`;
+    function applyZoomLevel(newZoom) {
+      currentZoom = Math.min(1.8, Math.max(0.20, +newZoom.toFixed(2)));
+      const canvasEl = document.getElementById("hallCanvas");
+      if (canvasEl) {
+        canvasEl.style.transform = `scale(${currentZoom})`;
+      }
       document.getElementById("zoomLabel").textContent = `${Math.round(currentZoom * 100)}%`;
-      stopWalkAnimation();
+      updateScaleWrapperBounds();
       requestAnimationFrame(alignExitStepsWithCentralPassage);
+    }
+
+    function adjustZoom(delta) {
+      applyZoomLevel(currentZoom + delta);
+    }
+
+    function fitEntireHallToScreen() {
+      const viewportEl = document.getElementById("hallViewport");
+      if (!viewportEl) return;
+      const availableW = Math.max(240, viewportEl.clientWidth - 28);
+      const fitScale = Math.min(1.0, Math.max(0.20, availableW / 1420));
+      applyZoomLevel(fitScale);
+    }
+
+    function resetZoom100() {
+      applyZoomLevel(1.0);
     }
 
     function switchView(view) {
@@ -3720,7 +3046,10 @@
     }
 
     window.addEventListener("resize", () => {
-      requestAnimationFrame(alignExitStepsWithCentralPassage);
+      requestAnimationFrame(() => {
+        alignExitStepsWithCentralPassage();
+        updateScaleWrapperBounds();
+      });
     });
 
     window.addEventListener("DOMContentLoaded", () => {
