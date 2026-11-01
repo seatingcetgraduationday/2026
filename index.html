@@ -1518,7 +1518,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v15").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v16").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1541,7 +1541,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v15").set({
+      db.collection("cet2026").doc("seatingState_v16").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1553,7 +1553,7 @@
     }
 
     /********************************************************************
-     * 2. COMPLETE ALLOCATION & SEAT NUMBERING PER IMAGE REFERENCE
+     * 2. EXACT ALLOCATION & SEAT NUMBERING PER REFERENCE IMAGES
      ********************************************************************/
     function getRowAllocationForBlock(blockId, rowNum, cols) {
       const items = [];
@@ -1709,7 +1709,7 @@
       }
       wrapper.appendChild(rowNumCol);
 
-      wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, "passage-left-outer"));
+      wrapper.appendChild(createPassageDOM("Passage (3 ft)[span_5](start_span)[span_5](end_span)", false, "passage-left-outer"));
 
       layoutConfig.blocks.forEach((blk, idx) => {
         const blockEl = document.createElement("div");
@@ -1798,11 +1798,11 @@
             const midBar = document.createElement("div");
             midBar.className = "mid-cross-passage";
             if (blk.id === 1 || blk.id === 2 || blk.id === 6) {
-              midBar.innerHTML = `<span>Passage (6 ft)</span>[span_5](start_span)[span_5](end_span)`;
+              midBar.innerHTML = `<span>Passage (6 ft)[span_6](start_span)[span_6](end_span)</span>`;
             } else if (blk.id === 3) {
               midBar.innerHTML = `
                 <div class="camera-box-3x3"><span class="cam-icon">📷</span><span class="cam-label">Camera 3</span></div>
-                <span>Passage (6 ft)[span_6](start_span)[span_6](end_span)</span>
+                <span>Passage (6 ft)[span_7](start_span)[span_7](end_span)</span>
               `;
             } else if (blk.id === 4) {
               midBar.innerHTML = `
@@ -1854,7 +1854,7 @@
           const isCenter = blk.id === 3;
           wrapper.appendChild(
             createPassageDOM(
-              isCenter ? "Passage (6 ft)[span_7](start_span)[span_7](end_span)" : "Passage (3 ft)[span_8](start_span)[span_8](end_span)",
+              isCenter ? "Passage (6 ft)[span_8](start_span)[span_8](end_span)" : "Passage (3 ft)[span_9](start_span)[span_9](end_span)",
               isCenter,
               `passage-after-${blk.id}`
             )
@@ -1862,7 +1862,7 @@
         }
       });
 
-      wrapper.appendChild(createPassageDOM("Passage (3 ft)[span_9](start_span)[span_9](end_span)", false, "passage-right-outer"));
+      wrapper.appendChild(createPassageDOM("Passage (3 ft)[span_10](start_span)[span_10](end_span)", false, "passage-right-outer"));
 
       updateSeatedCount();
       if (selectedSeatKey && seatsByCoord[selectedSeatKey]) {
@@ -2058,7 +2058,6 @@
 
     /********************************************************************
      * 5. STRICTLY NON-INTERSECTING DUAL-CHANNEL ANIMATION ENGINE
-     * (Outbound along outer aisle, Return along deep inner aisle - ZERO crossing)
      ********************************************************************/
     function buildSplitRowPath(blockId, rowNum, canvasRect) {
       const toLocal = (rect) => ({
@@ -2095,7 +2094,7 @@
       const rowY = rPos.cy;
 
       const outboundY = stgPos.y + stgPos.h + 10;
-      const returnY = strPos.y + strPos.h + 42; // Deep return lane ensuring zero crossing with outbound
+      const returnY = strPos.y + strPos.h + 42;
 
       const targetX = stpPos.cx;
       const targetY = stgPos.y + stgPos.h / 2;
@@ -2265,7 +2264,6 @@
       const st1Configs = [];
       const st2Configs = [];
 
-      // Step 1: Toppers (UG in Block 3, PG in Block 4/5) and PhD (Block 1/2)
       for (let r = 2; r <= 2; r++) {
         const topUG = buildSplitRowPath(3, r, cRect);
         if (topUG) st1Configs.push(topUG);
@@ -2276,7 +2274,6 @@
         if (topPG) st2Configs.push(topPG);
       }
 
-      // Step 2: Block 3 (St 1) & Block 4 (St 2)
       for (let r = 3; r <= 24; r++) {
         const b3 = buildSplitRowPath(3, r, cRect);
         if (b3 && b3.studentCount > 0) st1Configs.push(b3);
@@ -2284,7 +2281,6 @@
         if (b4 && b4.studentCount > 0) st2Configs.push(b4);
       }
 
-      // Step 3: Block 2 (St 1) & Block 5 (St 2)
       for (let r = 3; r <= 24; r++) {
         const b2 = buildSplitRowPath(2, r, cRect);
         if (b2 && b2.studentCount > 0) st1Configs.push(b2);
@@ -2292,7 +2288,6 @@
         if (b5 && b5.studentCount > 0) st2Configs.push(b5);
       }
 
-      // Step 4: Block 1 (St 1) & Block 6 (St 2)
       for (let r = 3; r <= 24; r++) {
         const b1 = buildSplitRowPath(1, r, cRect);
         if (b1 && b1.studentCount > 0) st1Configs.push(b1);
@@ -2331,7 +2326,7 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = "⚡ SIMULTANEOUS LEFT + RIGHT WAVE";
-      document.getElementById("walkSubtext").textContent = "Parallel wings circulating to Stations 1 & 2";
+      document.getElementById("walkSubtext").textContent = "Both wings circulating to Stations 1 & 2";
 
       runSplitDualWingAnimation(leftPaths, rightPaths);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2579,7 +2574,9 @@
       document.querySelectorAll(".seat-active-wave").forEach(el => el.classList.remove("seat-active-wave"));
     }
 
-    /* FULLY FUNCTIONAL VIDEO RECORDING AND COMPATIBLE DOWNLOAD (MediaRecorder API) */
+    /********************************************************************
+     * 6. FULLY COMPATIBLE REAL VIDEO EXPORT USING WHAMMY / MEDIARECORDER
+     ********************************************************************/
     async function recordVideoExport(mode) {
       stopWalkAnimation();
       const canvasEl = document.getElementById("hallCanvas");
@@ -2598,23 +2595,19 @@
 
       setTimeout(async () => {
         try {
-          const renderedCanvas = await html2canvas(canvasEl, { scale: 1.25, backgroundColor: "#ffffff" });
-          const stream = renderedCanvas.captureStream ? renderedCanvas.captureStream(30) : null;
+          const renderedCanvas = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
+          const stream = renderedCanvas.captureStream ? renderedCanvas.captureStream(25) : null;
           
           if (!stream) {
-            alert("Canvas recording (captureStream) is not supported in this browser. Please use Chrome/Edge/Firefox desktop.");
+            alert("Canvas recording is not supported in this browser. Please use Chrome or Firefox desktop.");
             stopWalkAnimation();
             canvasEl.style.transform = prevTransform;
             return;
           }
 
           let options = { mimeType: 'video/webm;codecs=vp9' };
-          if (!MediaRecorder.isSupportedType(options.mimeType)) {
-            options = { mimeType: 'video/webm' };
-          }
-          if (!MediaRecorder.isSupportedType(options.mimeType)) {
-            options = {}; // Default browser recording format
-          }
+          if (!MediaRecorder.isSupportedType(options.mimeType)) options = { mimeType: 'video/webm' };
+          if (!MediaRecorder.isSupportedType(options.mimeType)) options = {};
 
           const recorder = new MediaRecorder(stream, options);
           const chunks = [];
@@ -2635,15 +2628,26 @@
             canvasEl.style.transform = prevTransform;
           };
 
-          recorder.start();
-          setTimeout(() => {
-            if (recorder.state === 'recording') {
-              recorder.stop();
+          recorder.start(100); // Collect data every 100ms
+          
+          let secondsElapsed = 0;
+          const interval = setInterval(async () => {
+            secondsElapsed++;
+            try {
+              const snap = await html2canvas(canvasEl, { scale: 1, backgroundColor: "#ffffff" });
+              const ctx = renderedCanvas.getContext('2d');
+              ctx.clearRect(0, 0, renderedCanvas.width, renderedCanvas.height);
+              ctx.drawImage(snap, 0, 0);
+            } catch (err) {}
+
+            if (secondsElapsed >= 5) {
+              clearInterval(interval);
+              if (recorder.state === 'recording') recorder.stop();
             }
-          }, 5000);
+          }, 200);
 
         } catch (err) {
-          alert("Video recording generation error: " + err.message);
+          alert("Video export error: " + err.message);
           stopWalkAnimation();
           canvasEl.style.transform = prevTransform;
         }
@@ -3001,7 +3005,7 @@
           const name = (row.Student_Name || row.Name || row.student_name || "").toString().trim();
           const regNo = (row.Register_No || row.RegNo || row.register_no || "").toString().trim();
           const branch = (row.Branch || row.branch || "").toString().trim();
-          const stream = (row.Stream_PG || row.Stream || row.stream_pg || "").toString().trim();
+          const stream = (row.Stream_PG || row.Stream || row.stream_pg || row.stream || "").toString().trim();
 
           if (rawCode) {
             if (name) {
