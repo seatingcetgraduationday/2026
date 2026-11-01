@@ -514,8 +514,9 @@
       color: #b0bfd8;
       font-weight: 700;
     }
+    /* Widened Central Return Steps (56px wide) */
     .center-return-stairs {
-      width: 36px;
+      width: 56px;
       height: 22px;
       background: #dce4ee;
       border: 1.5px solid #7f97b2;
@@ -530,7 +531,7 @@
     }
     .return-stairs-label {
       position: absolute;
-      left: 42px;
+      left: 62px;
       top: 4px;
       font-size: 8px;
       font-weight: 700;
@@ -573,12 +574,6 @@
     }
     .row-cross-gap {
       height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      font-size: 8px;
-      font-weight: 700;
-      color: #2f5941;
     }
 
     .seating-block {
@@ -1233,7 +1228,7 @@
                   <div class="reception-desk" id="station1Desk">
                     <div class="reception-desk-title">CERTIFICATE<br>STATION 1</div>
                   </div>
-                  <!-- Central Collection Point (Uses opacity so bounding box is always accurate) -->
+                  <!-- Central Collection Point -->
                   <div class="central-collection-desk" id="centralStationDesk">
                     <div class="reception-desk-title">CENTRAL<br>COLLECTION POINT</div>
                   </div>
@@ -1244,14 +1239,14 @@
 
                 <div class="stage-floor-label">MAIN STAGE</div>
               </div>
-              <!-- Center Return Steps with explicit SVG treads -->
+              <!-- Widened Center Return Steps (56px wide) -->
               <div class="center-return-stairs" id="centerReturnStairs">
-                <svg width="36" height="22" viewBox="0 0 36 22">
-                  <rect width="36" height="22" fill="#dce4ee" />
-                  <line x1="0" y1="5" x2="36" y2="5" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="0" y1="10" x2="36" y2="10" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="0" y1="15" x2="36" y2="15" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="0" y1="20" x2="36" y2="20" stroke="#7f97b2" stroke-width="1.5" />
+                <svg width="56" height="22" viewBox="0 0 56 22">
+                  <rect width="56" height="22" fill="#dce4ee" />
+                  <line x1="0" y1="5" x2="56" y2="5" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="0" y1="10" x2="56" y2="10" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="0" y1="15" x2="56" y2="15" stroke="#7f97b2" stroke-width="1.5" />
+                  <line x1="0" y1="20" x2="56" y2="20" stroke="#7f97b2" stroke-width="1.5" />
                 </svg>
                 <span class="return-stairs-label">RETURN STEPS</span>
               </div>
@@ -1285,13 +1280,13 @@
     </div>
   </main>
 
-  <!-- 2. FACULTY LOGIN VIEW -->
+  <!-- 2. FACULTY LOGIN VIEW (Password Kept Secret) -->
   <section id="facultyView" class="container role-view">
     <div id="facultyGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
       <div class="eyebrow">CONVOCATION PROGRESS TRACKING</div>
       <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Faculty Login</h2>
       <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">
-        Sign in with password <code>CET_Graduation@2026</code> to update which block the convocation has reached and log block completion times.
+        Enter the authorized Faculty password to update which block the convocation has reached and log block completion times.
       </p>
       <div class="form-group">
         <label>Password</label>
@@ -1332,13 +1327,13 @@
     </div>
   </section>
 
-  <!-- 3. REGISTRATION LOGIN VIEW -->
+  <!-- 3. REGISTRATION LOGIN VIEW (Password Kept Secret) -->
   <section id="registrationView" class="container role-view">
     <div id="regGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
       <div class="eyebrow">REGISTRATION DESK</div>
       <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Registration Login</h2>
       <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">
-        Sign in with password <code>CET_Graduation@2026</code> to mark students who failed to register (Absentees) and download the post-registration student &amp; absentee PDF report.
+        Enter the authorized Registration Desk password to mark students who failed to register (Absentees) and download the post-registration student &amp; absentee PDF report.
       </p>
       <div class="form-group">
         <label>Password</label>
@@ -1398,13 +1393,13 @@
     </div>
   </section>
 
-  <!-- 4. ADMIN LOGIN VIEW -->
+  <!-- 4. ADMIN LOGIN VIEW (Password Kept Secret) -->
   <section id="adminView" class="container role-view">
     <div id="adminGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
       <div class="eyebrow">SYSTEM ADMINISTRATION</div>
       <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Admin Login</h2>
       <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">
-        Enter Admin password <code>Admin12345</code> to upload student Excel sheets, mark chairs defective/empty, clear student rosters, or customize block dimensions.
+        Enter the authorized Admin password to upload student Excel sheets, mark chairs defective/empty, clear student rosters, or customize block dimensions.
       </p>
       <div class="form-group">
         <label>Admin Password</label>
@@ -1653,7 +1648,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v23").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v24").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1676,7 +1671,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v23").set({
+      db.collection("cet2026").doc("seatingState_v24").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -1826,6 +1821,7 @@
 
       const maxRows = 24;
 
+      // Left Row Numbers Column (Entry 6 removed as requested)
       const rowNumCol = document.createElement("div");
       rowNumCol.className = "row-numbers-col";
       for (let r = 1; r <= maxRows; r++) {
@@ -1836,7 +1832,6 @@
         if (r === 16) {
           const gap = document.createElement("div");
           gap.className = "row-cross-gap";
-          gap.textContent = "Entry 6";
           rowNumCol.appendChild(gap);
         }
       }
@@ -2192,44 +2187,39 @@
     }
 
     /********************************************************************
-     * 5. SPLIT ENTRY / EXIT PATH ENGINE
-     * - Entry path stops right at the Certificate Station (idxCollectionCenter)!
-     * - Exit path starts right from the Certificate Station and routes strictly
-     *   through the Central Return Steps (returnStairX = strPos.cx ± 7)!
+     * 5. PURE MATHEMATICAL PATH ENGINE & SPLIT ENTRY / EXIT LINES
      ********************************************************************/
+    // Pure math point-at-distance calculator (never fails in detached SVG/Canvas video exports!)
+    function getPointAtDistance(pts, cumDist, d) {
+      const total = cumDist[cumDist.length - 1];
+      if (d <= 0) return pts[0];
+      if (d >= total) return pts[pts.length - 1];
+      for (let i = 1; i < cumDist.length; i++) {
+        if (cumDist[i] >= d) {
+          const segLen = cumDist[i] - cumDist[i - 1];
+          const t = segLen > 0 ? (d - cumDist[i - 1]) / segLen : 0;
+          return {
+            x: pts[i - 1].x + t * (pts[i].x - pts[i - 1].x),
+            y: pts[i - 1].y + t * (pts[i].y - pts[i - 1].y)
+          };
+        }
+      }
+      return pts[pts.length - 1];
+    }
+
     function getPolylineSegmentPoints(pts, cumDist, startD, endD) {
       const total = cumDist[cumDist.length - 1];
       const s = Math.max(0, Math.min(total, startD));
       const e = Math.max(0, Math.min(total, endD));
       if (e <= s + 0.5) return [];
 
-      const out = [];
-      const interp = (idx, dVal) => {
-        const segLen = cumDist[idx] - cumDist[idx - 1];
-        const t = segLen > 0 ? (dVal - cumDist[idx - 1]) / segLen : 0;
-        return {
-          x: pts[idx - 1].x + t * (pts[idx].x - pts[idx - 1].x),
-          y: pts[idx - 1].y + t * (pts[idx].y - pts[idx - 1].y)
-        };
-      };
-
-      for (let i = 1; i < cumDist.length; i++) {
-        if (cumDist[i] >= s) {
-          out.push(interp(i, s));
-          break;
-        }
-      }
+      const out = [getPointAtDistance(pts, cumDist, s)];
       for (let i = 1; i < cumDist.length - 1; i++) {
         if (cumDist[i] > s && cumDist[i] < e) {
           out.push(pts[i]);
         }
       }
-      for (let i = 1; i < cumDist.length; i++) {
-        if (cumDist[i] >= e) {
-          out.push(interp(i, e));
-          break;
-        }
-      }
+      out.push(getPointAtDistance(pts, cumDist, e));
       return out;
     }
 
@@ -2289,17 +2279,16 @@
       const stepInnerStageX = isLeft ? (stpPos.x + stpPos.w + 8) : (stpPos.x - 8);
 
       const stationBottomY = dskPos.y + dskPos.h + 5;
-      // Exact lane inside the 36px-wide Central Return Steps so 100% of returnees descend through the central steps!
-      const returnStairX = strPos.cx + (isLeft ? -7 : 7);
+      // Exact lane inside the widened 56px Central Return Steps so 100% of returnees descend through the central steps!
+      const returnStairX = strPos.cx + (isLeft ? -12 : 12);
 
       let pts = [];
       let idxStepOfStage = 4;
       let idxStageEntry = 5;
-      let idxCollectionCenter = 7; // Point where Entry Path ends and Exit Path begins!
-      let idxStageExit = 8;        // Point at top of Central Return Steps
+      let idxCollectionCenter = 7;
+      let idxStageExit = 8;
 
       if (useCentralStation) {
-        // Quarter-point collection aligned directly with the Central Return Steps lane for a 90° perpendicular exit!
         const quarterPointX = returnStairX;
 
         pts = [
@@ -2342,8 +2331,8 @@
         ];
         idxStepOfStage = 4;
         idxStageEntry = 5;
-        idxCollectionCenter = 8; // Entry path stops at Station!
-        idxStageExit = 9;        // Top of Central Return Steps
+        idxCollectionCenter = 8;
+        idxStageExit = 9;
       }
 
       const cumDist = [0];
@@ -2351,7 +2340,6 @@
         cumDist.push(cumDist[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
       }
 
-      // Entry path ends at idxCollectionCenter (the Station); Exit path starts from idxCollectionCenter (the Station)!
       const entryPts = pts.slice(0, idxCollectionCenter + 1);
       const entryCumDist = cumDist.slice(0, idxCollectionCenter + 1);
       const exitPts = pts.slice(idxCollectionCenter);
@@ -2395,8 +2383,8 @@
         rowNum,
         distToStepOfStage: cumDist[idxStepOfStage],
         distToStageEntry: cumDist[idxStageEntry],
-        distToCollectionCenter: cumDist[idxCollectionCenter], // Station point where Entry ends & Exit begins
-        distToStageExit: cumDist[idxStageExit],               // Top of Central Return Steps
+        distToCollectionCenter: cumDist[idxCollectionCenter],
+        distToStageExit: cumDist[idxStageExit],
         totalLength: cumDist[cumDist.length - 1]
       };
     }
@@ -2446,13 +2434,6 @@
       const pInfo = buildNonIntersectingRowPath(blockId, rowNum, cRect, Boolean(isCentralPerson));
       if (!pInfo) return;
 
-      const fullPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      fullPathEl.setAttribute("d", pInfo.d);
-      fullPathEl.setAttribute("fill", "none");
-      fullPathEl.setAttribute("stroke", "none");
-      svg.appendChild(fullPathEl);
-
-      // Entry Path Line (Stops right at the Certificate Station!)
       const entryPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
       entryPathEl.setAttribute("d", pInfo.entryD);
       entryPathEl.setAttribute("fill", "none");
@@ -2461,7 +2442,6 @@
       entryPathEl.setAttribute("stroke-dasharray", "5 4");
       svg.appendChild(entryPathEl);
 
-      // Exit Path Line (Starts from the Certificate Station, goes to Central Steps & back to Seat!)
       const exitPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
       exitPathEl.setAttribute("d", pInfo.exitD);
       exitPathEl.setAttribute("fill", "none");
@@ -2505,8 +2485,6 @@
 
         if (dist > pInfo.totalLength) dist = 0;
 
-        // Entry path stops at the Station (distToCollectionCenter) and trails the student by ENTRY_TAIL_GAP_PX;
-        // once the student reaches the Station, only the Exit path from the Station is shown!
         const entryStart = Math.max(0, dist - ENTRY_TAIL_GAP_PX);
         if (dist <= pInfo.distToCollectionCenter) {
           const clippedPts = getPolylineSegmentPoints(pInfo.entryPts, pInfo.entryCumDist, entryStart, pInfo.distToCollectionCenter);
@@ -2522,7 +2500,7 @@
             "Certificate Collected — Exiting from Station via Central Return Steps...";
         }
 
-        const pt = fullPathEl.getPointAtLength(dist);
+        const pt = getPointAtDistance(pInfo.pts, pInfo.cumDist, dist);
         dot.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
         updateLiveStationLogs(dist, [singleConvoy], Boolean(isCentralPerson));
         updateOnStageAndNextIndicators(dist, [singleConvoy]);
@@ -2540,12 +2518,12 @@
       const canvas = document.getElementById("hallCanvas");
       const cRect = canvas.getBoundingClientRect();
 
-      const ugRow = buildNonIntersectingRowPath(1, 2, cRect, true);     // Block 1: UG 1..8 (Left side)
-      const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect, true);    // Block 4: PG 1..9 (Right side)
-      const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect, true);  // Block 5: PG 10..18 (Right side)
-      const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect, true);  // Block 6: PG 19..25 (Right side)
-      const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect, true);   // Block 2: PhD 1..9 (Left side)
-      const phd10to12 = buildNonIntersectingRowPath(3, 2, cRect, true); // Block 3: PhD 10..12 (Left side)
+      const ugRow = buildNonIntersectingRowPath(1, 2, cRect, true);
+      const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect, true);
+      const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect, true);
+      const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect, true);
+      const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect, true);
+      const phd10to12 = buildNonIntersectingRowPath(3, 2, cRect, true);
 
       const firstWaveConfigs = [ugRow, pg1to9, pg10to18, pg19to25, phd1to9, phd10to12].filter(Boolean);
 
@@ -2561,12 +2539,6 @@
     }
 
     function createSplitPathElementsForConvoy(svg, pCfg) {
-      const fullPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      fullPathEl.setAttribute("d", pCfg.d);
-      fullPathEl.setAttribute("fill", "none");
-      fullPathEl.setAttribute("stroke", "none");
-      svg.appendChild(fullPathEl);
-
       const entryPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
       entryPathEl.setAttribute("d", pCfg.entryD);
       entryPathEl.setAttribute("fill", "none");
@@ -2585,11 +2557,9 @@
       exitPathEl.style.opacity = "0";
       svg.appendChild(exitPathEl);
 
-      return { fullPathEl, entryPathEl, exitPathEl };
+      return { entryPathEl, exitPathEl };
     }
 
-    // Entry path stops at Certificate Station (distToCollectionCenter) and ends after a gap behind the last student of that row;
-    // once the last student of the row reaches the Station, only the Exit path from the Station is shown!
     function updateConvoyEntryExitPathDOM(c, localHeadDist, tailDist) {
       const isRowMoving = localHeadDist > 0 && tailDist < c.totalLength;
       if (!isRowMoving) {
@@ -2622,7 +2592,7 @@
 
       const queue = [];
       configs.forEach((pCfg, idx) => {
-        const { fullPathEl, entryPathEl, exitPathEl } = createSplitPathElementsForConvoy(svg, pCfg);
+        const { entryPathEl, exitPathEl } = createSplitPathElementsForConvoy(svg, pCfg);
 
         const dots = [];
         for (let i = 0; i < pCfg.studentCount; i++) {
@@ -2650,7 +2620,6 @@
 
         queue.push({
           ...pCfg,
-          pathEl: fullPathEl,
           entryPathEl,
           exitPathEl,
           dots,
@@ -2703,7 +2672,7 @@
               dotGroup.style.opacity = "0";
             } else {
               dotGroup.style.opacity = "1";
-              const pt = c.pathEl.getPointAtLength(d);
+              const pt = getPointAtDistance(c.pts, c.cumDist, d);
               dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
             }
           });
@@ -2883,7 +2852,7 @@
       function buildQueue(configs) {
         const queue = [];
         configs.forEach((pCfg, idx) => {
-          const { fullPathEl, entryPathEl, exitPathEl } = createSplitPathElementsForConvoy(svg, pCfg);
+          const { entryPathEl, exitPathEl } = createSplitPathElementsForConvoy(svg, pCfg);
 
           const dots = [];
           for (let i = 0; i < pCfg.studentCount; i++) {
@@ -2910,7 +2879,6 @@
 
           queue.push({
             ...pCfg,
-            pathEl: fullPathEl,
             entryPathEl,
             exitPathEl,
             dots,
@@ -2954,7 +2922,7 @@
               dotGroup.style.opacity = "0";
             } else {
               dotGroup.style.opacity = "1";
-              const pt = c.pathEl.getPointAtLength(d);
+              const pt = getPointAtDistance(c.pts, c.cumDist, d);
               dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
             }
           });
@@ -2983,7 +2951,7 @@
     }
 
     /********************************************************************
-     * 6. PLAYABLE FULL-CYCLE VIDEO EXPORT
+     * 6. RELIABLE PLAYABLE VIDEO EXPORT FOR ALL MODES (FIRST WAVE & FULL WAVE)
      ********************************************************************/
     function drawStageStepsOnCanvas(ctx, canvasEl, headerHeight) {
       const cRect = canvasEl.getBoundingClientRect();
@@ -3034,14 +3002,14 @@
     }
 
     async function downloadCurrentAnimationVideo() {
-      if (!activeAnimState || !activeAnimState.convoys.length) {
+      if (!activeAnimState || !activeAnimState.convoys || !activeAnimState.convoys.length) {
         alert("Please trigger First Wave, Full Wave, a Block Wave, a Department Wave, or a Student Path first!");
         return;
       }
 
       const btn = document.getElementById("downloadVideoBtn");
       const origText = btn.textContent;
-      btn.textContent = "⏳ Recording Full Cycle (0%)...";
+      btn.textContent = "⏳ Preparing Video (0%)...";
       btn.disabled = true;
 
       const canvasEl = document.getElementById("hallCanvas");
@@ -3070,10 +3038,10 @@
 
         const stream = recCanvas.captureStream(30);
         const mimeTypes = [
-          "video/mp4",
           "video/webm;codecs=vp9",
           "video/webm;codecs=vp8",
-          "video/webm"
+          "video/webm",
+          "video/mp4"
         ];
         const supportedMime = mimeTypes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
         const recorder = supportedMime ? new MediaRecorder(stream, { mimeType: supportedMime }) : new MediaRecorder(stream);
@@ -3093,32 +3061,28 @@
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(url), 5000);
+          setTimeout(() => URL.revokeObjectURL(url), 8000);
           btn.textContent = origText;
           btn.disabled = false;
         };
 
-        recorder.start();
+        // Start recording with 200ms timeslice so data chunks flush reliably for all waves
+        recorder.start(200);
 
-        const convoys = activeAnimState.convoys.map(c => {
-          const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          tempPath.setAttribute("d", c.d);
-          return { ...c, tempPath };
-        });
-
+        const convoys = activeAnimState.convoys;
         const spacing = STUDENT_SPACING_PX;
         const maxDist = Math.max(...convoys.map(c => c.finishDist)) + 20;
-        const totalFrames = convoys.length > 25 ? 450 : (convoys.length > 5 ? 270 : 150);
+        const totalFrames = convoys.length > 25 ? 360 : (convoys.length > 4 ? 240 : 150);
         let frame = 0;
 
         function renderNextFrame() {
           if (frame > totalFrames) {
-            recorder.stop();
+            if (recorder.state === "recording") recorder.stop();
             return;
           }
 
           const pct = Math.round((frame / totalFrames) * 100);
-          btn.textContent = `⏳ Recording Full Cycle (${pct}%)...`;
+          btn.textContent = `⏳ Recording Video (${pct}%)...`;
 
           const simDist = (frame / totalFrames) * maxDist;
 
@@ -3158,7 +3122,7 @@
           // 2. Draw hall map below the header bar
           ctx.drawImage(bgCanvas, 0, headerHeight);
 
-          // 3. Draw clipped Entry (up to Station) or Exit (from Station) path line and moving students
+          // 3. Draw clipped Entry (up to Station) or Exit (from Station) path line and moving students using pure math
           convoys.forEach(c => {
             const localHead = simDist - c.startDist;
             const tail = localHead - (c.studentCount - 1) * spacing;
@@ -3186,7 +3150,7 @@
               for (let i = 0; i < c.studentCount; i++) {
                 const d = localHead - i * spacing;
                 if (d > 0 && d < c.totalLength) {
-                  const pt = c.tempPath.getPointAtLength(d);
+                  const pt = getPointAtDistance(c.pts, c.cumDist, d);
                   ctx.fillStyle = "#152542";
                   ctx.beginPath();
                   ctx.arc(pt.x, pt.y + headerHeight, 4, 0, Math.PI * 2);
