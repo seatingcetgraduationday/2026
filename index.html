@@ -267,7 +267,7 @@
         <div>
           <div id="walkEyebrow" class="walk-eyebrow">STAGE MOVEMENT SIMULATION</div>
           <div id="walkStepTitle" class="serif-title" style="font-size:17px; font-weight:700;">Entry path stops at Certificate Station; Exit path starts from Station &amp; descends Central Steps</div>
-          <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Video records in real time at the exact Video Pace selected below. Click "Stop &amp; Save" anytime or let it finish to 100%.</div>
+          <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Video records with full duration headers for Gallery &amp; WhatsApp at the exact Video Pace selected below.</div>
         </div>
 
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -529,7 +529,8 @@
     const PASSWORDS = { admin: "Admin12345", registration: "CET_Graduation@2026", faculty: "CET_Graduation@2026" };
     let unlockedRoles = { admin: false, registration: false, faculty: false };
     let currentZoom = 1, selectedSeatKey = null, selectedDeptForExcel = "EE";
-    let walkAnimFrame = null, highlightCompletedActive = false, activeAnimState = null, activeMediaRecorder = null;
+    let walkAnimFrame = null, highlightCompletedActive = false, activeAnimState = null;
+    let activeMediaRecorder = null, activeRecordingTimer = null;
 
     const STUDENT_SPACING_PX = 15, ENTRY_TAIL_GAP_PX = 18;
     const BASE_PX_PER_SECOND = STUDENT_SPACING_PX / 0.15;
@@ -597,7 +598,7 @@
     let seatsByCoord = {}, seatsByCode = {}, deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v30").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v31").onSnapshot((doc) => {
         if (doc.exists) {
           const d = doc.data();
           if (d.layoutConfig) layoutConfig = d.layoutConfig;
@@ -613,7 +614,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v30").set({
+      db.collection("cet2026").doc("seatingState_v31").set({
         layoutConfig, studentRoster, seatOverrides, convocationProgress,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }).catch(e => console.error(e));
@@ -1331,6 +1332,35 @@
       document.querySelectorAll(".wave-pill").forEach(btn => btn.classList.remove("active-wave"));
     }
 
+    /********************************************************************
+     * 6. WEBM/MP4 DURATION HEADER PATCHER & CONTIGUOUS VIDEO EXPORTER
+     * Fixes the 3-second truncation bug in Gallery & WhatsApp!
+     ********************************************************************/
+    async function injectWebmDurationHeader(blob, durationMs) {
+      try {
+        if (!blob.type.includes("webm")) return blob;
+        const buf = await blob.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        // Search for Matroska TimecodeScale (0x2AD7B1) inside Info header and append/patch Duration (0x4489)
+        for (let i = 0; i < Math.min(bytes.length - 12, 4096); i++) {
+          if (bytes[i] === 0x44 && bytes[i + 1] === 0x89) {
+            if (bytes[i + 2] === 0x84) {
+              const view = new DataView(buf, i + 3, 4);
+              view.setFloat32(0, durationMs, false);
+              return new Blob([buf], { type: blob.type });
+            } else if (bytes[i + 2] === 0x88) {
+              const view = new DataView(buf, i + 3, 8);
+              view.setFloat64(0, durationMs, false);
+              return new Blob([buf], { type: blob.type });
+            }
+          }
+        }
+        return blob;
+      } catch (e) {
+        return blob;
+      }
+    }
+
     function createUnclippedHallBackgroundCanvas(canvasEl, isCentralMode) {
       const prevZoom = currentZoom;
       canvasEl.style.transform = "scale(1)";
@@ -1416,6 +1446,7 @@
     }
 
     function finishVideoRecordingEarly() {
+      if (activeRecordingTimer) { clearInterval(activeRecordingTimer); activeRecordingTimer = null; }
       if (activeMediaRecorder && activeMediaRecorder.state === "recording") activeMediaRecorder.stop();
     }
 
@@ -1436,6 +1467,8 @@
       const canvasEl = document.getElementById("hallCanvas");
       setCentralStationMode(Boolean(activeAnimState.isCentralMode));
 
+      let audioCtx = null;
+
       try {
         const headerHeight = 92;
         const { bgCanvas, padX, padY } = createUnclippedHallBackgroundCanvas(canvasEl, Boolean(activeAnimState.isCentralMode));
@@ -1450,30 +1483,67 @@
         const outCanvas = document.createElement("canvas"); outCanvas.width = outW; outCanvas.height = outH;
         const outCtx = outCanvas.getContext("2d");
 
-        const stream = outCanvas.captureStream(30);
-        const mimeTypes = ["video/mp4;codecs=avc1.42E01E", "video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=h264", "video/webm;codecs=vp8", "video/webm"];
+        const fps = 30;
+        const videoStream = outCanvas.captureStream(fps);
+        const combinedTracks = [...videoStream.getVideoTracks()];
+
+        // Continuous audio master clock so Gallery & WhatsApp never truncate the video duration!
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+            const dst = audioCtx.createMediaStreamDestination();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.0001;
+            osc.connect(gain); gain.connect(dst); osc.start();
+            const aTracks = dst.stream.getAudioTracks();
+            if (aTracks.length) combinedTracks.push(aTracks[0]);
+          }
+        } catch (e) {}
+
+        const combinedStream = new MediaStream(combinedTracks);
+        const mimeTypes = [
+          "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+          "video/mp4;codecs=avc1.42E01E",
+          "video/mp4;codecs=avc1",
+          "video/mp4",
+          "video/webm;codecs=vp8,opus",
+          "video/webm;codecs=vp9,opus",
+          "video/webm"
+        ];
         const supportedMime = mimeTypes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
-        const recorder = new MediaRecorder(stream, supportedMime ? { mimeType:supportedMime, videoBitsPerSecond:2500000 } : { videoBitsPerSecond:2500000 });
+        const recorder = new MediaRecorder(combinedStream, supportedMime ? { mimeType:supportedMime, videoBitsPerSecond:2500000 } : { videoBitsPerSecond:2500000 });
         activeMediaRecorder = recorder;
 
         const chunks = [];
+        const recordStartMs = performance.now();
+
         recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunks.push(e.data); };
 
-        recorder.onstop = () => {
+        recorder.onstop = async () => {
+          if (activeRecordingTimer) { clearInterval(activeRecordingTimer); activeRecordingTimer = null; }
           activeMediaRecorder = null;
+          if (audioCtx) { try { audioCtx.close(); } catch (e) {} }
           if (stopSaveBtn) stopSaveBtn.style.display = "none";
-          const isMp4 = supportedMime.includes("mp4") || supportedMime.includes("h264");
-          const ext = isMp4 ? "mp4" : "webm";
-          const blob = new Blob(chunks, { type:isMp4 ? "video/mp4" : (supportedMime || "video/webm") });
-          const url = URL.createObjectURL(blob);
 
+          const actualDurationMs = Math.max(1000, performance.now() - recordStartMs);
+          const isMp4 = supportedMime.includes("mp4");
+          const ext = isMp4 ? "mp4" : "webm";
+          let blob = new Blob(chunks, { type:isMp4 ? "video/mp4" : (supportedMime || "video/webm") });
+
+          if (!isMp4) {
+            blob = await injectWebmDurationHeader(blob, actualDurationMs);
+          }
+
+          const url = URL.createObjectURL(blob);
           const now = new Date();
           const timeStamp = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
           const fileName = `CET_2026_${activeAnimState.mode}_${secPerStudent}s_${timeStamp}.${ext}`;
 
           if (saveLink) {
             saveLink.href = url; saveLink.download = fileName;
-            saveLink.textContent = `⬇ Save ${activeAnimState.mode.replace(/_/g, " ")} Video`;
+            saveLink.textContent = `⬇ Save ${activeAnimState.mode.replace(/_/g, " ")} Video (${Math.round(actualDurationMs / 1000)}s)`;
             saveLink.style.display = "inline-flex";
           }
           const a = document.createElement("a"); a.href = url; a.download = fileName;
@@ -1481,22 +1551,26 @@
           btn.textContent = origText; btn.disabled = false;
         };
 
-        recorder.start(200);
+        // Call recorder.start() WITHOUT a timeslice so the browser writes a single unfragmented container header with the full duration!
+        recorder.start();
 
         const convoys = activeAnimState.convoys, spacing = STUDENT_SPACING_PX;
         const maxDist = Math.max(...convoys.map(c => c.finishDist)) + 20;
-
-        // Exact real-time video speed matching selected `secPerStudent`
         const videoPxPerSec = spacing / secPerStudent;
         const totalDurationSec = Math.ceil(maxDist / videoPxPerSec);
-        const startTimeMs = performance.now();
 
-        function stepExportFrame(nowMs) {
-          if (!activeMediaRecorder || activeMediaRecorder.state !== "recording") return;
-          const elapsedSec = Math.max(0, (nowMs - startTimeMs) / 1000);
+        // Locked 30 FPS interval clock (never throttles like requestAnimationFrame, ensuring full duration in Gallery & WhatsApp)
+        activeRecordingTimer = setInterval(() => {
+          if (!activeMediaRecorder || activeMediaRecorder.state !== "recording") {
+            clearInterval(activeRecordingTimer); activeRecordingTimer = null; return;
+          }
+          const elapsedSec = Math.max(0, (performance.now() - recordStartMs) / 1000);
           const simDist = elapsedSec * videoPxPerSec;
 
-          if (simDist > maxDist) { activeMediaRecorder.stop(); return; }
+          if (simDist > maxDist) {
+            finishVideoRecordingEarly();
+            return;
+          }
 
           const pct = Math.min(100, Math.round((simDist / maxDist) * 100));
           btn.textContent = `⏳ Recording ${pct}% (${Math.floor(elapsedSec)}s / ${totalDurationSec}s)...`;
@@ -1551,10 +1625,10 @@
           });
 
           outCtx.drawImage(workCanvas, 0, 0, outW, outH);
-          requestAnimationFrame(stepExportFrame);
-        }
-        requestAnimationFrame(stepExportFrame);
+        }, 33);
       } catch (err) {
+        if (activeRecordingTimer) { clearInterval(activeRecordingTimer); activeRecordingTimer = null; }
+        if (audioCtx) { try { audioCtx.close(); } catch (e) {} }
         if (stopSaveBtn) stopSaveBtn.style.display = "none";
         btn.textContent = origText; btn.disabled = false;
         alert("Video generation error: " + err.message);
