@@ -320,15 +320,15 @@
       color: #fff;
       border-color: var(--navy-dark);
     }
+    .wave-pill.first-wave-btn {
+      background: #d97706;
+      color: #fff;
+      border-color: #b45309;
+    }
     .wave-pill.full-wave-btn {
       background: #7c3aed;
       color: #fff;
       border-color: #7c3aed;
-    }
-    .wave-pill.special-wave-btn {
-      background: #fef3c7;
-      color: #92400e;
-      border-color: #f59e0b;
     }
     .wave-pill.block-wave-btn {
       background: #eff6ff;
@@ -358,7 +358,7 @@
     .speed-label {
       font-size: 11.5px;
       font-weight: 700;
-      min-width: 68px;
+      min-width: 90px;
       text-align: center;
       color: var(--navy-dark);
     }
@@ -410,7 +410,6 @@
       display: flex;
       align-items: center;
     }
-    /* Explicit SVG-backed steps so html2canvas renders every step tread cleanly in video exports */
     .stage-side-steps {
       width: 26px;
       height: 48px;
@@ -468,6 +467,7 @@
       align-items: center;
       padding: 0 64px;
       margin-top: -12px;
+      position: relative;
     }
     .reception-desk {
       border: 2px solid #fef08a;
@@ -475,6 +475,11 @@
       border-radius: 6px;
       padding: 4px 16px;
       text-align: center;
+      transition: opacity 0.25s;
+    }
+    .reception-desk.hidden-station {
+      opacity: 0;
+      pointer-events: none;
     }
     .reception-desk-title {
       font-size: 8px;
@@ -483,6 +488,21 @@
       color: #854d0e;
       text-transform: uppercase;
       line-height: 1.2;
+    }
+    /* Central Collection Point for First Wave (Toppers & PhD) */
+    .central-collection-desk {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #fef08a;
+      background: #fef9c3;
+      border-radius: 6px;
+      padding: 4px 18px;
+      text-align: center;
+      display: none;
+      z-index: 20;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
     .stage-floor-label {
       font-size: 8.5px;
@@ -1033,7 +1053,7 @@
       </button>
     </div>
 
-    <div class="eyebrow">CERTIFICATE DISTRIBUTION · DUAL STATIONS</div>
+    <div class="eyebrow">CERTIFICATE DISTRIBUTION · CENTRAL &amp; DUAL STATIONS</div>
     <h1 class="hero-title">Find your seat for Graduation Day</h1>
     <p class="hero-desc">
       Blocks 1–3 are numbered left-to-right; Blocks 4–6 are mirror-numbered right-to-left (with Row 1 Faculty and Row 2 PhD/UG Left-to-Right).
@@ -1074,7 +1094,7 @@
       </div>
     </div>
 
-    <!-- Toolbar with PhD, Toppers UG & Toppers PG Waves -->
+    <!-- Toolbar with First Wave (Toppers & PhD) and Full Wave (Excludes Toppers & PhD) -->
     <div class="toolbar">
       <div class="zoom-controls">
         <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
@@ -1084,10 +1104,8 @@
       </div>
 
       <div class="ceremony-bar" id="deptWaveBar">
+        <button class="wave-pill first-wave-btn" onclick="startFirstWave(this)">🥇 First Wave (Toppers &amp; PhD)</button>
         <button class="wave-pill full-wave-btn" onclick="startFullWave(this)">🌟 Full Wave</button>
-        <button class="wave-pill special-wave-btn" onclick="startSpecialGroupWave('UG', this)">Toppers UG</button>
-        <button class="wave-pill special-wave-btn" onclick="startSpecialGroupWave('PG', this)">Toppers PG</button>
-        <button class="wave-pill special-wave-btn" style="background:#ede4ff; color:#5b21b6; border-color:#c084fc;" onclick="startSpecialGroupWave('PhD', this)">PhD</button>
         <button class="wave-pill block-wave-btn" onclick="startBlockWave(1, this)">Block 1</button>
         <button class="wave-pill block-wave-btn" onclick="startBlockWave(2, this)">Block 2</button>
         <button class="wave-pill block-wave-btn" onclick="startBlockWave(3, this)">Block 3</button>
@@ -1115,7 +1133,7 @@
             Walking through center of side steps &rarr; Bottom edge of Certificate Station &rarr; Central return steps
           </div>
           <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
-            When last student of one row exits stage, next row first student of same department is at the step of stage.
+            Default speed: 5 sec per student at collection center. Same-department rows connect continuously at collection center.
           </div>
         </div>
 
@@ -1123,7 +1141,7 @@
           <div class="speed-controls">
             <span style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Speed:</span>
             <button class="speed-btn" onclick="changeAnimSpeed(-1)">−</button>
-            <span id="speedValueLabel" class="speed-label">1x (Normal)</span>
+            <span id="speedValueLabel" class="speed-label">1x (5s/student)</span>
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
           <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
@@ -1145,7 +1163,7 @@
           <div class="entry-box">ENTRY (29 ft)</div>
 
           <div class="stage-cluster" id="stageCluster">
-            <!-- Left Side Steps with explicit SVG treads for crisp video & image export -->
+            <!-- Left Side Steps with explicit SVG treads -->
             <div class="stage-side-steps" id="leftStageSteps">
               <svg width="26" height="48" viewBox="0 0 26 48">
                 <rect width="26" height="48" fill="#dce4ee" />
@@ -1165,6 +1183,10 @@
                   <div class="reception-desk" id="station1Desk">
                     <div class="reception-desk-title">CERTIFICATE<br>STATION 1</div>
                   </div>
+                  <!-- Central Collection Point (Only visible during First Wave or Individual Topper/PhD walk) -->
+                  <div class="central-collection-desk" id="centralStationDesk">
+                    <div class="reception-desk-title">CENTRAL<br>COLLECTION POINT</div>
+                  </div>
                   <div class="reception-desk" id="station2Desk">
                     <div class="reception-desk-title">CERTIFICATE<br>STATION 2</div>
                   </div>
@@ -1172,7 +1194,7 @@
 
                 <div class="stage-floor-label">MAIN STAGE</div>
               </div>
-              <!-- Center Return Steps with explicit SVG treads for crisp video & image export -->
+              <!-- Center Return Steps with explicit SVG treads -->
               <div class="center-return-stairs" id="centerReturnStairs">
                 <svg width="36" height="22" viewBox="0 0 36 22">
                   <rect width="36" height="22" fill="#dce4ee" />
@@ -1185,7 +1207,7 @@
               </div>
             </div>
 
-            <!-- Right Side Steps with explicit SVG treads for crisp video & image export -->
+            <!-- Right Side Steps with explicit SVG treads -->
             <div class="stage-side-steps" id="rightStageSteps">
               <svg width="26" height="48" viewBox="0 0 26 48">
                 <rect width="26" height="48" fill="#dce4ee" />
@@ -1462,15 +1484,31 @@
     let highlightCompletedActive = false;
     let activeAnimState = null;
 
-    const SPEED_STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
-    let currentSpeedIndex = 3;
+    // Default 1x speed = 5 seconds per student at collection center!
+    // Student spacing = 15 px => 3.0 px per second = 5.0 seconds per student.
+    const STUDENT_SPACING_PX = 15;
+    const BASE_PX_PER_SECOND = STUDENT_SPACING_PX / 5.0; // Exactly 3.0 px/s (5 sec/student)
+    const SPEED_STEPS = [0.5, 1, 2, 5, 10, 20, 40];
+    let currentSpeedIndex = 1; // 1x (5s/student)
     let animSpeedMultiplier = 1;
 
     function changeAnimSpeed(delta) {
       currentSpeedIndex = Math.max(0, Math.min(SPEED_STEPS.length - 1, currentSpeedIndex + delta));
       animSpeedMultiplier = SPEED_STEPS[currentSpeedIndex];
       const lbl = document.getElementById("speedValueLabel");
-      if (lbl) lbl.textContent = animSpeedMultiplier === 1 ? "1x (Normal)" : `${animSpeedMultiplier}x`;
+      if (lbl) {
+        const secPerStudent = (5 / animSpeedMultiplier).toFixed(animSpeedMultiplier > 5 ? 2 : 1);
+        lbl.textContent = animSpeedMultiplier === 1 ? "1x (5s/student)" : `${animSpeedMultiplier}x (${secPerStudent}s/st)`;
+      }
+    }
+
+    function setCentralStationMode(isCentral) {
+      const s1 = document.getElementById("station1Desk");
+      const s2 = document.getElementById("station2Desk");
+      const cen = document.getElementById("centralStationDesk");
+      if (s1) s1.classList.toggle("hidden-station", isCentral);
+      if (s2) s2.classList.toggle("hidden-station", isCentral);
+      if (cen) cen.style.display = isCentral ? "block" : "none";
     }
 
     const FACULTY_DESIGNATIONS = {
@@ -1565,7 +1603,7 @@
     let deptRowsMap = {};
 
     function initFirestoreListener() {
-      db.collection("cet2026").doc("seatingState_v19").onSnapshot((doc) => {
+      db.collection("cet2026").doc("seatingState_v20").onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
           if (cloudData.layoutConfig) layoutConfig = cloudData.layoutConfig;
@@ -1588,7 +1626,7 @@
     }
 
     function saveAllCloudStorage() {
-      db.collection("cet2026").doc("seatingState_v19").set({
+      db.collection("cet2026").doc("seatingState_v20").set({
         layoutConfig,
         studentRoster,
         seatOverrides,
@@ -2042,7 +2080,10 @@
       else if (isEmpty) titleText = "Kept Empty";
       else if (assignedData && assignedData.name) titleText = assignedData.name;
 
-      const stationNum = seatObj.block <= 3 ? 1 : 2;
+      const isFirstWaveRow = seatObj.row === 2 && (seatObj.dept === "TOP" || seatObj.dept === "PhD");
+      const stationDisplay = isFirstWaveRow
+        ? "Central Collection Point"
+        : `Station ${seatObj.block <= 3 ? 1 : 2}`;
       const branchDisplay = isFaculty
         ? "Faculty / HoD"
         : (assignedData?.branch || BRANCH_META[seatObj.dept]?.name || "Unallocated");
@@ -2087,7 +2128,7 @@
           ${!isFaculty ? `
           <div>
             <div class="meta-item-label">📋 REGISTRATION &amp; STATION</div>
-            <div class="meta-item-val">Station ${stationNum} · ${regBadge}</div>
+            <div class="meta-item-val">${stationDisplay} · ${regBadge}</div>
           </div>` : ""}
         </div>
 
@@ -2101,12 +2142,11 @@
     }
 
     /********************************************************************
-     * 5. STRICTLY NON-INTERSECTING DUAL-CHANNEL ANIMATION ENGINE
-     * - Enters horizontally through the EXACT CENTER of side steps
-     * - Walks along bottom edge of moved-back Certificate Station
-     * - Exits down central return steps aligned with central passage
+     * 5. STRICTLY NON-INTERSECTING DUAL-CHANNEL & CENTRAL STAGE ENGINE
+     * - Supports Central Collection Point for First Wave (Toppers & PhD)
+     * - Supports Dual Stations (1 & 2) for Regular Waves
      ********************************************************************/
-    function buildNonIntersectingRowPath(blockId, rowNum, canvasRect) {
+    function buildNonIntersectingRowPath(blockId, rowNum, canvasRect, useCentralStation = false) {
       alignExitStepsWithCentralPassage();
 
       const toLocal = (rect) => ({
@@ -2123,7 +2163,9 @@
       const isLeft = blockId <= 3;
 
       const stepsEl = document.getElementById(isLeft ? "leftStageSteps" : "rightStageSteps");
-      const deskEl = document.getElementById(isLeft ? "station1Desk" : "station2Desk");
+      const deskEl = document.getElementById(
+        useCentralStation ? "centralStationDesk" : (isLeft ? "station1Desk" : "station2Desk")
+      );
       const stageEl = document.getElementById("stageMainRect");
       const stairsEl = document.getElementById("centerReturnStairs");
 
@@ -2149,14 +2191,15 @@
       const outboundFrontY = stgPos.y + stgPos.h + 5 + blockOffset;
       const returnFrontY = strPos.y + strPos.h + 10 + blockOffset;
 
-      // Side steps entry through the EXACT CENTER of side steps
+      // Side assembly & entry through the EXACT CENTER of left/right stage steps
       const stepOuterApproachX = isLeft ? (stpPos.x - 6) : (stpPos.x + stpPos.w + 6);
       const stepCenterY = stpPos.cy;
       const stepInnerStageX = isLeft ? (stpPos.x + stpPos.w + 8) : (stpPos.x - 8);
 
-      // Path along the BOTTOM EDGE of the Certificate Station rectangle
+      // Path along the BOTTOM EDGE of the active Certificate Station (or Central Collection Point)
       const stationBottomY = dskPos.y + dskPos.h + 5;
       const stationStartX = isLeft ? dskPos.x : (dskPos.x + dskPos.w);
+      const stationCenterX = dskPos.cx;
       const stationEndX = isLeft ? (dskPos.x + dskPos.w) : dskPos.x;
       const returnStairX = strPos.cx + (isLeft ? -7 : 7);
 
@@ -2165,16 +2208,17 @@
         { x: outerAisleX, y: rowY },                // 1: Enter outer passage
         { x: outerAisleX, y: outboundFrontY },      // 2: Walk up outer passage
         { x: stepOuterApproachX, y: outboundFrontY },// 3: Move outside side steps
-        { x: stepOuterApproachX, y: stepCenterY },  // 4: AT STEP OF STAGE (ready to ascend center of side steps)
-        { x: stepInnerStageX, y: stepCenterY },     // 5: Ascend through center of side steps onto stage
-        { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Certificate Station
-        { x: stationStartX, y: stationBottomY },    // 7: Start of Certificate Station bottom edge
-        { x: stationEndX, y: stationBottomY },      // 8: End of Certificate Station bottom edge
-        { x: returnStairX, y: stationBottomY },     // 9: STAGE EXIT (Top of Central Return Steps)
-        { x: returnStairX, y: returnFrontY },       // 10: Descend Central Return Steps aligned with Central Passage
-        { x: innerAisleX, y: returnFrontY },        // 11: Enter return passage
-        { x: innerAisleX, y: rowY },                // 12: Walk down return passage to row
-        { x: rowInnerEdgeX, y: rowY }               // 13: Re-enter row seat
+        { x: stepOuterApproachX, y: stepCenterY },  // 4: Assemble at side of stage (center of side steps)
+        { x: stepInnerStageX, y: stepCenterY },     // 5: Enter stage through center of side steps
+        { x: stepInnerStageX, y: stationBottomY },  // 6: Align with bottom edge of Collection Point
+        { x: stationStartX, y: stationBottomY },    // 7: Start of Collection Point bottom edge
+        { x: stationCenterX, y: stationBottomY },   // 8: EXACT COLLECTION CENTER (Receives Certificate)
+        { x: stationEndX, y: stationBottomY },      // 9: End of Collection Point bottom edge
+        { x: returnStairX, y: stationBottomY },     // 10: STAGE EXIT (Top of Central Return Steps)
+        { x: returnStairX, y: returnFrontY },       // 11: Descend Central Return Steps aligned with Central Passage
+        { x: innerAisleX, y: returnFrontY },        // 12: Enter return passage
+        { x: innerAisleX, y: rowY },                // 13: Walk down return passage to row
+        { x: rowInnerEdgeX, y: rowY }               // 14: Re-enter row seat
       ];
 
       const cumDist = [0];
@@ -2199,25 +2243,32 @@
         pts,
         d,
         deptLabel: rowDept,
-        stationNum: isLeft ? 1 : 2,
+        stationNum: useCentralStation ? 0 : (isLeft ? 1 : 2),
+        useCentralStation,
         studentCount: Math.max(1, studentCount),
         blockId,
         rowNum,
-        distToStepOfStage: cumDist[4],  // Exact point at the step of stage before ascending
-        distToStageEntry: cumDist[5],   // Inside stage after ascending steps
-        distToStageExit: cumDist[9],    // Exits stage at top of return steps
+        distToStepOfStage: cumDist[4],       // Side assembly point at step of stage
+        distToStageEntry: cumDist[5],        // Inside stage
+        distToCollectionCenter: cumDist[8],  // Exact point where student receives certificate
+        distToStageExit: cumDist[10],        // Top of central return steps
         totalLength: cumDist[cumDist.length - 1]
       };
     }
 
     function animateSingleStudentPath(blockId, rowNum, colNum, highlightCoordKey) {
       stopWalkAnimation();
+      const seatObj = seatsByCoord[highlightCoordKey];
+      const isCentralPerson = seatObj && seatObj.row === 2 && (seatObj.dept === "TOP" || seatObj.dept === "PhD");
+
+      // Show Central Collection Point & hide Stations 1 and 2 if this person is a Topper or PhD
+      setCentralStationMode(Boolean(isCentralPerson));
+
       const canvas = document.getElementById("hallCanvas");
       const svg = document.getElementById("walkOverlaySvg");
       const cRect = canvas.getBoundingClientRect();
 
-      const seatObj = seatsByCoord[highlightCoordKey];
-      const pInfo = buildNonIntersectingRowPath(blockId, rowNum, cRect);
+      const pInfo = buildNonIntersectingRowPath(blockId, rowNum, cRect, Boolean(isCentralPerson));
       if (!pInfo) return;
 
       const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -2239,7 +2290,9 @@
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent =
         `INDIVIDUAL STUDENT PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW ${rowNum}`}`;
-      document.getElementById("walkStepTitle").textContent = "Entering through center of side steps & walking along bottom edge of Certificate Station...";
+      document.getElementById("walkStepTitle").textContent = isCentralPerson
+        ? "Assembling at side of stage & proceeding to Central Collection Point..."
+        : "Entering through center of side steps & walking along bottom edge of Certificate Station...";
 
       const singleConvoy = {
         ...pInfo,
@@ -2249,66 +2302,187 @@
       };
       activeAnimState = {
         mode: `Student_${seatObj ? seatObj.code.replace(/\s+/g, '_') : 'Walk'}`,
+        isCentralMode: Boolean(isCentralPerson),
         convoys: [singleConvoy]
       };
 
       let dist = 0;
-      function stepSingle() {
-        dist += 2.8 * animSpeedMultiplier;
-        if (dist > pInfo.totalLength) dist = 0;
+      let lastTime = performance.now();
+      function stepSingle(now) {
+        const dt = Math.min(0.1, (now - lastTime) / 1000);
+        lastTime = now;
+        dist += BASE_PX_PER_SECOND * animSpeedMultiplier * dt;
+
+        if (dist > pInfo.totalLength) {
+          if (isCentralPerson) setCentralStationMode(false);
+          dist = 0;
+          if (isCentralPerson) setCentralStationMode(true);
+        }
         const pt = pathEl.getPointAtLength(dist);
         dot.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
-        updateLiveStationLogs(dist, [singleConvoy]);
+        updateLiveStationLogs(dist, [singleConvoy], Boolean(isCentralPerson));
         walkAnimFrame = requestAnimationFrame(stepSingle);
       }
       walkAnimFrame = requestAnimationFrame(stepSingle);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    // Dedicated Waves for Toppers UG, Toppers PG & PhD
-    function startSpecialGroupWave(groupType, btnEl) {
+    /* FIRST WAVE (TOPPERS & PhD AT CENTRAL COLLECTION POINT):
+     * - Hides Station 1 & Station 2, reveals Central Collection Point.
+     * - All Toppers & PhD assemble at left/right side of stage.
+     * - Order: All UG (UG 1..9) together in one line -> gap -> All PG (PG 1..25) together in one line -> gap -> All PhD (PhD 1..12) together in one line.
+     * - After all PhD students return to their seats, Central Collection Point disappears.
+     */
+    function startFirstWave(btnEl) {
       stopWalkAnimation();
       if (btnEl) btnEl.classList.add("active-wave");
+      setCentralStationMode(true);
 
       const canvas = document.getElementById("hallCanvas");
       const cRect = canvas.getBoundingClientRect();
-      const leftConfigs = [];
-      const rightConfigs = [];
 
-      if (groupType === "UG") {
-        const ugRow = buildNonIntersectingRowPath(3, 2, cRect);
-        if (ugRow) leftConfigs.push(ugRow);
-      } else if (groupType === "PG") {
-        const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect);
-        if (pg1to9) rightConfigs.push(pg1to9);
-        const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect);
-        if (pg10to18) rightConfigs.push(pg10to18);
-        const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect);
-        if (pg19to25) rightConfigs.push(pg19to25);
-      } else if (groupType === "PhD") {
-        const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect);
-        if (phd1to9) leftConfigs.push(phd1to9);
-        const phd10to12 = buildNonIntersectingRowPath(1, 2, cRect);
-        if (phd10to12) leftConfigs.push(phd10to12);
-      }
+      const ugRow = buildNonIntersectingRowPath(3, 2, cRect, true);     // UG 1..9 (Left side assembly)
+      const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect, true);    // PG 1..9 (Right side assembly)
+      const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect, true);  // PG 10..18 (Right side assembly)
+      const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect, true);  // PG 19..25 (Right side assembly)
+      const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect, true);   // PhD 1..9 (Left side assembly)
+      const phd10to12 = buildNonIntersectingRowPath(1, 2, cRect, true); // PhD 10..12 (Left side assembly)
+
+      const firstWaveConfigs = [ugRow, pg1to9, pg10to18, pg19to25, phd1to9, phd10to12].filter(Boolean);
 
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
-      const labelMap = {
-        UG: "TOPPERS UG WAVE (UG 1–9 → STATION 1)",
-        PG: "TOPPERS PG WAVE (PG 1–25 → STATION 2)",
-        PhD: "PhD SCHOLARS WAVE (PhD 1–12 → STATION 1)"
-      };
-      document.getElementById("walkEyebrow").textContent = labelMap[groupType] || groupType;
+      document.getElementById("walkEyebrow").textContent =
+        "🥇 FIRST WAVE (TOPPERS & PhD) · CENTRAL STAGE COLLECTION POINT";
       document.getElementById("walkSubtext").textContent =
-        "When last student of one row exits stage, next row first student of same department is at the step of stage.";
+        "UG (1–9) in one line → Gap → PG (1–25) in one line → Gap → PhD (1–12) in one line. Central station disappears after PhD returns.";
 
-      runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Wave_${groupType}`);
+      runFirstWaveCentralAnimation(firstWaveConfigs);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function runFirstWaveCentralAnimation(configs) {
+      const svg = document.getElementById("walkOverlaySvg");
+      svg.innerHTML = "";
+      const spacing = STUDENT_SPACING_PX;
+      const groupGapPx = 45; // Clear visual gap between UG -> PG and PG -> PhD at the Central Collection Point
+
+      const queue = [];
+      configs.forEach((pCfg, idx) => {
+        const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathEl.setAttribute("d", pCfg.d);
+        pathEl.setAttribute("fill", "none");
+        pathEl.setAttribute("stroke", "#cbd5e1");
+        pathEl.setAttribute("stroke-width", "1.4");
+        pathEl.setAttribute("stroke-dasharray", "4 4");
+        pathEl.style.opacity = "0";
+        svg.appendChild(pathEl);
+
+        const dots = [];
+        for (let i = 0; i < pCfg.studentCount; i++) {
+          const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.style.opacity = "0";
+          g.innerHTML = `
+            <circle cx="0" cy="-3" r="3" fill="#152542" stroke="#fff" stroke-width="1"/>
+            <rect x="-3.2" y="0.5" width="6.4" height="4.2" rx="1.8" fill="#152542" stroke="#fff" stroke-width="1"/>
+          `;
+          svg.appendChild(g);
+          dots.push(g);
+        }
+
+        let startDist = 0;
+        if (idx > 0) {
+          const prev = queue[idx - 1];
+          const prevLastAtCenter = prev.startDist + prev.distToCollectionCenter + (prev.studentCount - 1) * spacing;
+          if (prev.deptLabel === pCfg.deptLabel) {
+            // Same group (e.g. PG 1-9 -> PG 10-18 -> PG 19-25, or PhD 1-9 -> PhD 10-12):
+            // Come together in one continuous line (next row's 1st student is exactly 1 spacing behind previous row's last student)
+            startDist = prevLastAtCenter + spacing - pCfg.distToCollectionCenter;
+          } else {
+            // Gap between UG -> PG, and PG -> PhD
+            startDist = prevLastAtCenter + groupGapPx - pCfg.distToCollectionCenter;
+          }
+        }
+
+        queue.push({
+          ...pCfg,
+          pathEl,
+          dots,
+          startDist,
+          finishDist: startDist + pCfg.totalLength + (pCfg.studentCount - 1) * spacing
+        });
+      });
+
+      // Normalize so earliest startDist is 0
+      const minStart = Math.min(...queue.map(q => q.startDist));
+      queue.forEach(q => {
+        q.startDist -= minStart;
+        q.finishDist -= minStart;
+      });
+
+      activeAnimState = { mode: "First_Wave_Toppers_PhD", isCentralMode: true, convoys: queue };
+
+      const maxGlobalDist = Math.max(...queue.map(c => c.finishDist));
+      let globalDist = 0;
+      let lastTime = performance.now();
+
+      function stepFirstWave(now) {
+        const dt = Math.min(0.1, (now - lastTime) / 1000);
+        lastTime = now;
+        globalDist += BASE_PX_PER_SECOND * animSpeedMultiplier * dt;
+
+        if (globalDist >= maxGlobalDist) {
+          // After all PhD students return to their seats, Central Collection Point disappears!
+          setCentralStationMode(false);
+          document.getElementById("walkStepTitle").textContent =
+            "First Wave Complete — All Toppers & PhD seated; Central Collection Point hidden.";
+          document.getElementById("st1LiveLog").textContent =
+            "Central Collection Point: Completed (TOP UG, TOP PG, PhD) — Closed";
+          document.getElementById("st2LiveLog").textContent =
+            "Stations 1 & 2 Restored for Main Convocation";
+          svg.innerHTML = "";
+          walkAnimFrame = null;
+          return;
+        }
+
+        const activeStageLabels = [];
+        queue.forEach((c) => {
+          const localHeadDist = globalDist - c.startDist;
+          const tailDist = localHeadDist - (c.dots.length - 1) * spacing;
+          const isRowMoving = localHeadDist > 0 && tailDist < c.totalLength;
+
+          c.pathEl.style.opacity = isRowMoving ? "0.55" : "0";
+
+          if (localHeadDist >= c.distToStepOfStage && tailDist <= c.distToStageExit) {
+            activeStageLabels.push(`${c.deptLabel} (B${c.blockId})`);
+          }
+
+          c.dots.forEach((dotGroup, i) => {
+            const d = localHeadDist - i * spacing;
+            if (d <= 0 || d >= c.totalLength) {
+              dotGroup.style.opacity = "0";
+            } else {
+              dotGroup.style.opacity = "1";
+              const pt = c.pathEl.getPointAtLength(d);
+              dotGroup.setAttribute("transform", `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
+            }
+          });
+        });
+
+        updateLiveStationLogs(globalDist, queue, true);
+
+        document.getElementById("walkStepTitle").textContent = activeStageLabels.length
+          ? `At Central Collection Point: ${activeStageLabels.join(" · ")}`
+          : "Assembling / returning to seats...";
+
+        walkAnimFrame = requestAnimationFrame(stepFirstWave);
+      }
+      walkAnimFrame = requestAnimationFrame(stepFirstWave);
     }
 
     function startBlockWave(blockId, btnEl) {
       stopWalkAnimation();
+      setCentralStationMode(false);
       if (btnEl) btnEl.classList.add("active-wave");
 
       const canvas = document.getElementById("hallCanvas");
@@ -2322,7 +2496,7 @@
           if (s && s.type === "student") hasStudents = true;
         }
         if (hasStudents) {
-          const p = buildNonIntersectingRowPath(blockId, r, cRect);
+          const p = buildNonIntersectingRowPath(blockId, r, cRect, false);
           if (p) configs.push(p);
         }
       }
@@ -2332,7 +2506,8 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `BLOCK ${blockId} WAVE (EXCLUDING TOPPERS & PhD ROW)`;
-      document.getElementById("walkSubtext").textContent = `When last student of one row exits stage, next row first student of same department is at the step of stage.`;
+      document.getElementById("walkSubtext").textContent =
+        `5 sec per student at collection center; same-department rows connect continuously at collection center.`;
 
       if (blockId <= 3) runContinuousDualWingAnimation(configs, [], `Block_${blockId}`);
       else runContinuousDualWingAnimation([], configs, `Block_${blockId}`);
@@ -2341,6 +2516,7 @@
 
     function startDepartmentWave(deptCode, btnEl) {
       stopWalkAnimation();
+      setCentralStationMode(false);
       if (btnEl) btnEl.classList.add("active-wave");
 
       const rowsList = deptRowsMap[deptCode] || [];
@@ -2352,7 +2528,7 @@
       const leftConfigs = [];
       const rightConfigs = [];
       rowsList.forEach(item => {
-        const p = buildNonIntersectingRowPath(item.block, item.row, cRect);
+        const p = buildNonIntersectingRowPath(item.block, item.row, cRect, false);
         if (p) {
           if (item.block <= 3) leftConfigs.push(p);
           else rightConfigs.push(p);
@@ -2362,14 +2538,21 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent = `DEPARTMENT WAVE · ${deptCode}`;
-      document.getElementById("walkSubtext").textContent = `When last student of one row exits stage, next row first student is at the step of stage.`;
+      document.getElementById("walkSubtext").textContent =
+        `5 sec per student at collection center; next row first student reaches collection center continuously after previous row last student.`;
 
       runContinuousDualWingAnimation(leftConfigs, rightConfigs, `Department_${deptCode}`);
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    /* FULL WAVE (EXCLUDES TOPPERS & PhD ROW 2):
+     * - Starts with Block 3 (Station 1) & Block 4 (Station 2) simultaneously (Rows 3..24)
+     * - Followed by Block 2 (Station 1) & Block 5 (Station 2) simultaneously (Rows 3..24)
+     * - Followed by Block 1 (Station 1) & Block 6 (Station 2) simultaneously (Rows 3..24)
+     */
     function startFullWave(btnEl) {
       stopWalkAnimation();
+      setCentralStationMode(false);
       if (btnEl) btnEl.classList.add("active-wave");
 
       const canvas = document.getElementById("hallCanvas");
@@ -2378,22 +2561,6 @@
       const st1Configs = [];
       const st2Configs = [];
 
-      // 1. Toppers & PhD first in seat-number order
-      const ugRow = buildNonIntersectingRowPath(3, 2, cRect);
-      if (ugRow) st1Configs.push(ugRow);
-      const phd1to9 = buildNonIntersectingRowPath(2, 2, cRect);
-      if (phd1to9) st1Configs.push(phd1to9);
-      const phd10to12 = buildNonIntersectingRowPath(1, 2, cRect);
-      if (phd10to12) st1Configs.push(phd10to12);
-
-      const pg1to9 = buildNonIntersectingRowPath(4, 2, cRect);
-      if (pg1to9) st2Configs.push(pg1to9);
-      const pg10to18 = buildNonIntersectingRowPath(5, 2, cRect);
-      if (pg10to18) st2Configs.push(pg10to18);
-      const pg19to25 = buildNonIntersectingRowPath(6, 2, cRect);
-      if (pg19to25) st2Configs.push(pg19to25);
-
-      // 2. Block 3 & Block 4 (Rows 3..24) -> 3. Block 2 & Block 5 -> 4. Block 1 & Block 6
       const blockPairs = [[3, 4], [2, 5], [1, 6]];
       blockPairs.forEach(([lBlk, rBlk]) => {
         for (let r = 3; r <= 24; r++) {
@@ -2403,11 +2570,11 @@
             if (seatsByCoord[`B${rBlk}-R${r}-C${c}`]?.type === "student") hasR = true;
           }
           if (hasL) {
-            const lp = buildNonIntersectingRowPath(lBlk, r, cRect);
+            const lp = buildNonIntersectingRowPath(lBlk, r, cRect, false);
             if (lp) st1Configs.push(lp);
           }
           if (hasR) {
-            const rp = buildNonIntersectingRowPath(rBlk, r, cRect);
+            const rp = buildNonIntersectingRowPath(rBlk, r, cRect, false);
             if (rp) st2Configs.push(rp);
           }
         }
@@ -2416,9 +2583,9 @@
       const statusCard = document.getElementById("walkStatusCard");
       statusCard.style.display = "block";
       document.getElementById("walkEyebrow").textContent =
-        "🌟 FULL WAVE · UG & PhD (ST 1) + PG (ST 2) → BLOCKS 3 & 4 → BLOCKS 2 & 5 → BLOCKS 1 & 6";
+        "🌟 FULL WAVE (EXCLUDING TOPPERS & PhD) · BLOCKS 3 & 4 → BLOCKS 2 & 5 → BLOCKS 1 & 6";
       document.getElementById("walkSubtext").textContent =
-        "Same-department next row is at the step of stage when previous row exits stage; new department waits until previous department seats.";
+        "Same-department rows connect continuously at collection center; new department waits until previous department fully seats.";
 
       runContinuousDualWingAnimation(st1Configs, st2Configs, "Full_Wave");
       document.getElementById("hallViewport").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2442,8 +2609,9 @@
     }
 
     function getStationLogString(simDist, convoys, stationNum) {
+      const labelPrefix = stationNum === 0 ? "Central Collection Point" : `Station ${stationNum}`;
       const timings = computeStationDepartmentTimings(convoys, stationNum);
-      if (!timings.length) return `Station ${stationNum}: Idle`;
+      if (!timings.length) return `${labelPrefix}: Idle`;
 
       const completed = [];
       let currentActive = null;
@@ -2460,20 +2628,25 @@
       if (currentActive) parts.push(`Active: ${currentActive} (Started)`);
       if (completed.length) parts.push(`Completed: ${completed.join(", ")}`);
       if (!parts.length) parts.push(`Queued: ${timings[0].dept}`);
-      return `Station ${stationNum} — ${parts.join(" | ")}`;
+      return `${labelPrefix} — ${parts.join(" | ")}`;
     }
 
-    function updateLiveStationLogs(simDist, allConvoys) {
+    function updateLiveStationLogs(simDist, allConvoys, isCentralMode = false) {
       const st1El = document.getElementById("st1LiveLog");
       const st2El = document.getElementById("st2LiveLog");
-      if (st1El) st1El.textContent = getStationLogString(simDist, allConvoys, 1);
-      if (st2El) st2El.textContent = getStationLogString(simDist, allConvoys, 2);
+      if (isCentralMode) {
+        if (st1El) st1El.textContent = getStationLogString(simDist, allConvoys, 0);
+        if (st2El) st2El.textContent = "Stations 1 & 2: Temporarily Hidden (First Wave Active)";
+      } else {
+        if (st1El) st1El.textContent = getStationLogString(simDist, allConvoys, 1);
+        if (st2El) st2El.textContent = getStationLogString(simDist, allConvoys, 2);
+      }
     }
 
     function runContinuousDualWingAnimation(leftConfigs, rightConfigs, modeLabel) {
       const svg = document.getElementById("walkOverlaySvg");
       svg.innerHTML = "";
-      const spacing = 15;
+      const spacing = STUDENT_SPACING_PX;
 
       function buildQueue(configs) {
         const queue = [];
@@ -2506,10 +2679,11 @@
               // NEW DEPARTMENT GAP: First row of a new department starts ONLY after previous row is fully seated!
               startDist = prev.finishDist + 15;
             } else {
-              // SAME DEPARTMENT: When last student of previous row exits stage (distToStageExit),
-              // first student of next row is at the step of stage (distToStepOfStage)!
-              const prevLastExitsStageAt = prev.startDist + prev.distToStageExit + (prev.studentCount - 1) * spacing;
-              startDist = Math.max(prev.startDist + 25, prevLastExitsStageAt - pCfg.distToStepOfStage);
+              // SAME DEPARTMENT CONTINUITY AT COLLECTION CENTER:
+              // As the last student of the previous row receives their certificate at distToCollectionCenter,
+              // the first student of the next row reaches distToCollectionCenter immediately after (1 spacing = 5 sec behind)!
+              const prevLastReceivesCertAt = prev.startDist + prev.distToCollectionCenter + (prev.studentCount - 1) * spacing;
+              startDist = prevLastReceivesCertAt + spacing - pCfg.distToCollectionCenter;
             }
           }
 
@@ -2527,13 +2701,23 @@
       const allConvoys = [...buildQueue(leftConfigs), ...buildQueue(rightConfigs)];
       if (!allConvoys.length) return;
 
-      activeAnimState = { mode: modeLabel || "Wave", convoys: allConvoys };
+      // Normalize so earliest startDist is 0
+      const minStart = Math.min(...allConvoys.map(c => c.startDist));
+      allConvoys.forEach(c => {
+        c.startDist -= minStart;
+        c.finishDist -= minStart;
+      });
+
+      activeAnimState = { mode: modeLabel || "Wave", isCentralMode: false, convoys: allConvoys };
 
       const maxGlobalDist = Math.max(...allConvoys.map(c => c.finishDist)) + 30;
       let globalDist = 0;
+      let lastTime = performance.now();
 
-      function stepWave() {
-        globalDist += 3.2 * animSpeedMultiplier;
+      function stepWave(now) {
+        const dt = Math.min(0.1, (now - lastTime) / 1000);
+        lastTime = now;
+        globalDist += BASE_PX_PER_SECOND * animSpeedMultiplier * dt;
         if (globalDist > maxGlobalDist) globalDist = 0;
 
         const activeStageLabels = [];
@@ -2560,10 +2744,10 @@
           });
         });
 
-        updateLiveStationLogs(globalDist, allConvoys);
+        updateLiveStationLogs(globalDist, allConvoys, false);
 
         document.getElementById("walkStepTitle").textContent = activeStageLabels.length
-          ? `On Stage Now: ${activeStageLabels.slice(0, 2).join(" & ")}`
+          ? `At Collection Centers Now: ${activeStageLabels.slice(0, 2).join(" & ")}`
           : "Department transition / returning to seats...";
 
         walkAnimFrame = requestAnimationFrame(stepWave);
@@ -2576,6 +2760,7 @@
         cancelAnimationFrame(walkAnimFrame);
         walkAnimFrame = null;
       }
+      setCentralStationMode(false);
       const svg = document.getElementById("walkOverlaySvg");
       if (svg) svg.innerHTML = "";
       const statusCard = document.getElementById("walkStatusCard");
@@ -2637,7 +2822,7 @@
 
     async function downloadCurrentAnimationVideo() {
       if (!activeAnimState || !activeAnimState.convoys.length) {
-        alert("Please trigger a Student Path, Block Wave, Department Wave, or Full Wave first!");
+        alert("Please trigger First Wave, Full Wave, a Block Wave, a Department Wave, or a Student Path first!");
         return;
       }
 
@@ -2652,6 +2837,8 @@
       const prevZoom = currentZoom;
       canvasEl.style.transform = "scale(1)";
       svg.style.display = "none";
+
+      setCentralStationMode(Boolean(activeAnimState.isCentralMode));
 
       try {
         const headerHeight = 76;
@@ -2707,7 +2894,7 @@
           return { ...c, tempPath };
         });
 
-        const spacing = 15;
+        const spacing = STUDENT_SPACING_PX;
         const maxDist = Math.max(...convoys.map(c => c.finishDist)) + 20;
         const totalFrames = convoys.length > 25 ? 450 : (convoys.length > 5 ? 270 : 150);
         let frame = 0;
@@ -2733,10 +2920,15 @@
 
           ctx.fillStyle = "#ffffff";
           ctx.font = "bold 13px sans-serif";
-          const st1Text = getStationLogString(simDist, convoys, 1);
-          const st2Text = getStationLogString(simDist, convoys, 2);
-          ctx.fillText(st1Text, 24, 50);
-          ctx.fillText(st2Text, 24, 68);
+          if (activeAnimState.isCentralMode) {
+            const cenText = getStationLogString(simDist, convoys, 0);
+            ctx.fillText(cenText, 24, 52);
+          } else {
+            const st1Text = getStationLogString(simDist, convoys, 1);
+            const st2Text = getStationLogString(simDist, convoys, 2);
+            ctx.fillText(st1Text, 24, 50);
+            ctx.fillText(st2Text, 24, 68);
+          }
 
           // 2. Draw hall map (with explicit stage steps included) below the header bar
           ctx.drawImage(bgCanvas, 0, headerHeight);
