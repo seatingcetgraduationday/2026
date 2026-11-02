@@ -597,6 +597,39 @@
     let layoutConfig = JSON.parse(JSON.stringify(DEFAULT_LAYOUT)), studentRoster = {}, seatOverrides = {}, convocationProgress = JSON.parse(JSON.stringify(DEFAULT_PROGRESS));
     let seatsByCoord = {}, seatsByCode = {}, deptRowsMap = {};
 
+    function normalizeSeatCode(raw) {
+      if (!raw) return "";
+      let s = raw.toString().trim().toUpperCase().replace(/\s+/g, " ");
+      if (seatsByCode[s]) return seatsByCode[s].code;
+
+      const compactMatch = s.match(/^([A-Z]+)\s*(\d+)$/);
+      if (compactMatch) {
+        const prefix = compactMatch[1], num = parseInt(compactMatch[2], 10);
+        if (prefix === "PHD") return `PhD ${num}`;
+        if (prefix === "UG") return `TOP UG ${num}`;
+        if (prefix === "PG") return `TOP PG ${num}`;
+        if (prefix === "ARCH") return `Arch ${num}`;
+        if (prefix === "TOP") return num <= 8 ? `TOP UG ${num}` : `TOP PG ${num - 8}`;
+        const spaced = `${prefix} ${num}`;
+        if (seatsByCode[spaced]) return seatsByCode[spaced].code;
+      }
+
+      const topMatch = s.match(/^TOP\s+(UG|PG)\s*(\d+)$/);
+      if (topMatch) return `TOP ${topMatch[1]} ${parseInt(topMatch[2], 10)}`;
+
+      return raw.toString().trim();
+    }
+
+    function getRosterEntry(seatCode) {
+      if (!seatCode) return null;
+      return (
+        studentRoster[seatCode] ||
+        studentRoster[seatCode.toUpperCase()] ||
+        studentRoster[normalizeSeatCode(seatCode)] ||
+        null
+      );
+    }
+
     function initFirestoreListener() {
       db.collection("cet2026").doc("seatingState_v31").onSnapshot((doc) => {
         if (doc.exists) {
@@ -785,13 +818,24 @@
     }
 
     function createSeatDOM(seatObj) {
-      const el = document.createElement("div"); el.id = `seat-${seatObj.coordKey}`; el.className = "seat-box";
-      if (seatObj.statusOverride === "defective") { el.classList.add("seat-defective-slot"); el.textContent = "✕"; }
-      else if (seatObj.statusOverride === "empty" || seatObj.type === "empty") { el.classList.add("seat-empty-slot"); el.textContent = ""; }
-      else if (seatObj.type === "faculty") { el.classList.add(`seat-${seatObj.dept}`); el.textContent = seatObj.num; el.title = seatObj.designation ? `${seatObj.num}: ${seatObj.designation}` : seatObj.num; }
-      else {
+      const el = document.createElement("div");
+      el.id = `seat-${seatObj.coordKey}`;
+      el.className = "seat-box";
+      if (seatObj.statusOverride === "defective") {
+        el.classList.add("seat-defective-slot");
+        el.textContent = "✕";
+      } else if (seatObj.statusOverride === "empty" || seatObj.type === "empty") {
+        el.classList.add("seat-empty-slot");
+        el.textContent = "";
+      } else if (seatObj.type === "faculty") {
         el.classList.add(`seat-${seatObj.dept}`);
-        const rEntry = studentRoster[seatObj.code], isFilled = Boolean(rEntry?.name), isAbsent = Boolean(rEntry?.absent);
+        el.textContent = seatObj.num;
+        el.title = seatObj.designation ? `${seatObj.num}: ${seatObj.designation}` : seatObj.num;
+      } else {
+        el.classList.add(`seat-${seatObj.dept}`);
+        const rEntry = getRosterEntry(seatObj.code);
+        const isFilled = Boolean(rEntry?.name);
+        const isAbsent = Boolean(rEntry?.absent);
         if (isFilled) el.classList.add("seat-assigned");
         if (isAbsent) el.classList.add("seat-absent-slot");
         el.textContent = seatObj.label;
@@ -805,8 +849,12 @@
     }
 
     function updateSeatedCount() {
-      const count = Object.keys(studentRoster).filter(k => studentRoster[k]?.name && !studentRoster[k]?.absent).length;
-      const absentCount = Object.keys(studentRoster).filter(k => studentRoster[k]?.absent).length;
+      let count = 0, absentCount = 0;
+      Object.values(seatsByCoord).filter(s => s.type === "student" && s.code).forEach(s => {
+        const r = getRosterEntry(s.code);
+        if (r?.absent) absentCount++;
+        else if (r?.name) count++;
+      });
       document.getElementById("seatedCounter").textContent = `${count} students registered · ${absentCount} absent`;
     }
 
@@ -852,7 +900,7 @@
       const isFaculty = seatObj.type === "faculty", isDefective = seatObj.statusOverride === "defective", isEmpty = seatObj.statusOverride === "empty" || seatObj.type === "empty";
       const badgeColor = isDefective ? "#374151" : (BRANCH_META[seatObj.dept]?.color || "#64748b");
       const badgeText = isDefective ? "✕" : (isEmpty ? "◌" : (seatObj.label || seatObj.num));
-      const assignedData = seatObj.code ? studentRoster[seatObj.code] : null;
+      const assignedData = seatObj.code ? getRosterEntry(seatObj.code) : null;
       let titleText = "Not yet assigned";
       if (isFaculty) titleText = seatObj.designation || assignedData?.name || `Faculty (${seatObj.num})`;
       else if (isDefective) titleText = "Defective Chair";
@@ -1034,7 +1082,8 @@
       document.getElementById("walkStatusCard").style.display = "block";
       document.getElementById("walkEyebrow").textContent = `INDIVIDUAL STUDENT PATH · ${seatObj ? seatObj.code : `BLOCK ${blockId} ROW ${rowNum}`}`;
 
-      const studentNameClean = seatObj && studentRoster[seatObj.code]?.name ? "_" + studentRoster[seatObj.code].name.replace(/[^a-zA-Z0-9]/g, "_") : "";
+      const rEntry = seatObj?.code ? getRosterEntry(seatObj.code) : null;
+      const studentNameClean = rEntry?.name ? "_" + rEntry.name.replace(/[^a-zA-Z0-9]/g, "_") : "";
       const seatLabelClean = seatObj?.code ? seatObj.code.replace(/[^a-zA-Z0-9]/g, "_") : `Block${blockId}_Row${rowNum}_Col${colNum}`;
 
       const singleConvoy = { ...pInfo, displayTitle:seatObj ? `${seatObj.code} (Block ${blockId} Row ${rowNum})` : pInfo.displayTitle, studentCount:1, startDist:0, finishDist:pInfo.totalLength };
@@ -1332,16 +1381,11 @@
       document.querySelectorAll(".wave-pill").forEach(btn => btn.classList.remove("active-wave"));
     }
 
-    /********************************************************************
-     * 6. WEBM/MP4 DURATION HEADER PATCHER & CONTIGUOUS VIDEO EXPORTER
-     * Fixes the 3-second truncation bug in Gallery & WhatsApp!
-     ********************************************************************/
     async function injectWebmDurationHeader(blob, durationMs) {
       try {
         if (!blob.type.includes("webm")) return blob;
         const buf = await blob.arrayBuffer();
         const bytes = new Uint8Array(buf);
-        // Search for Matroska TimecodeScale (0x2AD7B1) inside Info header and append/patch Duration (0x4489)
         for (let i = 0; i < Math.min(bytes.length - 12, 4096); i++) {
           if (bytes[i] === 0x44 && bytes[i + 1] === 0x89) {
             if (bytes[i + 2] === 0x84) {
@@ -1487,7 +1531,6 @@
         const videoStream = outCanvas.captureStream(fps);
         const combinedTracks = [...videoStream.getVideoTracks()];
 
-        // Continuous audio master clock so Gallery & WhatsApp never truncate the video duration!
         try {
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           if (AudioContextClass) {
@@ -1551,7 +1594,6 @@
           btn.textContent = origText; btn.disabled = false;
         };
 
-        // Call recorder.start() WITHOUT a timeslice so the browser writes a single unfragmented container header with the full duration!
         recorder.start();
 
         const convoys = activeAnimState.convoys, spacing = STUDENT_SPACING_PX;
@@ -1559,7 +1601,6 @@
         const videoPxPerSec = spacing / secPerStudent;
         const totalDurationSec = Math.ceil(maxDist / videoPxPerSec);
 
-        // Locked 30 FPS interval clock (never throttles like requestAnimationFrame, ensuring full duration in Gallery & WhatsApp)
         activeRecordingTimer = setInterval(() => {
           if (!activeMediaRecorder || activeMediaRecorder.state !== "recording") {
             clearInterval(activeRecordingTimer); activeRecordingTimer = null; return;
@@ -1658,15 +1699,19 @@
       const q = rawQuery.trim().toUpperCase();
       document.getElementById("clearSearchBtn").style.display = q ? "flex" : "none";
       if (!q) return;
-      const normalizedCode = q.replace(/([A-Z]+)\s*(\d+)/, "$1 $2");
-      if (seatsByCode[normalizedCode]) { selectSeat(seatsByCode[normalizedCode].coordKey, true); return; }
+      const canonical = normalizeSeatCode(q);
+      if (canonical && seatsByCode[canonical.toUpperCase()]) {
+        selectSeat(seatsByCode[canonical.toUpperCase()].coordKey, true);
+        return;
+      }
       if (seatsByCode[q]) { selectSeat(seatsByCode[q].coordKey, true); return; }
       for (const [coordKey, sObj] of Object.entries(seatsByCoord)) {
         if (sObj.designation && sObj.designation.toUpperCase().includes(q)) { selectSeat(coordKey, true); return; }
       }
       for (const [code, info] of Object.entries(studentRoster)) {
         if ((info.name && info.name.toUpperCase().includes(q)) || (info.regNo && info.regNo.toUpperCase().includes(q))) {
-          const seatObj = seatsByCode[code.toUpperCase()];
+          const norm = normalizeSeatCode(code);
+          const seatObj = seatsByCode[norm.toUpperCase()] || seatsByCode[code.toUpperCase()];
           if (seatObj) { selectSeat(seatObj.coordKey, true); return; }
         }
       }
@@ -1744,7 +1789,7 @@
 
       allStudentSeats.forEach(sObj => {
         if (deptFilter !== "ALL" && sObj.dept !== deptFilter) return;
-        const rData = studentRoster[sObj.code] || {}, nameStr = rData.name || "", regStr = rData.regNo || "";
+        const rData = getRosterEntry(sObj.code) || {}, nameStr = rData.name || "", regStr = rData.regNo || "";
         if (searchQ && !(sObj.code.toUpperCase().includes(searchQ) || nameStr.toUpperCase().includes(searchQ) || regStr.toUpperCase().includes(searchQ))) return;
         totalShown++; if (rData.absent) absentShown++;
         const tr = document.createElement("tr");
@@ -1755,8 +1800,14 @@
     }
 
     function toggleStudentAbsent(seatCode, isAbsent) {
-      if (!studentRoster[seatCode]) studentRoster[seatCode] = { name:"Unassigned Student", regNo:"", branch:"", stream:"", absent:isAbsent };
-      else studentRoster[seatCode].absent = isAbsent;
+      const canonical = normalizeSeatCode(seatCode);
+      const existing = getRosterEntry(canonical);
+      if (!existing) {
+        studentRoster[canonical] = { name:"Unassigned Student", regNo:"", branch:"", stream:"", absent:isAbsent };
+      } else {
+        existing.absent = isAbsent;
+        studentRoster[canonical] = existing;
+      }
       saveAllCloudStorage(); renderRegistrationTable(); buildAndRenderMap();
     }
 
@@ -1766,7 +1817,7 @@
       doc.setFontSize(15); doc.text("CET Graduation Day 2026 — Registration & Absentees Report", 40, 40);
       const absenteesRows = [], registeredRows = [];
       Object.values(seatsByCoord).filter(s => s.type === "student" && s.code).forEach(s => {
-        const r = studentRoster[s.code] || {};
+        const r = getRosterEntry(s.code) || {};
         const rowData = [s.code, `B${s.block}-R${s.row}`, r.name || "Unassigned", r.regNo || "-", r.branch || s.dept, r.absent ? "ABSENT (Failed to Register)" : "Registered"];
         if (r.absent) absenteesRows.push(rowData); else if (r.name) registeredRows.push(rowData);
       });
@@ -1793,10 +1844,28 @@
       const alloc = layoutConfig.allocations.find(a => a.dept === selectedDeptForExcel); if (!alloc) return;
       const defaultBranchName = BRANCH_META[alloc.dept]?.name || alloc.dept;
       const rows = [["Seat_Number", "Department", "Branch", "Stream_PG", "Student_Name", "Register_No"]];
-      for (let i = 1; i <= alloc.count; i++) {
-        const code = `${alloc.dept} ${i}`, ex = studentRoster[code] || {};
-        rows.push([code, alloc.dept, ex.branch || defaultBranchName, ex.stream || "", ex.name || "", ex.regNo || ""]);
+
+      if (alloc.dept === "TOP") {
+        for (let i = 1; i <= 8; i++) {
+          const code = `TOP UG ${i}`, ex = getRosterEntry(code) || {};
+          rows.push([code, "TOP", ex.branch || "UG Topper", ex.stream || "UG", ex.name || "", ex.regNo || ""]);
+        }
+        for (let i = 1; i <= 25; i++) {
+          const code = `TOP PG ${i}`, ex = getRosterEntry(code) || {};
+          rows.push([code, "TOP", ex.branch || "PG Topper", ex.stream || "PG", ex.name || "", ex.regNo || ""]);
+        }
+      } else if (alloc.dept === "PhD") {
+        for (let i = 1; i <= alloc.count; i++) {
+          const code = `PhD ${i}`, ex = getRosterEntry(code) || {};
+          rows.push([code, "PhD", ex.branch || defaultBranchName, ex.stream || "PhD", ex.name || "", ex.regNo || ""]);
+        }
+      } else {
+        for (let i = 1; i <= alloc.count; i++) {
+          const code = `${alloc.dept} ${i}`, ex = getRosterEntry(code) || {};
+          rows.push([code, alloc.dept, ex.branch || defaultBranchName, ex.stream || "", ex.name || "", ex.regNo || ""]);
+        }
       }
+
       const ws = XLSX.utils.aoa_to_sheet(rows), wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, `${alloc.dept}_Seating`);
       XLSX.writeFile(wb, `CET_2026_${alloc.dept}_Seating.xlsx`);
@@ -1811,17 +1880,27 @@
         const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         let count = 0;
         json.forEach(row => {
-          const rawCode = (row.Seat_Number || row.Seat || row.seat_number || "").toString().trim().toUpperCase();
+          const rawInputCode = (row.Seat_Number || row.Seat || row.seat_number || "").toString().trim();
+          const canonicalCode = normalizeSeatCode(rawInputCode);
           const name = (row.Student_Name || row.Name || row.student_name || "").toString().trim();
           const regNo = (row.Register_No || row.RegNo || row.register_no || "").toString().trim();
           const branch = (row.Branch || row.branch || "").toString().trim();
           const stream = (row.Stream_PG || row.Stream || row.stream_pg || "").toString().trim();
-          if (rawCode) {
-            if (name) { studentRoster[rawCode] = { name, regNo, branch, stream, absent:studentRoster[rawCode]?.absent || false }; count++; }
-            else delete studentRoster[rawCode];
+          if (canonicalCode) {
+            if (name) {
+              const prevEntry = getRosterEntry(canonicalCode);
+              delete studentRoster[rawInputCode.toUpperCase()];
+              studentRoster[canonicalCode] = { name, regNo, branch, stream, absent:prevEntry?.absent || false };
+              count++;
+            } else {
+              delete studentRoster[canonicalCode];
+              delete studentRoster[rawInputCode.toUpperCase()];
+            }
           }
         });
-        saveAllCloudStorage(); alert(`Successfully synced ${count} students to Firebase Cloud!`);
+        saveAllCloudStorage();
+        buildAndRenderMap();
+        alert(`Successfully synced ${count} students to Firebase Cloud!`);
       };
       reader.readAsArrayBuffer(fileInput.files[0]);
     }
@@ -1832,10 +1911,16 @@
     }
 
     function applySeatStatusByInput() {
-      const rawKey = document.getElementById("statusSeatInput").value.trim().toUpperCase(), status = document.getElementById("statusTypeSelect").value;
+      const rawKey = document.getElementById("statusSeatInput").value.trim(), status = document.getElementById("statusTypeSelect").value;
       if (!rawKey) return;
-      if (status === "normal") delete seatOverrides[rawKey]; else seatOverrides[rawKey] = status;
-      saveAllCloudStorage(); alert(`Seat "${rawKey}" status updated.`);
+      const canonical = normalizeSeatCode(rawKey).toUpperCase();
+      if (status === "normal") {
+        delete seatOverrides[rawKey.toUpperCase()];
+        delete seatOverrides[canonical];
+      } else {
+        seatOverrides[canonical] = status;
+      }
+      saveAllCloudStorage(); alert(`Seat "${canonical}" status updated.`);
     }
 
     function renderAdminConfigTables() {
