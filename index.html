@@ -201,7 +201,7 @@
     <div class="search-row">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (e.g. HoD-CE, F1) or seat (e.g. EE 92, CS 45, UG 1)" oninput="handleSearch(this.value)" />
+        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (e.g. HoD-CE, F1) or seat (e.g. EE 92, PTDC 5, Arch 12, UG 1)" oninput="handleSearch(this.value)" />
         <button id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✕</button>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -597,37 +597,78 @@
     let layoutConfig = JSON.parse(JSON.stringify(DEFAULT_LAYOUT)), studentRoster = {}, seatOverrides = {}, convocationProgress = JSON.parse(JSON.stringify(DEFAULT_PROGRESS));
     let seatsByCoord = {}, seatsByCode = {}, deptRowsMap = {};
 
-    function normalizeSeatCode(raw) {
-      if (!raw) return "";
-      let s = raw.toString().trim().toUpperCase().replace(/\s+/g, " ");
-      if (seatsByCode[s]) return seatsByCode[s].code;
+    // Universal seat code normalizer supporting TOP (UG/PG), PhD, PTDC, Arch, EE, CS, MCA, CE, ME, MBA, EC
+    function normalizeSeatCode(raw, fallbackDept = "") {
+      if (raw === undefined || raw === null) return "";
+      let s = raw.toString().trim().replace(/[-_]+/g, " ").replace(/\s+/g, " ");
+      if (!s) return "";
+      const upper = s.toUpperCase();
 
-      const compactMatch = s.match(/^([A-Z]+)\s*(\d+)$/);
-      if (compactMatch) {
-        const prefix = compactMatch[1], num = parseInt(compactMatch[2], 10);
-        if (prefix === "PHD") return `PhD ${num}`;
-        if (prefix === "UG") return `TOP UG ${num}`;
-        if (prefix === "PG") return `TOP PG ${num}`;
-        if (prefix === "ARCH") return `Arch ${num}`;
-        if (prefix === "TOP") return num <= 8 ? `TOP UG ${num}` : `TOP PG ${num - 8}`;
-        const spaced = `${prefix} ${num}`;
-        if (seatsByCode[spaced]) return seatsByCode[spaced].code;
+      if (seatsByCode[upper]) return seatsByCode[upper].code;
+
+      // If user uploaded just a plain seat number (e.g. "1", "15") in the Seat_Number column, combine with Department
+      if (/^\d+$/.test(upper) && fallbackDept) {
+        const num = parseInt(upper, 10);
+        const fb = fallbackDept.toString().trim().toUpperCase();
+        if (fb === "PHD") return `PhD ${num}`;
+        if (fb === "ARCH" || fb === "B.ARCH" || fb === "ARCHITECTURE") return `Arch ${num}`;
+        if (fb === "PTDC" || fb.includes("PART")) return `PTDC ${num}`;
+        if (fb === "TOP" || fb === "TOPPER" || fb === "TOPPERS") return num <= 8 ? `TOP UG ${num}` : `TOP PG ${num - 8}`;
+        if (fb === "UG" || fb === "TOP UG") return `TOP UG ${num}`;
+        if (fb === "PG" || fb === "TOP PG") return `TOP PG ${num}`;
+        if (seatsByCode[`${fb} ${num}`]) return seatsByCode[`${fb} ${num}`].code;
+        return `${fb} ${num}`;
       }
 
-      const topMatch = s.match(/^TOP\s+(UG|PG)\s*(\d+)$/);
-      if (topMatch) return `TOP ${topMatch[1]} ${parseInt(topMatch[2], 10)}`;
+      // Handle Toppers variations ("TOP UG 1", "TOP UG1", "UG 1", "UG1", "PG 1", "PG1", "TOP 1")
+      const topSubMatch = upper.match(/^(?:TOP\s*)?(UG|PG)\s*(\d+)$/);
+      if (topSubMatch) {
+        return `TOP ${topSubMatch[1]} ${parseInt(topSubMatch[2], 10)}`;
+      }
+      const topNumMatch = upper.match(/^TOP(?:PERS?)?\s*(\d+)$/);
+      if (topNumMatch) {
+        const n = parseInt(topNumMatch[1], 10);
+        return n <= 8 ? `TOP UG ${n}` : `TOP PG ${n - 8}`;
+      }
 
-      return raw.toString().trim();
+      // Handle Department + Number variations ("PHD 1", "PHD1", "PTDC 1", "PTDC1", "ARCH 1", "ARCH1", "B.ARCH 1", etc.)
+      const deptMatch = upper.match(/^([A-Z.]+)\s*(\d+)$/);
+      if (deptMatch) {
+        let prefix = deptMatch[1].replace(/\./g, "");
+        const num = parseInt(deptMatch[2], 10);
+        if (prefix === "PHD") return `PhD ${num}`;
+        if (prefix === "ARCH" || prefix === "BARCH" || prefix === "ARCHITECTURE") return `Arch ${num}`;
+        if (prefix === "PTDC" || prefix === "PARTTIME") return `PTDC ${num}`;
+        const candidate = `${prefix} ${num}`;
+        if (seatsByCode[candidate]) return seatsByCode[candidate].code;
+        return candidate;
+      }
+
+      return s;
     }
 
     function getRosterEntry(seatCode) {
       if (!seatCode) return null;
+      const upper = seatCode.toUpperCase();
+      const norm = normalizeSeatCode(seatCode);
       return (
         studentRoster[seatCode] ||
-        studentRoster[seatCode.toUpperCase()] ||
-        studentRoster[normalizeSeatCode(seatCode)] ||
+        studentRoster[upper] ||
+        studentRoster[norm] ||
+        studentRoster[norm.toUpperCase()] ||
         null
       );
+    }
+
+    function normalizeAllLoadedRosterKeys() {
+      if (!studentRoster || typeof studentRoster !== "object") return;
+      const normalized = {};
+      for (const [k, val] of Object.entries(studentRoster)) {
+        if (!val) continue;
+        const canon = normalizeSeatCode(k, val.dept || val.branch || "");
+        normalized[canon] = val;
+      }
+      studentRoster = normalized;
     }
 
     function initFirestoreListener() {
@@ -727,6 +768,22 @@
       wrapper.appendChild(rowNumCol);
       wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, "passage-left-outer"));
 
+      // First pass: populate seatsByCoord and seatsByCode so normalizeSeatCode has full map awareness
+      layoutConfig.blocks.forEach((blk) => {
+        for (let r = 1; r <= 24; r++) {
+          const orderedItems = getRowAllocationForBlock(blk.id, r, blk.cols);
+          while (orderedItems.length < blk.cols) orderedItems.push({ type:"empty", dept:null, label:null, code:null });
+          for (let c = 1; c <= blk.cols; c++) {
+            const item = orderedItems[c - 1], coordKey = `B${blk.id}-R${r}-C${c}`;
+            const seatObj = { coordKey, block:blk.id, row:r, col:c, type:item.type, dept:item.dept, subType:item.subType || null, label:item.label, code:item.code, designation:item.designation || null, num:item.num || null };
+            seatsByCoord[coordKey] = seatObj;
+            if (seatObj.code) seatsByCode[seatObj.code.toUpperCase()] = seatObj;
+          }
+        }
+      });
+
+      normalizeAllLoadedRosterKeys();
+
       layoutConfig.blocks.forEach((blk, idx) => {
         const blockEl = document.createElement("div");
         blockEl.className = "seating-block";
@@ -744,12 +801,10 @@
 
         for (let r = 1; r <= 24; r++) {
           const rowEl = document.createElement("div"); rowEl.className = "seat-row"; rowEl.id = `row-el-B${blk.id}-R${r}`;
-          const orderedItems = getRowAllocationForBlock(blk.id, r, blk.cols);
-          while (orderedItems.length < blk.cols) orderedItems.push({ type:"empty", dept:null, label:null, code:null });
 
           for (let c = 1; c <= blk.cols; c++) {
-            const item = orderedItems[c - 1], coordKey = `B${blk.id}-R${r}-C${c}`;
-            const seatObj = { coordKey, block:blk.id, row:r, col:c, type:item.type, dept:item.dept, subType:item.subType || null, label:item.label, code:item.code, designation:item.designation || null, num:item.num || null };
+            const coordKey = `B${blk.id}-R${r}-C${c}`;
+            const seatObj = seatsByCoord[coordKey];
 
             if (seatObj.type === "student" && seatObj.dept) {
               const spanKey = `${seatObj.dept}_${r <= 16 ? 'top' : 'bot'}`;
@@ -765,8 +820,6 @@
             if (ov === "defective") seatObj.statusOverride = "defective";
             if (ov === "empty") seatObj.statusOverride = "empty";
 
-            seatsByCoord[coordKey] = seatObj;
-            if (seatObj.code) seatsByCode[seatObj.code.toUpperCase()] = seatObj;
             rowEl.appendChild(createSeatDOM(seatObj));
           }
           rowsStack.appendChild(rowEl);
@@ -1859,6 +1912,16 @@
           const code = `PhD ${i}`, ex = getRosterEntry(code) || {};
           rows.push([code, "PhD", ex.branch || defaultBranchName, ex.stream || "PhD", ex.name || "", ex.regNo || ""]);
         }
+      } else if (alloc.dept === "Arch") {
+        for (let i = 1; i <= alloc.count; i++) {
+          const code = `Arch ${i}`, ex = getRosterEntry(code) || {};
+          rows.push([code, "Arch", ex.branch || defaultBranchName, ex.stream || "", ex.name || "", ex.regNo || ""]);
+        }
+      } else if (alloc.dept === "PTDC") {
+        for (let i = 1; i <= alloc.count; i++) {
+          const code = `PTDC ${i}`, ex = getRosterEntry(code) || {};
+          rows.push([code, "PTDC", ex.branch || defaultBranchName, ex.stream || "", ex.name || "", ex.regNo || ""]);
+        }
       } else {
         for (let i = 1; i <= alloc.count; i++) {
           const code = `${alloc.dept} ${i}`, ex = getRosterEntry(code) || {};
@@ -1871,33 +1934,57 @@
       XLSX.writeFile(wb, `CET_2026_${alloc.dept}_Seating.xlsx`);
     }
 
+    // Flexible column extractor so minor Excel header changes or spaces never break upload
+    function getExcelRowField(row, patterns) {
+      for (const [k, val] of Object.entries(row)) {
+        const cleanKey = k.toString().trim().toLowerCase().replace(/[\s_-]+/g, "");
+        if (patterns.some(p => cleanKey === p || cleanKey.includes(p))) {
+          return val !== undefined && val !== null ? val.toString().trim() : "";
+        }
+      }
+      return "";
+    }
+
     function uploadBranchExcel() {
       const fileInput = document.getElementById("excelFileInput");
       if (!fileInput.files.length) { alert("Please select an Excel file first."); return; }
       const reader = new FileReader();
       reader.onload = (e) => {
         const wb = XLSX.read(new Uint8Array(e.target.result), { type:"array" });
-        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         let count = 0;
-        json.forEach(row => {
-          const rawInputCode = (row.Seat_Number || row.Seat || row.seat_number || "").toString().trim();
-          const canonicalCode = normalizeSeatCode(rawInputCode);
-          const name = (row.Student_Name || row.Name || row.student_name || "").toString().trim();
-          const regNo = (row.Register_No || row.RegNo || row.register_no || "").toString().trim();
-          const branch = (row.Branch || row.branch || "").toString().trim();
-          const stream = (row.Stream_PG || row.Stream || row.stream_pg || "").toString().trim();
-          if (canonicalCode) {
-            if (name) {
-              const prevEntry = getRosterEntry(canonicalCode);
-              delete studentRoster[rawInputCode.toUpperCase()];
-              studentRoster[canonicalCode] = { name, regNo, branch, stream, absent:prevEntry?.absent || false };
-              count++;
-            } else {
-              delete studentRoster[canonicalCode];
-              delete studentRoster[rawInputCode.toUpperCase()];
+
+        wb.SheetNames.forEach(sheetName => {
+          const json = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+          json.forEach(row => {
+            const rawSeat = getExcelRowField(row, ["seatnumber", "seatno", "seat", "chair"]);
+            const rowDept = getExcelRowField(row, ["department", "dept", "group"]) || selectedDeptForExcel;
+            const name = getExcelRowField(row, ["studentname", "name", "candidate", "student"]);
+            const regNo = getExcelRowField(row, ["registerno", "regno", "registration", "rollno", "ktuid"]);
+            const branch = getExcelRowField(row, ["branch", "programme", "course", "discipline"]);
+            const stream = getExcelRowField(row, ["streampg", "stream", "specialization", "spec"]);
+
+            const canonicalCode = normalizeSeatCode(rawSeat, rowDept);
+            if (canonicalCode) {
+              if (name) {
+                const prevEntry = getRosterEntry(canonicalCode);
+                delete studentRoster[rawSeat.toUpperCase()];
+                delete studentRoster[canonicalCode.toUpperCase()];
+                studentRoster[canonicalCode] = {
+                  name,
+                  regNo,
+                  branch: branch || BRANCH_META[rowDept]?.name || rowDept,
+                  stream,
+                  absent: prevEntry?.absent || false
+                };
+                count++;
+              } else {
+                delete studentRoster[canonicalCode];
+                delete studentRoster[rawSeat.toUpperCase()];
+              }
             }
-          }
+          });
         });
+
         saveAllCloudStorage();
         buildAndRenderMap();
         alert(`Successfully synced ${count} students to Firebase Cloud!`);
