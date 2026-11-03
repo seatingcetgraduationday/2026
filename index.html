@@ -14,156 +14,156 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    :root { --bg-cream:#f8f6f0; --navy-dark:#152542; --navy-card:#192a48; --gold:#e6b333; --text-main:#182232; --text-muted:#5e6b7c; --border-light:#e6e2d8; --card-bg:#ffffff; }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { background:var(--bg-cream); color:var(--text-main); font-family:'Plus Jakarta Sans',sans-serif; line-height:1.5; padding-bottom:60px; }
-    h1,h2,h3,.serif-title { font-family:'Fraunces',Georgia,serif; }
-    .navbar { background:var(--navy-dark); color:#fff; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.12); }
-    .nav-brand { display:flex; align-items:center; gap:12px; }
-    .brand-icon { width:38px; height:38px; border-radius:50%; background:var(--gold); color:var(--navy-dark); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; }
-    .brand-title { font-family:'Fraunces',serif; font-size:17px; font-weight:700; line-height:1.2; }
-    .brand-sub { font-size:12px; color:#b0bfd8; }
-    .nav-tabs { display:flex; gap:6px; flex-wrap:wrap; }
-    .nav-tab { background:transparent; color:#d1dbed; border:1px solid rgba(255,255,255,0.12); padding:7px 12px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer; }
-    .nav-tab.active { background:var(--gold); color:var(--navy-dark); border-color:var(--gold); font-weight:700; }
-    .container { max-width:1440px; margin:0 auto; padding:20px 16px; }
-    .live-progress-banner { background:#fff; border:1.5px solid #cbd5e1; border-left:6px solid var(--navy-dark); border-radius:14px; padding:14px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
-    .progress-pills-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
-    .prog-chip { font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px; background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-    .prog-chip.completed { background:#dcfce7; color:#166534; border-color:#86efac; }
-    .prog-chip.in-progress { background:#fef9c3; color:#854d0e; border-color:#fde047; }
-    .eyebrow { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:6px; }
-    .hero-title { font-size:28px; font-weight:700; margin-bottom:8px; }
-    .hero-desc { font-size:14px; color:var(--text-muted); max-width:780px; margin-bottom:16px; }
-    .search-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:16px; }
-    .search-box { position:relative; flex:1; min-width:260px; max-width:560px; }
-    .search-box input { width:100%; padding:12px 40px; border-radius:999px; border:1px solid #dcd7cc; background:#fff; font-size:14px; outline:none; }
-    .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); pointer-events:none; }
-    .clear-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:#eeeae0; border:none; width:24px; height:24px; border-radius:50%; font-size:12px; cursor:pointer; display:none; align-items:center; justify-content:center; }
-    .legend-card { background:#fdfcf9; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); padding:10px 0; margin-bottom:12px; }
-    .legend-grid { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; font-size:12px; }
-    .legend-item { display:flex; align-items:center; gap:6px; }
-    .dot { width:11px; height:11px; border-radius:50%; display:inline-block; }
-    .rect-indicator { width:14px; height:8px; border-radius:2px; display:inline-block; }
-    .rect-indicator.filled { background:#16a34a; }
-    .rect-indicator.unoccupied { background:#ef4444; }
-    .rect-indicator.absent { background:#f97316; }
-    .dot-defective { background:#374151; color:#fff; font-size:8px; display:inline-flex; align-items:center; justify-content:center; }
-    .toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin:12px 0; }
-    .zoom-controls { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .zoom-btn { width:34px; height:34px; border-radius:9px; border:1px solid #dcd7cc; background:#fff; font-size:18px; font-weight:700; cursor:pointer; }
-    .zoom-fit-btn { padding:0 10px; height:34px; border-radius:9px; border:1px solid #cbd5e1; background:#f8fafc; font-size:11.5px; font-weight:700; color:var(--navy-dark); cursor:pointer; }
-    .zoom-label { font-size:13px; font-weight:700; min-width:44px; text-align:center; }
-    .ceremony-bar { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .wave-pill { padding:6px 10px; border-radius:8px; font-size:11px; font-weight:700; border:1px solid #d5cfc2; background:#fff; cursor:pointer; }
-    .wave-pill.active-wave { background:var(--navy-dark); color:#fff; border-color:var(--navy-dark); }
-    .wave-pill.first-wave-btn { background:#d97706; color:#fff; border-color:#b45309; }
-    .wave-pill.full-wave-btn { background:#7c3aed; color:#fff; border-color:#7c3aed; }
-    .wave-pill.block-wave-btn { background:#eff6ff; color:#1e40af; border-color:#bfdbfe; }
-    .speed-controls { display:inline-flex; align-items:center; gap:6px; background:#f4f1e8; padding:4px 8px; border-radius:10px; border:1px solid #dcd7cc; }
-    .speed-btn { width:26px; height:26px; border-radius:6px; border:1px solid #d5cfc2; background:#fff; font-size:14px; font-weight:700; cursor:pointer; }
-    .speed-label { font-size:11.5px; font-weight:700; min-width:92px; text-align:center; color:var(--navy-dark); }
-    .video-speed-select { padding:5px 8px; border-radius:7px; border:1px solid #cbd5e1; background:#fff; font-size:11.5px; font-weight:700; color:var(--navy-dark); cursor:pointer; }
-    .hall-viewport { background:#fff; border-radius:20px; border:1px solid var(--border-light); box-shadow:0 4px 20px rgba(0,0,0,0.04); overflow:auto; padding:12px; position:relative; max-height:85vh; width:100%; }
-    .hall-scale-wrapper { position:relative; overflow:hidden; margin:0 auto; }
-    .hall-canvas { position:relative; transform-origin:top left; width:1460px; padding:20px 32px 48px 32px; background:#fff; }
-    .hall-top-architecture { display:flex; align-items:flex-start; justify-content:space-between; position:relative; height:154px; margin-bottom:16px; }
-    .entry-box { background:#e9f2ec; color:#2f5941; border:1px solid #c7dfd0; font-size:10px; font-weight:700; letter-spacing:0.08em; padding:7px 40px; border-radius:4px; text-transform:uppercase; }
-    .stage-cluster { position:absolute; left:50%; transform:translateX(-50%); top:2px; display:flex; align-items:center; }
-    .stage-side-steps { width:26px; height:48px; background:#dce4ee; border:1.5px solid #7f97b2; z-index:5; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-    .stage-wrapper { display:flex; flex-direction:column; align-items:center; position:relative; }
-    .stage-main-rect { width:720px; height:126px; background:var(--navy-card); border:1.5px solid #152542; border-radius:8px; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:0 24px 12px 24px; color:#fff; }
-    .stage-header-pill { background:var(--gold); color:var(--navy-dark); font-family:'Fraunces',serif; font-weight:700; font-size:11px; letter-spacing:0.08em; padding:3px 28px; border-radius:0 0 6px 6px; text-transform:uppercase; }
-    .stage-led-tag { font-size:8.5px; letter-spacing:0.14em; color:#9ab0d4; font-weight:700; margin-top:-8px; }
-    .stage-receptions-row { width:100%; display:flex; justify-content:space-between; align-items:center; padding:0 64px; margin-top:-12px; position:relative; }
-    .reception-desk { border:2px solid #fef08a; background:#fef9c3; border-radius:6px; padding:4px 16px; text-align:center; transition:opacity 0.25s; }
-    .reception-desk.hidden-station { opacity:0; pointer-events:none; }
-    .reception-desk-title { font-size:8px; font-weight:800; letter-spacing:0.08em; color:#854d0e; text-transform:uppercase; line-height:1.2; }
-    .central-collection-desk { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border:2px solid #fef08a; background:#fef9c3; border-radius:6px; padding:4px 18px; text-align:center; opacity:0; pointer-events:none; z-index:20; }
-    .central-collection-desk.visible-central { opacity:1; }
-    .stage-floor-label { font-size:8.5px; letter-spacing:0.1em; color:#b0bfd8; font-weight:700; }
-    .center-return-stairs { width:56px; height:22px; background:#dce4ee; border:1.5px solid #7f97b2; border-top:none; position:absolute; top:126px; left:50%; transform:translateX(-50%); display:flex; align-items:center; justify-content:center; }
-    .return-stairs-label { position:absolute; left:62px; top:4px; font-size:8px; font-weight:700; color:#5c708a; white-space:nowrap; }
-    .front-area-banner { text-align:center; font-size:10px; font-weight:700; letter-spacing:0.08em; color:#5e6b7c; margin-bottom:10px; text-transform:uppercase; }
-    .blocks-wrapper { display:flex; align-items:flex-start; justify-content:center; gap:0; position:relative; }
-    .row-numbers-col { display:flex; flex-direction:column; gap:3px; padding-top:34px; margin-right:6px; }
-    .row-num-label { height:20px; font-size:9px; font-weight:700; color:#64748b; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; }
-    .row-cross-gap { height:36px; }
-    .seating-block { display:flex; flex-direction:column; position:relative; border-radius:8px; padding:2px; }
-    .seating-block.block-completed-highlight { background:rgba(22,163,74,0.12); outline:2.5px solid #16a34a; }
-    .block-col-spec { text-align:center; font-size:8.5px; color:#64748b; font-weight:600; height:14px; }
-    .block-header { text-align:center; font-size:9.5px; letter-spacing:0.06em; color:#1e293b; font-weight:800; margin-bottom:4px; height:16px; text-transform:uppercase; }
-    .block-body { display:flex; position:relative; }
-    .branch-bars-col { width:14px; position:relative; margin-right:2px; }
-    .branch-bar { position:absolute; left:9px; width:3px; border-radius:2px; }
-    .branch-bar-label { position:absolute; right:4px; top:50%; transform:translateY(-50%) rotate(-90deg); transform-origin:center; font-size:7px; font-weight:700; white-space:nowrap; }
-    .rows-stack { display:flex; flex-direction:column; gap:3px; }
-    .seat-row { display:flex; gap:3px; height:20px; }
-    .mid-cross-passage { height:36px; background:#f4f1e8; border-top:1px dashed #cbd5e1; border-bottom:1px dashed #cbd5e1; display:flex; align-items:center; justify-content:space-between; padding:0 8px; font-size:8.5px; font-weight:700; color:#475569; margin:2px 0; border-radius:4px; }
-    .camera-box-3x3 { width:42px; height:32px; background:#f8fafc; color:#0f172a; border:1px solid #cbd5e1; border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:6px; font-weight:800; flex-shrink:0; padding:1px 2px; }
-    .camera-box-3x3 span.cam-icon { font-size:8px; line-height:1; }
-    .camera-box-3x3 span.cam-label { font-size:5.2px; white-space:nowrap; font-weight:800; }
-    .seat-box { width:20px; height:20px; border-radius:4px; font-size:5px; font-weight:800; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; position:relative; border:1px solid transparent; white-space:nowrap; overflow:hidden; }
-    .seat-box:hover { transform:scale(1.25); z-index:15; }
-    .seat-selected { outline:2.5px solid #152542 !important; outline-offset:1px; box-shadow:0 0 0 4px rgba(230,179,51,0.65); z-index:20; transform:scale(1.2); }
-    .occ-rect { position:absolute; bottom:0.5px; left:50%; transform:translateX(-50%); width:10px; height:2px; border-radius:1px; pointer-events:none; }
-    .occ-rect.filled { background:#16a34a; }
-    .occ-rect.unoccupied { background:#ef4444; }
-    .occ-rect.absent { background:#f97316; }
-    .seat-FAC { background:#64748b; color:#fff; font-size:5px; }
-    .seat-TOP { background:#fef3c7; color:#92400e; border-color:#f59e0b; font-size:4.8px; }
-    .seat-PhD { background:#ede4ff; color:#5b21b6; border-color:#d8b4fe; font-size:4.6px; }
-    .seat-EE  { background:#dceaff; color:#1e40af; border-color:#93c5fd; }
-    .seat-PTDC{ background:#d5f3f7; color:#0e7490; border-color:#67e8f9; }
-    .seat-CS  { background:#d6f5e3; color:#065f46; border-color:#6ee7b7; }
-    .seat-MCA { background:#e4f8cc; color:#3f6212; border-color:#bef264; }
-    .seat-CE  { background:#fef0c7; color:#92400e; border-color:#fcd34d; }
-    .seat-ME  { background:#ffedd5; color:#9a3412; border-color:#fdba74; }
-    .seat-Arch{ background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
-    .seat-MBA { background:#fae8ff; color:#86198f; border-color:#f0abfc; }
-    .seat-EC  { background:#e0e7ff; color:#3730a3; border-color:#a5b4fc; }
-    .seat-empty-slot { background:transparent !important; border:1.5px dashed #cbd5e1 !important; color:transparent !important; }
-    .seat-defective-slot { background:#374151 !important; border-color:#1f2937 !important; color:#fff !important; }
-    .seat-absent-slot { opacity:0.55; border:1.5px solid #f97316 !important; }
-    .passage-col { width:20px; background:#f4f1e8; align-self:stretch; border-radius:3px; position:relative; margin:34px 5px 0 5px; display:flex; align-items:center; justify-content:center; }
-    .passage-col.center-6ft { width:36px; background:#ede8da; border-left:1.5px dashed #94a3b8; border-right:1.5px dashed #94a3b8; display:flex; flex-direction:column; justify-content:space-between; padding:18px 0 0 0; }
-    .passage-vertical-text { transform:rotate(-90deg); white-space:nowrap; font-size:8px; font-weight:700; letter-spacing:0.08em; color:#7c8898; text-transform:uppercase; }
-    .central-door-box { width:100%; height:30px; background:#cbd5e1; border-top:2px solid #475569; color:#1e293b; font-size:7.5px; font-weight:800; display:flex; align-items:center; justify-content:center; text-transform:uppercase; }
-    #walkOverlaySvg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:35; }
-    .info-card { background:var(--card-bg); border:1px solid var(--border-light); border-radius:18px; padding:22px; margin-top:18px; }
-    .info-card-empty { text-align:center; padding:28px 20px; }
-    .seat-detail-header { display:flex; align-items:center; gap:16px; margin-bottom:18px; }
-    .seat-badge-lg { width:54px; height:54px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:16px; font-weight:700; color:#fff; flex-shrink:0; }
-    .assigned-label { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); font-weight:600; }
-    .assigned-name { font-family:'Fraunces',serif; font-size:21px; font-weight:700; }
-    .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:18px; }
-    .meta-item-label { font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; margin-bottom:2px; }
-    .meta-item-val { font-size:14.5px; font-weight:600; }
-    .meta-item-sub { font-size:12.5px; color:var(--text-muted); }
-    .card-actions { display:flex; flex-wrap:wrap; gap:10px; }
-    .btn-outline { padding:9px 16px; border-radius:10px; border:1px solid #d5cfc2; background:#fff; font-weight:600; font-size:13px; cursor:pointer; color:var(--text-main); }
-    .btn-primary { padding:9px 18px; border-radius:10px; border:none; background:var(--navy-dark); color:#fff; font-weight:600; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-    .btn-danger { padding:9px 18px; border-radius:10px; border:none; background:#dc2626; color:#fff; font-weight:600; font-size:13px; cursor:pointer; }
-    .walk-banner-card { border:2px solid #94a3b8; background:#fff; border-radius:16px; padding:16px 20px; margin-top:14px; display:none; }
-    .walk-eyebrow { font-size:11.5px; font-weight:700; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin-bottom:3px; }
-    .stage-queue-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; margin-top:10px; padding-top:10px; border-top:1px solid #e2e8f0; }
-    .queue-box { background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid var(--navy-dark); border-radius:8px; padding:6px 12px; display:flex; flex-direction:column; }
-    .queue-box.next-box { border-left-color:#d97706; background:#fffbeb; }
-    .queue-box-label { font-size:10px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#64748b; }
-    .queue-box-val { font-size:13px; font-weight:700; color:#1e293b; }
-    .station-live-log-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px dashed #e2e8f0; font-size:12px; font-weight:700; }
-    .station-log-pill { padding:4px 10px; border-radius:6px; background:#f1f5f9; border:1px solid #cbd5e1; color:#1e293b; }
-    .role-view { display:none; }
-    .admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:18px; margin-top:18px; }
-    .form-group { margin-bottom:12px; }
-    .form-group label { display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
-    .form-control { width:100%; padding:9px 12px; border-radius:9px; border:1px solid #d5cfc2; font-size:13.5px; }
-    .dept-pills { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-    .dept-pill-btn { padding:6px 11px; border-radius:7px; border:1px solid #d5cfc2; background:#f9f7f2; font-size:12px; font-weight:600; cursor:pointer; }
-    .dept-pill-btn.active { background:var(--navy-dark); color:#fff; border-color:var(--navy-dark); }
-    .config-table { width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:12px; }
-    .config-table th,.config-table td { padding:7px 6px; border-bottom:1px solid var(--border-light); text-align:left; }
-    .config-table input[type="number"],.config-table input[type="text"] { width:80px; padding:4px 6px; border:1px solid #cbd5e1; border-radius:5px; font-size:12.5px; }
+    :root{--bg-cream:#f8f6f0;--navy-dark:#152542;--navy-card:#192a48;--gold:#e6b333;--text-main:#182232;--text-muted:#5e6b7c;--border-light:#e6e2d8;--card-bg:#fff}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg-cream);color:var(--text-main);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;padding-bottom:60px}
+    h1,h2,h3,.serif-title{font-family:'Fraunces',Georgia,serif}
+    .navbar{background:var(--navy-dark);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+    .nav-brand{display:flex;align-items:center;gap:12px}
+    .brand-icon{width:38px;height:38px;border-radius:50%;background:var(--gold);color:var(--navy-dark);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+    .brand-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;line-height:1.2}
+    .brand-sub{font-size:12px;color:#b0bfd8}
+    .nav-tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .nav-tab{background:transparent;color:#d1dbed;border:1px solid rgba(255,255,255,.12);padding:7px 12px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer}
+    .nav-tab.active{background:var(--gold);color:var(--navy-dark);border-color:var(--gold);font-weight:700}
+    .container{max-width:1440px;margin:0 auto;padding:20px 16px}
+    .live-progress-banner{background:#fff;border:1.5px solid #cbd5e1;border-left:6px solid var(--navy-dark);border-radius:14px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .progress-pills-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+    .prog-chip{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+    .prog-chip.completed{background:#dcfce7;color:#166534;border-color:#86efac}
+    .prog-chip.in-progress{background:#fef9c3;color:#854d0e;border-color:#fde047}
+    .eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:6px}
+    .hero-title{font-size:28px;font-weight:700;margin-bottom:8px}
+    .hero-desc{font-size:14px;color:var(--text-muted);max-width:780px;margin-bottom:16px}
+    .search-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .search-box{position:relative;flex:1;min-width:260px;max-width:560px}
+    .search-box input{width:100%;padding:12px 40px;border-radius:999px;border:1px solid #dcd7cc;background:#fff;font-size:14px;outline:none}
+    .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none}
+    .clear-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#eeeae0;border:none;width:24px;height:24px;border-radius:50%;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+    .legend-card{background:#fdfcf9;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:10px 0;margin-bottom:12px}
+    .legend-grid{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:12px}
+    .legend-item{display:flex;align-items:center;gap:6px}
+    .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+    .rect-indicator{width:14px;height:8px;border-radius:2px;display:inline-block}
+    .rect-indicator.filled{background:#16a34a}
+    .rect-indicator.unoccupied{background:#ef4444}
+    .rect-indicator.absent{background:#f97316}
+    .dot-defective{background:#374151;color:#fff;font-size:8px;display:inline-flex;align-items:center;justify-content:center}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:12px 0}
+    .zoom-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .zoom-btn{width:34px;height:34px;border-radius:9px;border:1px solid #dcd7cc;background:#fff;font-size:18px;font-weight:700;cursor:pointer}
+    .zoom-fit-btn{padding:0 10px;height:34px;border-radius:9px;border:1px solid #cbd5e1;background:#f8fafc;font-size:11.5px;font-weight:700;color:var(--navy-dark);cursor:pointer}
+    .zoom-label{font-size:13px;font-weight:700;min-width:44px;text-align:center}
+    .ceremony-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .wave-pill{padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid #d5cfc2;background:#fff;cursor:pointer}
+    .wave-pill.active-wave{background:var(--navy-dark);color:#fff;border-color:var(--navy-dark)}
+    .wave-pill.first-wave-btn{background:#d97706;color:#fff;border-color:#b45309}
+    .wave-pill.full-wave-btn{background:#7c3aed;color:#fff;border-color:#7c3aed}
+    .wave-pill.block-wave-btn{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
+    .speed-controls{display:inline-flex;align-items:center;gap:6px;background:#f4f1e8;padding:4px 8px;border-radius:10px;border:1px solid #dcd7cc}
+    .speed-btn{width:26px;height:26px;border-radius:6px;border:1px solid #d5cfc2;background:#fff;font-size:14px;font-weight:700;cursor:pointer}
+    .speed-label{font-size:11.5px;font-weight:700;min-width:92px;text-align:center;color:var(--navy-dark)}
+    .video-speed-select{padding:5px 8px;border-radius:7px;border:1px solid #cbd5e1;background:#fff;font-size:11.5px;font-weight:700;color:var(--navy-dark);cursor:pointer}
+    .hall-viewport{background:#fff;border-radius:20px;border:1px solid var(--border-light);box-shadow:0 4px 20px rgba(0,0,0,.04);overflow:auto;padding:12px;position:relative;max-height:85vh;width:100%}
+    .hall-scale-wrapper{position:relative;overflow:hidden;margin:0 auto}
+    .hall-canvas{position:relative;transform-origin:top left;width:1460px;padding:20px 32px 48px 32px;background:#fff}
+    .hall-top-architecture{display:flex;align-items:flex-start;justify-content:space-between;position:relative;height:154px;margin-bottom:16px}
+    .entry-box{background:#e9f2ec;color:#2f5941;border:1px solid #c7dfd0;font-size:10px;font-weight:700;letter-spacing:.08em;padding:7px 40px;border-radius:4px;text-transform:uppercase}
+    .stage-cluster{position:absolute;left:50%;transform:translateX(-50%);top:2px;display:flex;align-items:center}
+    .stage-side-steps{width:26px;height:48px;background:#dce4ee;border:1.5px solid #7f97b2;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .stage-wrapper{display:flex;flex-direction:column;align-items:center;position:relative}
+    .stage-main-rect{width:720px;height:126px;background:var(--navy-card);border:1.5px solid #152542;border-radius:8px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:0 24px 12px 24px;color:#fff}
+    .stage-header-pill{background:var(--gold);color:var(--navy-dark);font-family:'Fraunces',serif;font-weight:700;font-size:11px;letter-spacing:.08em;padding:3px 28px;border-radius:0 0 6px 6px;text-transform:uppercase}
+    .stage-led-tag{font-size:8.5px;letter-spacing:.14em;color:#9ab0d4;font-weight:700;margin-top:-8px}
+    .stage-receptions-row{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 64px;margin-top:-12px;position:relative}
+    .reception-desk{border:2px solid #fef08a;background:#fef9c3;border-radius:6px;padding:4px 16px;text-align:center;transition:opacity .25s}
+    .reception-desk.hidden-station{opacity:0;pointer-events:none}
+    .reception-desk-title{font-size:8px;font-weight:800;letter-spacing:.08em;color:#854d0e;text-transform:uppercase;line-height:1.2}
+    .central-collection-desk{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:2px solid #fef08a;background:#fef9c3;border-radius:6px;padding:4px 18px;text-align:center;opacity:0;pointer-events:none;z-index:20}
+    .central-collection-desk.visible-central{opacity:1}
+    .stage-floor-label{font-size:8.5px;letter-spacing:.1em;color:#b0bfd8;font-weight:700}
+    .center-return-stairs{width:56px;height:22px;background:#dce4ee;border:1.5px solid #7f97b2;border-top:none;position:absolute;top:126px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center}
+    .return-stairs-label{position:absolute;left:62px;top:4px;font-size:8px;font-weight:700;color:#5c708a;white-space:nowrap}
+    .front-area-banner{text-align:center;font-size:10px;font-weight:700;letter-spacing:.08em;color:#5e6b7c;margin-bottom:10px;text-transform:uppercase}
+    .blocks-wrapper{display:flex;align-items:flex-start;justify-content:center;gap:0;position:relative}
+    .row-numbers-col{display:flex;flex-direction:column;gap:3px;padding-top:34px;margin-right:6px}
+    .row-num-label{height:20px;font-size:9px;font-weight:700;color:#64748b;display:flex;align-items:center;justify-content:flex-end;padding-right:4px}
+    .row-cross-gap{height:36px}
+    .seating-block{display:flex;flex-direction:column;position:relative;border-radius:8px;padding:2px}
+    .seating-block.block-completed-highlight{background:rgba(22,163,74,.12);outline:2.5px solid #16a34a}
+    .block-col-spec{text-align:center;font-size:8.5px;color:#64748b;font-weight:600;height:14px}
+    .block-header{text-align:center;font-size:9.5px;letter-spacing:.06em;color:#1e293b;font-weight:800;margin-bottom:4px;height:16px;text-transform:uppercase}
+    .block-body{display:flex;position:relative}
+    .branch-bars-col{width:14px;position:relative;margin-right:2px}
+    .branch-bar{position:absolute;left:9px;width:3px;border-radius:2px}
+    .branch-bar-label{position:absolute;right:4px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:center;font-size:7px;font-weight:700;white-space:nowrap}
+    .rows-stack{display:flex;flex-direction:column;gap:3px}
+    .seat-row{display:flex;gap:3px;height:20px}
+    .mid-cross-passage{height:36px;background:#f4f1e8;border-top:1px dashed #cbd5e1;border-bottom:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:8.5px;font-weight:700;color:#475569;margin:2px 0;border-radius:4px}
+    .camera-box-3x3{width:42px;height:32px;background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:6px;font-weight:800;flex-shrink:0;padding:1px 2px}
+    .camera-box-3x3 span.cam-icon{font-size:8px;line-height:1}
+    .camera-box-3x3 span.cam-label{font-size:5.2px;white-space:nowrap;font-weight:800}
+    .seat-box{width:20px;height:20px;border-radius:4px;font-size:5px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;position:relative;border:1px solid transparent;white-space:nowrap;overflow:hidden}
+    .seat-box:hover{transform:scale(1.25);z-index:15}
+    .seat-selected{outline:2.5px solid #152542!important;outline-offset:1px;box-shadow:0 0 0 4px rgba(230,179,51,.65);z-index:20;transform:scale(1.2)}
+    .occ-rect{position:absolute;bottom:.5px;left:50%;transform:translateX(-50%);width:10px;height:2px;border-radius:1px;pointer-events:none}
+    .occ-rect.filled{background:#16a34a}
+    .occ-rect.unoccupied{background:#ef4444}
+    .occ-rect.absent{background:#f97316}
+    .seat-FAC{background:#64748b;color:#fff;font-size:5px}
+    .seat-TOP{background:#fef3c7;color:#92400e;border-color:#f59e0b;font-size:4.8px}
+    .seat-PhD{background:#ede4ff;color:#5b21b6;border-color:#d8b4fe;font-size:4.6px}
+    .seat-EE{background:#dceaff;color:#1e40af;border-color:#93c5fd}
+    .seat-PTDC{background:#d5f3f7;color:#0e7490;border-color:#67e8f9}
+    .seat-CS{background:#d6f5e3;color:#065f46;border-color:#6ee7b7}
+    .seat-MCA{background:#e4f8cc;color:#3f6212;border-color:#bef264}
+    .seat-CE{background:#fef0c7;color:#92400e;border-color:#fcd34d}
+    .seat-ME{background:#ffedd5;color:#9a3412;border-color:#fdba74}
+    .seat-Arch{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+    .seat-MBA{background:#fae8ff;color:#86198f;border-color:#f0abfc}
+    .seat-EC{background:#e0e7ff;color:#3730a3;border-color:#a5b4fc}
+    .seat-empty-slot{background:transparent!important;border:1.5px dashed #cbd5e1!important;color:transparent!important}
+    .seat-defective-slot{background:#374151!important;border-color:#1f2937!important;color:#fff!important}
+    .seat-absent-slot{opacity:.55;border:1.5px solid #f97316!important}
+    .passage-col{width:20px;background:#f4f1e8;align-self:stretch;border-radius:3px;position:relative;margin:34px 5px 0 5px;display:flex;align-items:center;justify-content:center}
+    .passage-col.center-6ft{width:36px;background:#ede8da;border-left:1.5px dashed #94a3b8;border-right:1.5px dashed #94a3b8;display:flex;flex-direction:column;justify-content:space-between;padding:18px 0 0 0}
+    .passage-vertical-text{transform:rotate(-90deg);white-space:nowrap;font-size:8px;font-weight:700;letter-spacing:.08em;color:#7c8898;text-transform:uppercase}
+    .central-door-box{width:100%;height:30px;background:#cbd5e1;border-top:2px solid #475569;color:#1e293b;font-size:7.5px;font-weight:800;display:flex;align-items:center;justify-content:center;text-transform:uppercase}
+    #walkOverlaySvg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:35}
+    .info-card{background:var(--card-bg);border:1px solid var(--border-light);border-radius:18px;padding:22px;margin-top:18px}
+    .info-card-empty{text-align:center;padding:28px 20px}
+    .seat-detail-header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .seat-badge-lg{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+    .assigned-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600}
+    .assigned-name{font-family:'Fraunces',serif;font-size:21px;font-weight:700}
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+    .meta-item-label{font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:2px}
+    .meta-item-val{font-size:14.5px;font-weight:600}
+    .meta-item-sub{font-size:12.5px;color:var(--text-muted)}
+    .card-actions{display:flex;flex-wrap:wrap;gap:10px}
+    .btn-outline{padding:9px 16px;border-radius:10px;border:1px solid #d5cfc2;background:#fff;font-weight:600;font-size:13px;cursor:pointer;color:var(--text-main)}
+    .btn-primary{padding:9px 18px;border-radius:10px;border:none;background:var(--navy-dark);color:#fff;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+    .btn-danger{padding:9px 18px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:600;font-size:13px;cursor:pointer}
+    .walk-banner-card{border:2px solid #94a3b8;background:#fff;border-radius:16px;padding:16px 20px;margin-top:14px;display:none}
+    .walk-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:#64748b;text-transform:uppercase;margin-bottom:3px}
+    .stage-queue-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0}
+    .queue-box{background:#f8fafc;border:1px solid #cbd5e1;border-left:4px solid var(--navy-dark);border-radius:8px;padding:6px 12px;display:flex;flex-direction:column}
+    .queue-box.next-box{border-left-color:#d97706;background:#fffbeb}
+    .queue-box-label{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64748b}
+    .queue-box-val{font-size:13px;font-weight:700;color:#1e293b}
+    .station-live-log-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:12px;font-weight:700}
+    .station-log-pill{padding:4px 10px;border-radius:6px;background:#f1f5f9;border:1px solid #cbd5e1;color:#1e293b}
+    .role-view{display:none}
+    .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-top:18px}
+    .form-group{margin-bottom:12px}
+    .form-group label{display:block;font-size:11.5px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
+    .form-control{width:100%;padding:9px 12px;border-radius:9px;border:1px solid #d5cfc2;font-size:13.5px}
+    .dept-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .dept-pill-btn{padding:6px 11px;border-radius:7px;border:1px solid #d5cfc2;background:#f9f7f2;font-size:12px;font-weight:600;cursor:pointer}
+    .dept-pill-btn.active{background:var(--navy-dark);color:#fff;border-color:var(--navy-dark)}
+    .config-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+    .config-table th,.config-table td{padding:7px 6px;border-bottom:1px solid var(--border-light);text-align:left}
+    .config-table input[type="number"],.config-table input[type="text"]{width:80px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:5px;font-size:12.5px}
   </style>
 </head>
 <body>
@@ -187,8 +187,8 @@
   <main id="seatView" class="container">
     <div class="live-progress-banner">
       <div>
-        <div class="eyebrow" style="margin-bottom:2px; color:#152542;">📡 LIVE CONVOCATION PROGRESS LOG</div>
-        <div id="liveProgressSummary" style="font-size:14px; font-weight:700; color:var(--text-main);">Ceremony status updates will appear here in real time.</div>
+        <div class="eyebrow" style="margin-bottom:2px;color:#152542">📡 LIVE CONVOCATION PROGRESS LOG</div>
+        <div id="liveProgressSummary" style="font-size:14px;font-weight:700;color:var(--text-main)">Ceremony status updates will appear here in real time.</div>
         <div class="progress-pills-row" id="liveProgressPills"></div>
       </div>
       <button id="highlightCompletedBtn" class="btn-outline" onclick="toggleHighlightCompletedBlocks()">✨ Highlight Completed Blocks</button>
@@ -204,7 +204,7 @@
         <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (e.g. HoD-CE, F1) or seat (e.g. EE 92, PTDC 5, Arch 12, UG 1)" oninput="handleSearch(this.value)" />
         <button id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✕</button>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn-outline" onclick="exportFullLayout('png')">🖼 Save Map as Image</button>
         <button class="btn-primary" onclick="exportFullLayout('pdf')">📄 Print / Save Map as PDF</button>
       </div>
@@ -238,7 +238,7 @@
         <button class="zoom-btn" title="Zoom In" onclick="adjustZoom(0.1)">+</button>
         <button class="zoom-fit-btn" onclick="fitEntireHallToScreen()">🔍 Fit All Seats</button>
         <button class="zoom-fit-btn" onclick="resetZoom100()">100%</button>
-        <span id="seatedCounter" style="font-size:12.5px; color:var(--text-muted); margin-left:4px;">0 students seated</span>
+        <span id="seatedCounter" style="font-size:12.5px;color:var(--text-muted);margin-left:4px">0 students seated</span>
       </div>
 
       <div class="ceremony-bar" id="deptWaveBar">
@@ -263,23 +263,23 @@
     </div>
 
     <div id="walkStatusCard" class="walk-banner-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
         <div>
           <div id="walkEyebrow" class="walk-eyebrow">STAGE MOVEMENT SIMULATION</div>
-          <div id="walkStepTitle" class="serif-title" style="font-size:17px; font-weight:700;">Entry path stops at Certificate Station; Exit path starts from Station &amp; descends Central Steps</div>
-          <div id="walkSubtext" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Video records with full duration headers for Gallery &amp; WhatsApp at the exact Video Pace selected below.</div>
+          <div id="walkStepTitle" class="serif-title" style="font-size:17px;font-weight:700">Entry path stops at Certificate Station; Exit path starts from Station &amp; descends Central Steps</div>
+          <div id="walkSubtext" style="font-size:12.5px;color:var(--text-muted);margin-top:2px">Video records with full duration headers for Gallery &amp; WhatsApp at the exact Video Pace selected below.</div>
         </div>
 
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <div class="speed-controls">
-            <span style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Live Speed:</span>
+            <span style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase">Live Speed:</span>
             <button class="speed-btn" onclick="changeAnimSpeed(-1)">−</button>
             <span id="speedValueLabel" class="speed-label">1x (0.15s/st)</span>
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
 
-          <div class="speed-controls" style="background:#eef2ff; border-color:#c7d2fe;">
-            <span style="font-size:10.5px; font-weight:700; color:#1e3a8a; text-transform:uppercase;">Video Pace:</span>
+          <div class="speed-controls" style="background:#eef2ff;border-color:#c7d2fe">
+            <span style="font-size:10.5px;font-weight:700;color:#1e3a8a;text-transform:uppercase">Video Pace:</span>
             <select id="videoSecPerStudentSelect" class="video-speed-select">
               <option value="0.15" selected>0.15 sec / student (Max Speed)</option>
               <option value="0.3">0.30 sec / student</option>
@@ -290,10 +290,10 @@
             </select>
           </div>
 
-          <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669;">🎥 Download Video</button>
-          <button class="btn-danger" onclick="finishVideoRecordingEarly()" id="stopSaveVideoBtn" style="display:none; padding:9px 14px;">⏹ Stop &amp; Save Video Now</button>
-          <a id="manualVideoSaveLink" class="btn-primary" style="display:none; background:#2563eb;" download>⬇ Save Video File</a>
-          <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px;">Stop ✕</button>
+          <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669">🎥 Download Video</button>
+          <button class="btn-danger" onclick="finishVideoRecordingEarly()" id="stopSaveVideoBtn" style="display:none;padding:9px 14px">⏹ Stop &amp; Save Video Now</button>
+          <a id="manualVideoSaveLink" class="btn-primary" style="display:none;background:#2563eb" download>⬇ Save Video File</a>
+          <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px">Stop ✕</button>
         </div>
       </div>
 
@@ -385,20 +385,20 @@
   </main>
 
   <section id="facultyView" class="container role-view">
-    <div id="facultyGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
+    <div id="facultyGateCard" class="info-card" style="max-width:460px;margin:20px auto">
       <div class="eyebrow">CONVOCATION PROGRESS TRACKING</div>
-      <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Faculty Login</h2>
-      <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">Enter the authorized Faculty password to update which block the convocation has reached and log block completion times.</p>
+      <h2 class="serif-title" style="font-size:24px;margin-bottom:8px">Faculty Login</h2>
+      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">Enter the authorized Faculty password to update which block the convocation has reached and log block completion times.</p>
       <div class="form-group">
         <label>Password</label>
         <input id="facultyPassInput" type="password" class="form-control" placeholder="Enter Faculty password..." onkeydown="if(event.key==='Enter') unlockRole('faculty')" />
       </div>
-      <button class="btn-primary" style="width:100%; justify-content:center;" onclick="unlockRole('faculty')">Sign In to Faculty Tracker</button>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('faculty')">Sign In to Faculty Tracker</button>
     </div>
 
-    <div id="facultyConsole" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div><div class="eyebrow">LIVE CEREMONY LOGS</div><h2 class="serif-title" style="font-size:26px;">Convocation Block Progress Updater</h2></div>
+    <div id="facultyConsole" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div><div class="eyebrow">LIVE CEREMONY LOGS</div><h2 class="serif-title" style="font-size:26px">Convocation Block Progress Updater</h2></div>
         <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
       </div>
       <div class="info-card">
@@ -406,7 +406,7 @@
           <thead><tr><th>Block</th><th>Departments</th><th>Status</th><th>Approx. Completion Time</th></tr></thead>
           <tbody></tbody>
         </table>
-        <div style="display:flex; gap:12px; margin-top:14px; flex-wrap:wrap;">
+        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
           <button class="btn-primary" onclick="saveConvocationProgress()">💾 Save &amp; Broadcast Progress</button>
           <button class="btn-danger" onclick="clearConvocationProgressLog()">🗑 Clear Progress Log</button>
         </div>
@@ -415,28 +415,28 @@
   </section>
 
   <section id="registrationView" class="container role-view">
-    <div id="regGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
+    <div id="regGateCard" class="info-card" style="max-width:460px;margin:20px auto">
       <div class="eyebrow">REGISTRATION DESK</div>
-      <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Registration Login</h2>
-      <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">Enter the authorized Registration Desk password to mark students who failed to register (Absentees) and download the post-registration student &amp; absentee PDF report.</p>
+      <h2 class="serif-title" style="font-size:24px;margin-bottom:8px">Registration Login</h2>
+      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">Enter the authorized Registration Desk password to mark students who failed to register (Absentees) and download the post-registration student &amp; absentee PDF report.</p>
       <div class="form-group">
         <label>Password</label>
         <input id="regPassInput" type="password" class="form-control" placeholder="Enter Registration password..." onkeydown="if(event.key==='Enter') unlockRole('registration')" />
       </div>
-      <button class="btn-primary" style="width:100%; justify-content:center;" onclick="unlockRole('registration')">Sign In to Registration Desk</button>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('registration')">Sign In to Registration Desk</button>
     </div>
 
-    <div id="regConsole" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div><div class="eyebrow">ATTENDANCE &amp; ABSENTEES</div><h2 class="serif-title" style="font-size:26px;">Student Registration &amp; Absentee Desk</h2></div>
-        <div style="display:flex; gap:8px;">
+    <div id="regConsole" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div><div class="eyebrow">ATTENDANCE &amp; ABSENTEES</div><h2 class="serif-title" style="font-size:26px">Student Registration &amp; Absentee Desk</h2></div>
+        <div style="display:flex;gap:8px">
           <button class="btn-primary" onclick="downloadRegistrationReportPDF()">📄 Download Registration &amp; Absentees PDF</button>
           <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
         </div>
       </div>
       <div class="info-card">
-        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px;">
-          <select id="regDeptFilter" class="form-control" style="max-width:200px;" onchange="renderRegistrationTable()">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+          <select id="regDeptFilter" class="form-control" style="max-width:200px" onchange="renderRegistrationTable()">
             <option value="ALL">All Departments</option>
             <option value="TOP">Toppers (UG/PG)</option><option value="PhD">PhD</option>
             <option value="EE">EE</option><option value="PTDC">PTDC</option>
@@ -444,10 +444,10 @@
             <option value="CE">CE</option><option value="ME">ME</option>
             <option value="Arch">Arch</option><option value="MBA">MBA</option><option value="EC">EC</option>
           </select>
-          <input id="regSearchInput" type="text" class="form-control" style="max-width:320px;" placeholder="Filter by Seat Code, Name, or Reg No..." oninput="renderRegistrationTable()" />
-          <span id="regStatsSummary" style="font-size:13px; font-weight:700; color:var(--navy-dark);"></span>
+          <input id="regSearchInput" type="text" class="form-control" style="max-width:320px" placeholder="Filter by Seat Code, Name, or Reg No..." oninput="renderRegistrationTable()" />
+          <span id="regStatsSummary" style="font-size:13px;font-weight:700;color:var(--navy-dark)"></span>
         </div>
-        <div style="max-height:480px; overflow:auto;">
+        <div style="max-height:480px;overflow:auto">
           <table class="config-table">
             <thead><tr><th>Seat No.</th><th>Block / Row</th><th>Student Name</th><th>Register No.</th><th>Branch / Stream</th><th>Registration Status</th></tr></thead>
             <tbody id="regTableBody"></tbody>
@@ -458,32 +458,32 @@
   </section>
 
   <section id="adminView" class="container role-view">
-    <div id="adminGateCard" class="info-card" style="max-width:460px; margin:20px auto;">
+    <div id="adminGateCard" class="info-card" style="max-width:460px;margin:20px auto">
       <div class="eyebrow">SYSTEM ADMINISTRATION</div>
-      <h2 class="serif-title" style="font-size:24px; margin-bottom:8px;">Admin Login</h2>
-      <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">Enter the authorized Admin password to upload student Excel sheets, mark chairs defective/empty, clear student rosters, or customize block dimensions.</p>
+      <h2 class="serif-title" style="font-size:24px;margin-bottom:8px">Admin Login</h2>
+      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">Enter the authorized Admin password to upload student Excel sheets, mark chairs defective/empty, clear student rosters, or customize block dimensions.</p>
       <div class="form-group">
         <label>Admin Password</label>
         <input id="adminPassInput" type="password" class="form-control" placeholder="Enter Admin password..." onkeydown="if(event.key==='Enter') unlockRole('admin')" />
       </div>
-      <button class="btn-primary" style="width:100%; justify-content:center;" onclick="unlockRole('admin')">Unlock Admin Console</button>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('admin')">Unlock Admin Console</button>
     </div>
 
-    <div id="adminConsole" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div><div class="eyebrow">ADMINISTRATION CONSOLE</div><h2 class="serif-title" style="font-size:26px;">Seating &amp; Roster Management</h2></div>
+    <div id="adminConsole" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div><div class="eyebrow">ADMINISTRATION CONSOLE</div><h2 class="serif-title" style="font-size:26px">Seating &amp; Roster Management</h2></div>
         <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
       </div>
       <div class="admin-grid">
-        <div class="info-card" style="margin-top:0;">
-          <h3 class="serif-title" style="font-size:18px; margin-bottom:8px;">1. Student Excel Template &amp; Upload</h3>
+        <div class="info-card" style="margin-top:0">
+          <h3 class="serif-title" style="font-size:18px;margin-bottom:8px">1. Student Excel Template &amp; Upload</h3>
           <div class="dept-pills" id="deptButtonsContainer"></div>
-          <button class="btn-outline" style="width:100%; margin-bottom:14px;" onclick="downloadBranchExcel()">⬇ Download Selected Excel Template</button>
+          <button class="btn-outline" style="width:100%;margin-bottom:14px" onclick="downloadBranchExcel()">⬇ Download Selected Excel Template</button>
           <div class="form-group"><label>Upload Filled Excel (.xlsx / .xls)</label><input type="file" id="excelFileInput" accept=".xlsx,.xls" class="form-control" /></div>
-          <button class="btn-primary" style="width:100%; justify-content:center;" onclick="uploadBranchExcel()">Upload &amp; Sync Students</button>
+          <button class="btn-primary" style="width:100%;justify-content:center" onclick="uploadBranchExcel()">Upload &amp; Sync Students</button>
         </div>
-        <div class="info-card" style="margin-top:0;">
-          <h3 class="serif-title" style="font-size:18px; margin-bottom:8px;">2. Mark Seat Defective / Kept Empty</h3>
+        <div class="info-card" style="margin-top:0">
+          <h3 class="serif-title" style="font-size:18px;margin-bottom:8px">2. Mark Seat Defective / Kept Empty</h3>
           <div class="form-group"><label>Seat Code or Coordinate</label><input id="statusSeatInput" type="text" class="form-control" placeholder="e.g. EE 92 or B1-R4-C2" /></div>
           <div class="form-group">
             <label>Status</label>
@@ -493,18 +493,18 @@
               <option value="empty">◌ Kept Empty</option>
             </select>
           </div>
-          <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:16px;" onclick="applySeatStatusByInput()">Update Seat Status</button>
-          <div style="border-top:1px dashed #cbd5e1; padding-top:14px;">
-            <button class="btn-danger" style="width:100%; justify-content:center;" onclick="clearAllStudents()">🗑 Clear All Students From Seats</button>
+          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:16px" onclick="applySeatStatusByInput()">Update Seat Status</button>
+          <div style="border-top:1px dashed #cbd5e1;padding-top:14px">
+            <button class="btn-danger" style="width:100%;justify-content:center" onclick="clearAllStudents()">🗑 Clear All Students From Seats</button>
           </div>
         </div>
-        <div class="info-card" style="margin-top:0; grid-column:1 / -1;">
-          <h3 class="serif-title" style="font-size:18px; margin-bottom:6px;">3. Customize Block Rows &amp; Seats per Row</h3>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px;">
+        <div class="info-card" style="margin-top:0;grid-column:1 / -1">
+          <h3 class="serif-title" style="font-size:18px;margin-bottom:6px">3. Customize Block Rows &amp; Seats per Row</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
             <div><table class="config-table" id="blockConfigTable"><thead><tr><th>Block</th><th>Total Rows</th><th>Seats / Row</th></tr></thead><tbody></tbody></table></div>
             <div><table class="config-table" id="deptConfigTable"><thead><tr><th>Dept / Group</th><th>Block</th><th>Total Seats</th></tr></thead><tbody></tbody></table></div>
           </div>
-          <div style="display:flex; gap:10px; margin-top:10px;">
+          <div style="display:flex;gap:10px;margin-top:10px">
             <button class="btn-primary" onclick="saveCustomLayoutConfig()">Save &amp; Rebuild Map</button>
             <button class="btn-outline" onclick="resetDefaultLayoutConfig()">Reset to Official 2026 Layout</button>
           </div>
@@ -597,19 +597,15 @@
     let layoutConfig = JSON.parse(JSON.stringify(DEFAULT_LAYOUT)), studentRoster = {}, seatOverrides = {}, convocationProgress = JSON.parse(JSON.stringify(DEFAULT_PROGRESS));
     let seatsByCoord = {}, seatsByCode = {}, deptRowsMap = {};
 
-    // Universal seat code normalizer supporting TOP (UG/PG), PhD, PTDC, Arch, EE, CS, MCA, CE, ME, MBA, EC
     function normalizeSeatCode(raw, fallbackDept = "") {
       if (raw === undefined || raw === null) return "";
       let s = raw.toString().trim().replace(/[-_]+/g, " ").replace(/\s+/g, " ");
       if (!s) return "";
       const upper = s.toUpperCase();
-
       if (seatsByCode[upper]) return seatsByCode[upper].code;
 
-      // If user uploaded just a plain seat number (e.g. "1", "15") in the Seat_Number column, combine with Department
       if (/^\d+$/.test(upper) && fallbackDept) {
-        const num = parseInt(upper, 10);
-        const fb = fallbackDept.toString().trim().toUpperCase();
+        const num = parseInt(upper, 10), fb = fallbackDept.toString().trim().toUpperCase();
         if (fb === "PHD") return `PhD ${num}`;
         if (fb === "ARCH" || fb === "B.ARCH" || fb === "ARCHITECTURE") return `Arch ${num}`;
         if (fb === "PTDC" || fb.includes("PART")) return `PTDC ${num}`;
@@ -620,18 +616,15 @@
         return `${fb} ${num}`;
       }
 
-      // Handle Toppers variations ("TOP UG 1", "TOP UG1", "UG 1", "UG1", "PG 1", "PG1", "TOP 1")
       const topSubMatch = upper.match(/^(?:TOP\s*)?(UG|PG)\s*(\d+)$/);
-      if (topSubMatch) {
-        return `TOP ${topSubMatch[1]} ${parseInt(topSubMatch[2], 10)}`;
-      }
+      if (topSubMatch) return `TOP ${topSubMatch[1]} ${parseInt(topSubMatch[2], 10)}`;
+
       const topNumMatch = upper.match(/^TOP(?:PERS?)?\s*(\d+)$/);
       if (topNumMatch) {
         const n = parseInt(topNumMatch[1], 10);
         return n <= 8 ? `TOP UG ${n}` : `TOP PG ${n - 8}`;
       }
 
-      // Handle Department + Number variations ("PHD 1", "PHD1", "PTDC 1", "PTDC1", "ARCH 1", "ARCH1", "B.ARCH 1", etc.)
       const deptMatch = upper.match(/^([A-Z.]+)\s*(\d+)$/);
       if (deptMatch) {
         let prefix = deptMatch[1].replace(/\./g, "");
@@ -643,21 +636,13 @@
         if (seatsByCode[candidate]) return seatsByCode[candidate].code;
         return candidate;
       }
-
       return s;
     }
 
     function getRosterEntry(seatCode) {
       if (!seatCode) return null;
-      const upper = seatCode.toUpperCase();
-      const norm = normalizeSeatCode(seatCode);
-      return (
-        studentRoster[seatCode] ||
-        studentRoster[upper] ||
-        studentRoster[norm] ||
-        studentRoster[norm.toUpperCase()] ||
-        null
-      );
+      const upper = seatCode.toUpperCase(), norm = normalizeSeatCode(seatCode);
+      return studentRoster[seatCode] || studentRoster[upper] || studentRoster[norm] || studentRoster[norm.toUpperCase()] || null;
     }
 
     function normalizeAllLoadedRosterKeys() {
@@ -768,7 +753,6 @@
       wrapper.appendChild(rowNumCol);
       wrapper.appendChild(createPassageDOM("Passage (3 ft)", false, "passage-left-outer"));
 
-      // First pass: populate seatsByCoord and seatsByCode so normalizeSeatCode has full map awareness
       layoutConfig.blocks.forEach((blk) => {
         for (let r = 1; r <= 24; r++) {
           const orderedItems = getRowAllocationForBlock(blk.id, r, blk.cols);
@@ -1437,25 +1421,15 @@
     async function injectWebmDurationHeader(blob, durationMs) {
       try {
         if (!blob.type.includes("webm")) return blob;
-        const buf = await blob.arrayBuffer();
-        const bytes = new Uint8Array(buf);
+        const buf = await blob.arrayBuffer(), bytes = new Uint8Array(buf);
         for (let i = 0; i < Math.min(bytes.length - 12, 4096); i++) {
           if (bytes[i] === 0x44 && bytes[i + 1] === 0x89) {
-            if (bytes[i + 2] === 0x84) {
-              const view = new DataView(buf, i + 3, 4);
-              view.setFloat32(0, durationMs, false);
-              return new Blob([buf], { type: blob.type });
-            } else if (bytes[i + 2] === 0x88) {
-              const view = new DataView(buf, i + 3, 8);
-              view.setFloat64(0, durationMs, false);
-              return new Blob([buf], { type: blob.type });
-            }
+            if (bytes[i + 2] === 0x84) { new DataView(buf, i + 3, 4).setFloat32(0, durationMs, false); return new Blob([buf], { type: blob.type }); }
+            else if (bytes[i + 2] === 0x88) { new DataView(buf, i + 3, 8).setFloat64(0, durationMs, false); return new Blob([buf], { type: blob.type }); }
           }
         }
         return blob;
-      } catch (e) {
-        return blob;
-      }
+      } catch (e) { return blob; }
     }
 
     function createUnclippedHallBackgroundCanvas(canvasEl, isCentralMode) {
@@ -1817,7 +1791,7 @@
       const blockDepts = { 1:"UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty", 2:"PhD (1–9), CS (1–159), MCA (1–34)", 3:"PhD (10–12), CE (1–196)", 4:"PG Toppers (9–1), ME (1–198)", 5:"PG Toppers (18–10), Arch (1–86), MBA (1–107), Faculty", 6:"PG Toppers (25–19), EC (1–159), Faculty" };
       for (let b = 1; b <= 6; b++) {
         const p = convocationProgress[b] || { status:"Pending", time:"" }, tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>Block ${b}</strong></td><td>${blockDepts[b]}</td><td><select id="prog-status-${b}" class="form-control" style="max-width:160px;"><option value="Pending" ${p.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="In Progress" ${p.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Completed" ${p.status === 'Completed' ? 'selected' : ''}>Completed</option></select></td><td><input type="text" id="prog-time-${b}" class="form-control" style="width:140px;" placeholder="e.g. 11:45 AM" value="${p.time || ''}" /></td>`;
+        tr.innerHTML = `<td><strong>Block ${b}</strong></td><td>${blockDepts[b]}</td><td><select id="prog-status-${b}" class="form-control" style="max-width:160px"><option value="Pending" ${p.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="In Progress" ${p.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Completed" ${p.status === 'Completed' ? 'selected' : ''}>Completed</option></select></td><td><input type="text" id="prog-time-${b}" class="form-control" style="width:140px" placeholder="e.g. 11:45 AM" value="${p.time || ''}" /></td>`;
         tbody.appendChild(tr);
       }
     }
@@ -1846,7 +1820,7 @@
         if (searchQ && !(sObj.code.toUpperCase().includes(searchQ) || nameStr.toUpperCase().includes(searchQ) || regStr.toUpperCase().includes(searchQ))) return;
         totalShown++; if (rData.absent) absentShown++;
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><strong>${sObj.code}</strong></td><td>Block ${sObj.block} · R${sObj.row}</td><td>${nameStr || '<span style="color:#94a3b8;">Unassigned</span>'}</td><td>${regStr || '-'}</td><td>${rData.branch || sObj.dept} ${rData.stream ? `(${rData.stream})` : ''}</td><td><label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:${rData.absent ? '#ea580c' : '#16a34a'}"><input type="checkbox" ${rData.absent ? 'checked' : ''} onchange="toggleStudentAbsent('${sObj.code}', this.checked)" />${rData.absent ? 'Absent (Failed to Register)' : 'Registered / Present'}</label></td>`;
+        tr.innerHTML = `<td><strong>${sObj.code}</strong></td><td>Block ${sObj.block} · R${sObj.row}</td><td>${nameStr || '<span style="color:#94a3b8">Unassigned</span>'}</td><td>${regStr || '-'}</td><td>${rData.branch || sObj.dept} ${rData.stream ? `(${rData.stream})` : ''}</td><td><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:${rData.absent ? '#ea580c' : '#16a34a'}"><input type="checkbox" ${rData.absent ? 'checked' : ''} onchange="toggleStudentAbsent('${sObj.code}', this.checked)" />${rData.absent ? 'Absent (Failed to Register)' : 'Registered / Present'}</label></td>`;
         tbody.appendChild(tr);
       });
       document.getElementById("regStatsSummary").textContent = `Showing ${totalShown} seats · ${absentShown} marked Absent`;
@@ -1934,7 +1908,6 @@
       XLSX.writeFile(wb, `CET_2026_${alloc.dept}_Seating.xlsx`);
     }
 
-    // Flexible column extractor so minor Excel header changes or spaces never break upload
     function getExcelRowField(row, patterns) {
       for (const [k, val] of Object.entries(row)) {
         const cleanKey = k.toString().trim().toLowerCase().replace(/[\s_-]+/g, "");
