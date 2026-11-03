@@ -48,6 +48,10 @@
     .wave-pill.first-wave-btn{background:#d97706;color:#fff;border-color:#b45309}
     .wave-pill.full-wave-btn{background:#7c3aed;color:#fff;border-color:#7c3aed}
     .wave-pill.block-wave-btn{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
+    .speed-controls{display:inline-flex;align-items:center;gap:6px;background:#f4f1e8;padding:4px 8px;border-radius:10px;border:1px solid #dcd7cc}
+    .speed-btn{width:26px;height:26px;border-radius:6px;border:1px solid #d5cfc2;background:#fff;font-size:14px;font-weight:700;cursor:pointer}
+    .speed-label{font-size:11.5px;font-weight:700;min-width:92px;text-align:center;color:var(--navy)}
+    .video-speed-select{padding:5px 8px;border-radius:7px;border:1px solid #cbd5e1;background:#fff;font-size:11.5px;font-weight:700;color:var(--navy);cursor:pointer}
     .hall-viewport{background:#fff;border-radius:16px;border:1px solid var(--bdr);overflow:auto;padding:10px;max-height:85vh;width:100%}
     .hall-scale-wrapper{position:relative;overflow:hidden;margin:0 auto}
     .hall-canvas{position:relative;transform-origin:top left;width:1460px;padding:18px 28px 54px 28px;background:#fff}
@@ -533,7 +537,6 @@
       }).catch(e=>console.error(e));
     }
 
-    // Exact Master Plan Allocation matching 1000154143.jpg & 1000154142.jpg + Dynamic Admin Overrides
     function getRowAllocationForBlock(blockId,rowNum,cols){
       const items=[];
       const eeCap=getDeptCap("EE",135),ptdcCap=getDeptCap("PTDC",30),csCap=getDeptCap("CS",159),mcaCap=getDeptCap("MCA",34);
@@ -585,7 +588,6 @@
         const s=(rowNum-3)*cols+1;
         for(let i=0;i<cols;i++){const n=s+i;if(n<=ceCap)items.push({type:"student",dept:"CE",label:`${n}`,code:`CE ${n}`});}
       }else if(blockId===4){
-        // In Official Chart 1000154143.jpg: Camera 1 3X3 is after Row 15 (visual slot 16), ME runs 1..198 (22 student rows), Rows 23 & 24 at bottom are Faculty!
         const meRows=Math.ceil(meCap/cols);
         if(rowNum>=3&&rowNum<3+meRows){
           const end=(rowNum-2)*cols;
@@ -594,7 +596,6 @@
           for(let i=1;i<=cols;i++)items.push({type:"faculty",dept:"FAC",num:"Fac",code:`FAC_B4_R${rowNum}_${i}`,designation:"Faculty"});
         }
       }else if(blockId===5){
-        // Arch 1..86 (Rows 3..12 right-to-left), MBA 1..107 (Rows 13..24 right-to-left), then 2 Faculty rows at bottom per 1000154143.jpg
         const archRows=Math.ceil(archCap/cols);
         const mbaRows=Math.ceil(mbaCap/cols);
         if(rowNum>=3&&rowNum<3+archRows){
@@ -609,7 +610,6 @@
           for(let i=1;i<=cols;i++)items.push({type:"faculty",dept:"FAC",num:"Fac",code:`FAC_B5_R${rowNum}_${i}`,designation:"Faculty"});
         }
       }else if(blockId===6){
-        // Official Chart 1000154143.jpg: EC 1..159 (Rows 3..22 right-to-left, no middle cross-passage) + 4 Faculty rows at bottom!
         const ecRows=Math.ceil(ecCap/cols);
         if(rowNum>=3&&rowNum<3+ecRows){
           const end=Math.min(ecCap,(rowNum-2)*cols),start=(rowNum-3)*cols+1,cnt=end-start+1;
@@ -640,7 +640,6 @@
       const wrapper=document.getElementById("blocksWrapper");
       wrapper.innerHTML="";
 
-      // Left Row Numbers Column matching 1000154143.jpg (1..16, Main Door Entry, 17..24)
       const rowNumCol=document.createElement("div");
       rowNumCol.className="row-numbers-col";
       for(let r=1;r<=16;r++){
@@ -656,7 +655,6 @@
       wrapper.appendChild(rowNumCol);
       wrapper.appendChild(createPassageDOM("Passage (3 ft)",false,"passage-left-outer"));
 
-      // First pass: register all seats into seatsByCoord & seatsByCode
       layoutConfig.blocks.forEach((blk)=>{
         const totalRows=(blk.id===4||blk.id===5||blk.id===6)?Math.max(blk.rows,26):blk.rows;
         for(let r=1;r<=totalRows;r++){
@@ -688,7 +686,6 @@
         const rowsStack=document.createElement("div");rowsStack.className="rows-stack";
         const deptRowSpans={};
 
-        // Visual slots 1..26 so all 6 blocks align identically at the bottom (Row 24)
         const totalRows=(blk.id===4||blk.id===5||blk.id===6)?Math.max(blk.rows,26):blk.rows;
         let visualSlot=0;
 
@@ -698,7 +695,7 @@
           for(let c=1;c<=blk.cols;c++){
             const ck=`B${blk.id}-R${r}-C${c}`,sObj=seatsByCoord[ck];
             if(sObj.type==="student"&&sObj.dept){
-              const half=(blk.id<=3&&r>16)||(blk.id>=4&& blk.id<=5&&r>15)?"bot":"top";
+              const half=(blk.id<=3&&r>16)||(blk.id>=4&&blk.id<=5&&r>15)?"bot":"top";
               const sk=`${sObj.dept}_${half}`;
               if(!deptRowSpans[sk])deptRowSpans[sk]={dept:sObj.dept,startSlot:visualSlot,endSlot:visualSlot};
               else deptRowSpans[sk].endSlot=visualSlot;
@@ -714,22 +711,17 @@
           }
           rowsStack.appendChild(rowEl);
 
-          // Exact Cross-Passage & Camera positions from 1000154143.jpg:
-          // Blocks 1, 2, 3: 2-row tall Passage (6 ft) / Camera 3 3X3 after Row 16
           if(blk.id<=3&&r===16){
             const mid1=document.createElement("div");mid1.className="mid-cross-passage";
             const mid2=document.createElement("div");mid2.className="mid-cross-passage";
             if(blk.id===1||blk.id===2){
-              mid1.innerHTML=`<span>Passage (6 ft)</span>`;
-              mid2.innerHTML=`<span></span>`;
+              mid1.innerHTML=`<span>Passage (6 ft)</span>`;mid2.innerHTML=`<span></span>`;
             }else if(blk.id===3){
-              mid1.innerHTML=`<span class="cam-badge">📷 Camera 3 (3X3)</span><span>Passage (6 ft)</span>`;
-              mid2.innerHTML=`<span></span>`;
+              mid1.innerHTML=`<span class="cam-badge">📷 Camera 3 (3X3)</span><span>Passage (6 ft)</span>`;mid2.innerHTML=`<span></span>`;
             }
             rowsStack.appendChild(mid1);rowsStack.appendChild(mid2);
             visualSlot+=2;
           }
-          // Blocks 4 & 5: 1-row Camera 1 3X3 / Camera 3 3X3 after Row 15 (and NO passage in Block 6!)
           if((blk.id===4||blk.id===5)&&r===15){
             const mid=document.createElement("div");mid.className="mid-cross-passage";
             mid.innerHTML=blk.id===4?`<span class="cam-badge">📷 Camera 1 (3X3)</span>`:`<span class="cam-badge">📷 Camera 3 (3X3)</span>`;
@@ -739,8 +731,7 @@
         }
 
         Object.values(deptRowSpans).forEach((sp)=>{
-          const topPx=(sp.startSlot-1)*23;
-          const heightPx=(sp.endSlot-sp.startSlot+1)*23-3;
+          const topPx=(sp.startSlot-1)*23,heightPx=(sp.endSlot-sp.startSlot+1)*23-3;
           const bar=document.createElement("div");bar.className="branch-bar";
           bar.style.top=`${topPx}px`;bar.style.height=`${heightPx}px`;
           bar.style.backgroundColor=BRANCH_META[sp.dept]?.color||"#333";
@@ -751,14 +742,12 @@
         });
 
         body.appendChild(barsCol);body.appendChild(rowsStack);blockEl.appendChild(body);
-
         const footer=document.createElement("div");footer.className="block-footer";footer.textContent=`Block ${blk.id}`;
         blockEl.appendChild(footer);
         if(blk.id===4){
           const snd=document.createElement("div");snd.className="sound-box";snd.textContent="6X6 Sound System";
           blockEl.appendChild(snd);
         }
-
         wrapper.appendChild(blockEl);
 
         if(idx===2){
@@ -888,7 +877,7 @@
       const stpEl=document.getElementById(isL?"leftStageSteps":"rightStageSteps"),dskEl=document.getElementById(useCentral?"centralStationDesk":(isL?"station1Desk":"station2Desk"));
       const stgEl=document.getElementById("stageMainRect"),strEl=document.getElementById("centerReturnStairs");
       if(!bEl||!rEl||!stpEl||!dskEl||!stgEl||!strEl)return null;
-      const bP=toL(bEl.getBoundingClientRect()),rP=toL(rEl.getBoundingClientRect()),stpP=toL(stpEl.getBoundingClientRect()),dskP=toL(dskEl.getBoundingClientRect()),stgP=toL(stgEl.getBoundingClientRect()),strP=toL(stairsEl=strEl.getBoundingClientRect());
+      const bP=toL(bEl.getBoundingClientRect()),rP=toL(rEl.getBoundingClientRect()),stpP=toL(stpEl.getBoundingClientRect()),dskP=toL(dskEl.getBoundingClientRect()),stgP=toL(stgEl.getBoundingClientRect()),strP=toL(strEl.getBoundingClientRect());
       const outX=isL?(bP.x-10):(bP.x+bP.w+10),inX=isL?(bP.x+bP.w+10):(bP.x-10),rOutX=isL?(bP.x+16):(bP.x+bP.w-4),rInX=isL?(bP.x+bP.w-4):(bP.x+16),rY=rP.cy;
       const bOff=(blockId<=3?(3-blockId):(blockId-4))*3.5,outFY=stgP.y+stgP.h+5+bOff,retFY=strP.y+strP.h+10+bOff;
       const stpOutX=isL?(stpP.x-8):(stpP.x+stpP.w+8),stpCY=stpP.cy,stpInX=isL?(stpP.x+stpP.w+8):(stpP.x-8),stBotY=dskP.y+dskP.h+5,retStX=strP.cx+(isL?-12:12);
