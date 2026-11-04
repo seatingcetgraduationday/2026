@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CET Graduation Day 2026 — Seating Arrangement</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -14,244 +12,118 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    :root {
-      --bg-cream: #f8f6f0;
-      --navy-dark: #152542;
-      --navy-card: #192a48;
-      --gold: #e6b333;
-      --text-main: #182232;
-      --text-muted: #5e6b7c;
-      --border-light: #e6e2d8;
-      --card-bg: #ffffff;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: var(--bg-cream);
-      color: var(--text-main);
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      line-height: 1.5;
-      padding-bottom: 60px;
-    }
-    h1, h2, h3, .serif-title { font-family: 'Fraunces', Georgia, serif; }
-    .navbar {
-      background-color: var(--navy-dark); color: #fff; padding: 12px 20px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    }
-    .nav-brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 38px; height: 38px; border-radius: 50%; background-color: var(--gold);
-      color: var(--navy-dark); display: flex; align-items: center; justify-content: center;
-      font-weight: 700; flex-shrink: 0;
-    }
-    .brand-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; line-height: 1.2; }
-    .brand-sub { font-size: 12px; color: #b0bfd8; }
-    .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-    .nav-tab {
-      background: transparent; color: #d1dbed; border: 1px solid rgba(255,255,255,0.12);
-      padding: 7px 12px; border-radius: 10px; font-size: 12.5px; font-weight: 600;
-      cursor: pointer; transition: all 0.18s;
-    }
-    .nav-tab.active { background-color: var(--gold); color: var(--navy-dark); border-color: var(--gold); font-weight: 700; }
-    .container { max-width: 1440px; margin: 0 auto; padding: 20px 16px; }
-    .live-progress-banner {
-      background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 6px solid var(--navy-dark);
-      border-radius: 14px; padding: 14px 18px; margin-bottom: 18px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .progress-pills-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-    .prog-chip {
-      font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
-      background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
-    }
-    .prog-chip.completed { background: #dcfce7; color: #166534; border-color: #86efac; }
-    .prog-chip.in-progress { background: #fef9c3; color: #854d0e; border-color: #fde047; }
-    .eyebrow { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
-    .hero-title { font-size: 30px; font-weight: 700; color: var(--text-main); line-height: 1.15; margin-bottom: 8px; }
-    .hero-desc { font-size: 14.5px; color: var(--text-muted); max-width: 820px; margin-bottom: 12px; }
-    .dept-roster-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-    .dept-stat-badge { font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: #fff; border: 1px solid #dcd7cc; color: #334155; }
-    .dept-stat-badge.has-students { background: #dcfce7; border-color: #86efac; color: #166534; }
-    .search-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .search-box { position: relative; flex: 1; min-width: 280px; max-width: 560px; }
-    .search-box input {
-      width: 100%; padding: 13px 42px; border-radius: 999px;
-      border: 1px solid #dcd7cc; background: #ffffff; font-size: 14.5px; color: var(--text-main); outline: none;
-    }
-    .search-box input:focus { border-color: var(--navy-dark); box-shadow: 0 0 0 3px rgba(21,37,66,0.1); }
-    .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #7c8898; pointer-events: none; }
-    .clear-btn {
-      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-      background: #eeeae0; border: none; width: 24px; height: 24px; border-radius: 50%;
-      font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center;
-    }
-    .legend-card { background: #fdfcf9; border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); padding: 10px 0; margin-bottom: 12px; }
-    .legend-grid { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12.5px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-    .rect-indicator { width: 14px; height: 8px; border-radius: 2px; display: inline-block; }
-    .rect-indicator.filled { background-color: #16a34a; }
-    .rect-indicator.unoccupied { background-color: #ef4444; }
-    .rect-indicator.absent { background-color: #f97316; }
-    .dot-defective { background: #374151; color: #fff; font-size: 8px; display: inline-flex; align-items: center; justify-content: center; }
-    .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
-    .zoom-controls, .ceremony-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .zoom-btn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid #dcd7cc; background: #fff; font-size: 18px; font-weight: 700; cursor: pointer; }
-    .zoom-fit-btn { padding: 0 11px; height: 34px; border-radius: 9px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11.5px; font-weight: 700; color: var(--navy-dark); cursor: pointer; }
-    .zoom-label { font-size: 13px; font-weight: 700; min-width: 46px; text-align: center; }
-    .wave-pill { padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid #d5cfc2; background: #fff; cursor: pointer; transition: all 0.15s; }
-    .wave-pill:hover { background: #f1efe8; }
-    .wave-pill.active-wave { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
-    .wave-pill.first-wave-btn { background: #d97706; color: #fff; border-color: #b45309; }
-    .wave-pill.full-wave-btn { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-    .wave-pill.block-wave-btn { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
-    .speed-controls { display: inline-flex; align-items: center; gap: 6px; background: #f4f1e8; padding: 4px 8px; border-radius: 10px; border: 1px solid #dcd7cc; }
-    .speed-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #d5cfc2; background: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
-    .speed-label { font-size: 11.5px; font-weight: 700; min-width: 92px; text-align: center; color: var(--navy-dark); }
-    .video-speed-select { padding: 5px 8px; border-radius: 7px; border: 1px solid #cbd5e1; background: #fff; font-size: 11.5px; font-weight: 700; color: var(--navy-dark); cursor: pointer; }
-    .hall-viewport {
-      background: #ffffff; border-radius: 20px; border: 1px solid var(--border-light);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04); overflow: auto; padding: 14px; position: relative; max-height: 85vh; width: 100%;
-    }
-    .hall-scale-wrapper { position: relative; overflow: hidden; margin: 0 auto; }
-    .hall-canvas { position: relative; transform-origin: top left; width: 1460px; padding: 20px 32px 54px 32px; background: #ffffff; }
-    .hall-top-architecture { display: flex; align-items: flex-start; justify-content: space-between; position: relative; height: 154px; margin-bottom: 16px; }
-    .entry-box {
-      background: #e9f2ec; color: #2f5941; border: 1px solid #c7dfd0;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; padding: 7px 40px; border-radius: 4px; text-transform: uppercase;
-    }
-    .stage-cluster { position: absolute; left: 50%; transform: translateX(-50%); top: 2px; display: flex; align-items: center; }
-    .stage-side-steps {
-      width: 26px; height: 48px; background: #dce4ee; border: 1.5px solid #7f97b2;
-      z-index: 5; display: flex; align-items: center; justify-content: center; overflow: hidden;
-    }
-    .stage-wrapper { display: flex; flex-direction: column; align-items: center; position: relative; }
-    .stage-main-rect {
-      width: 720px; height: 126px; background: var(--navy-card); border: 1.5px solid #152542; border-radius: 8px;
-      position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 0 24px 12px 24px; box-shadow: 0 4px 14px rgba(21,37,66,0.18); color: #fff;
-    }
-    .stage-header-pill {
-      background: var(--gold); color: var(--navy-dark); font-family: 'Fraunces', serif;
-      font-weight: 700; font-size: 11px; letter-spacing: 0.08em; padding: 3px 28px; border-radius: 0 0 6px 6px; text-transform: uppercase;
-    }
-    .stage-led-tag { font-size: 8.5px; letter-spacing: 0.14em; color: #9ab0d4; font-weight: 700; margin-top: -8px; }
-    .stage-receptions-row { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 64px; margin-top: -12px; position: relative; }
-    .reception-desk { border: 2px solid #fef08a; background: #fef9c3; border-radius: 6px; padding: 4px 16px; text-align: center; transition: opacity 0.25s; }
-    .reception-desk.hidden-station { opacity: 0; pointer-events: none; }
-    .reception-desk-title { font-size: 8px; font-weight: 800; letter-spacing: 0.08em; color: #854d0e; text-transform: uppercase; line-height: 1.2; }
-    .central-collection-desk {
-      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-      border: 2px solid #fef08a; background: #fef9c3; border-radius: 6px; padding: 4px 18px;
-      text-align: center; opacity: 0; pointer-events: none; z-index: 20; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: opacity 0.25s;
-    }
-    .central-collection-desk.visible-central { opacity: 1; }
-    .stage-floor-label { font-size: 8.5px; letter-spacing: 0.1em; color: #b0bfd8; font-weight: 700; }
-    .center-return-stairs {
-      width: 56px; height: 22px; background: #dce4ee; border: 1.5px solid #7f97b2; border-top: none;
-      position: absolute; top: 126px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center;
-    }
-    .return-stairs-label { position: absolute; left: 62px; top: 4px; font-size: 8px; font-weight: 700; color: #5c708a; white-space: nowrap; }
-    .front-area-banner { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #5e6b7c; margin-bottom: 10px; text-transform: uppercase; }
-    .blocks-wrapper { display: flex; align-items: flex-start; justify-content: center; gap: 0; position: relative; }
-    .row-numbers-col { display: flex; flex-direction: column; gap: 3px; padding-top: 34px; margin-right: 6px; }
-    .row-num-label { height: 20px; font-size: 9px; font-weight: 700; color: #64748b; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; }
-    .seating-block { display: flex; flex-direction: column; position: relative; transition: all 0.25s; border-radius: 8px; padding: 2px; }
-    .seating-block.block-completed-highlight { background: rgba(22, 163, 74, 0.12); outline: 2.5px solid #16a34a; }
-    .block-col-spec { text-align: center; font-size: 8.5px; color: #64748b; font-weight: 600; height: 14px; }
-    .block-header { text-align: center; font-size: 9.5px; letter-spacing: 0.06em; color: #1e293b; font-weight: 800; margin-bottom: 4px; height: 16px; text-transform: uppercase; }
-    .block-footer { text-align: center; font-size: 9.5px; letter-spacing: 0.04em; color: #1e293b; font-weight: 800; margin-top: 6px; }
-    .sound-box { margin: 4px auto 0 auto; padding: 4px 10px; border: 1.5px solid #475569; background: #f8fafc; border-radius: 4px; font-size: 8px; font-weight: 800; text-align: center; color: #0f172a; }
-    .block-body { display: flex; position: relative; }
-    .branch-bars-col { width: 14px; position: relative; margin-right: 2px; }
-    .branch-bar { position: absolute; left: 9px; width: 3px; border-radius: 2px; }
-    .branch-bar-label { position: absolute; right: 4px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center; font-size: 7px; font-weight: 700; white-space: nowrap; }
-    .rows-stack { display: flex; flex-direction: column; gap: 3px; }
-    .seat-row { display: flex; gap: 3px; height: 20px; }
-    .mid-cross-passage {
-      height: 20px; background: #f4f1e8; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1;
-      display: flex; align-items: center; justify-content: space-between; padding: 0 6px; font-size: 8px; font-weight: 700; color: #475569; border-radius: 3px;
-    }
-    .camera-box-3x3 {
-      background: #f8fafc; color: #0f172a; border: 1px solid #94a3b8; border-radius: 4px;
-      display: inline-flex; align-items: center; gap: 3px; padding: 1px 5px; font-size: 7px; font-weight: 800; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .seat-box {
-      width: 20px; height: 20px; border-radius: 4px; font-size: 5px; font-weight: 800;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none;
-      transition: transform 0.12s, box-shadow 0.12s; position: relative; border: 1px solid transparent; white-space: nowrap; overflow: hidden;
-    }
-    .seat-box:hover { transform: scale(1.25); z-index: 15; }
-    .seat-selected { outline: 2.5px solid #152542 !important; outline-offset: 1px; box-shadow: 0 0 0 4px rgba(230,179,51,0.65); z-index: 20; transform: scale(1.2); }
-    .occ-rect { position: absolute; bottom: 0.5px; left: 50%; transform: translateX(-50%); width: 10px; height: 2px; border-radius: 1px; pointer-events: none; }
-    .occ-rect.filled { background-color: #16a34a; }
-    .occ-rect.unoccupied { background-color: #ef4444; }
-    .occ-rect.absent { background-color: #f97316; }
-    .seat-FAC { background: #64748b; color: #fff; font-size: 5px; }
-    .seat-TOP { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 4.8px; }
-    .seat-PhD { background: #ede4ff; color: #5b21b6; border-color: #d8b4fe; font-size: 4.6px; }
-    .seat-EE  { background: #dceaff; color: #1e40af; border-color: #93c5fd; }
-    .seat-PTDC{ background: #d5f3f7; color: #0e7490; border-color: #67e8f9; }
-    .seat-CS  { background: #d6f5e3; color: #065f46; border-color: #6ee7b7; }
-    .seat-MCA { background: #e4f8cc; color: #3f6212; border-color: #bef264; }
-    .seat-CE  { background: #fef0c7; color: #92400e; border-color: #fcd34d; }
-    .seat-ME  { background: #ffedd5; color: #9a3412; border-color: #fdba74; }
-    .seat-Arch{ background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
-    .seat-MBA { background: #fae8ff; color: #86198f; border-color: #f0abfc; }
-    .seat-EC  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
-    .seat-empty-slot { background: transparent !important; border: 1.5px dashed #cbd5e1 !important; color: transparent !important; }
-    .seat-defective-slot { background: #374151 !important; border-color: #1f2937 !important; color: #ffffff !important; }
-    .seat-absent-slot { opacity: 0.55; border: 1.5px solid #f97316 !important; }
-    .passage-col {
-      width: 20px; background: #f4f1e8; align-self: stretch; border-radius: 3px;
-      position: relative; margin: 34px 5px 0 5px; display: flex; align-items: center; justify-content: center;
-    }
-    .passage-col.center-6ft {
-      width: 36px; background: #ede8da; border-left: 1.5px dashed #94a3b8; border-right: 1.5px dashed #94a3b8;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 0 0;
-    }
-    .passage-vertical-text { transform: rotate(-90deg); white-space: nowrap; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; color: #7c8898; text-transform: uppercase; }
-    .central-door-box {
-      width: 100%; height: 30px; background: #cbd5e1; border-top: 2px solid #475569;
-      color: #1e293b; font-size: 7.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-transform: uppercase;
-    }
-    #walkOverlaySvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 35; }
-    .info-card { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 18px; padding: 22px; margin-top: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
-    .info-card-empty { text-align: center; padding: 28px 20px; }
-    .seat-detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
-    .seat-badge-lg { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
-    .assigned-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
-    .assigned-name { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 700; }
-    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
-    .meta-item-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
-    .meta-item-val { font-size: 14.5px; font-weight: 600; }
-    .meta-item-sub { font-size: 12.5px; color: var(--text-muted); }
-    .card-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-    .btn-outline { padding: 9px 16px; border-radius: 10px; border: 1px solid #d5cfc2; background: #fff; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-main); }
-    .btn-primary { padding: 9px 18px; border-radius: 10px; border: none; background: var(--navy-dark); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
-    .btn-danger { padding: 9px 18px; border-radius: 10px; border: none; background: #dc2626; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
-    .walk-banner-card { border: 2px solid #94a3b8; background: #fff; border-radius: 16px; padding: 16px 20px; margin-top: 14px; display: none; }
-    .walk-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
-    .stage-queue-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
-    .queue-box { background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid var(--navy-dark); border-radius: 8px; padding: 6px 12px; display: flex; flex-direction: column; }
-    .queue-box.next-box { border-left-color: #d97706; background: #fffbeb; }
-    .queue-box-label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; }
-    .queue-box-val { font-size: 13px; font-weight: 700; color: #1e293b; }
-    .station-live-log-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; font-size: 12px; font-weight: 700; }
-    .station-log-pill { padding: 4px 10px; border-radius: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; }
-    .role-view { display: none; }
-    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-top: 18px; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
-    .form-control { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid #d5cfc2; font-size: 13.5px; }
-    .dept-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-    .dept-pill-btn { padding: 6px 11px; border-radius: 7px; border: 1px solid #d5cfc2; background: #f9f7f2; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .dept-pill-btn.active { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
-    .config-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 12px; }
-    .config-table th, .config-table td { padding: 7px 6px; border-bottom: 1px solid var(--border-light); text-align: left; }
-    .config-table input { width: 80px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12.5px; }
+    :root{--bg:#f8f6f0;--navy:#152542;--navy2:#192a48;--gold:#e6b333;--txt:#182232;--muted:#5e6b7c;--bdr:#e6e2d8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.45;padding-bottom:50px}
+    h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+    .navbar{background:var(--navy);color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100}
+    .nav-brand{display:flex;align-items:center;gap:10px}
+    .brand-icon{width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .nav-tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .nav-tab{background:transparent;color:#d1dbed;border:1px solid rgba(255,255,255,.15);padding:6px 11px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+    .nav-tab.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700}
+    .container{max-width:1460px;margin:0 auto;padding:16px}
+    .banner{background:#fff;border:1.5px solid #cbd5e1;border-left:6px solid var(--navy);border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .prog-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+    .prog-chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+    .prog-chip.completed{background:#dcfce7;color:#166534;border-color:#86efac}
+    .prog-chip.in-progress{background:#fef9c3;color:#854d0e;border-color:#fde047}
+    .dept-bar{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+    .dept-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#fff;border:1px solid #dcd7cc}
+    .dept-badge.ok{background:#dcfce7;border-color:#86efac;color:#166534}
+    .search-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .search-box{position:relative;flex:1;min-width:250px;max-width:520px}
+    .search-box input{width:100%;padding:10px 36px;border-radius:99px;border:1px solid #dcd7cc;background:#fff;font-size:13.5px}
+    .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
+    .clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#eeeae0;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:11.5px;padding:8px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);margin-bottom:10px}
+    .legend-item{display:flex;align-items:center;gap:5px}
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+    .rect-ind{width:12px;height:6px;border-radius:2px;display:inline-block}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .zoom-controls,.ceremony-bar{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+    .zoom-btn{width:32px;height:32px;border-radius:8px;border:1px solid #dcd7cc;background:#fff;font-size:16px;font-weight:700;cursor:pointer}
+    .zoom-fit-btn,.wave-pill{padding:5px 9px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid #d5cfc2;background:#fff;cursor:pointer}
+    .wave-pill.active-wave{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .wave-pill.first-wave-btn{background:#d97706;color:#fff;border-color:#b45309}
+    .wave-pill.full-wave-btn{background:#7c3aed;color:#fff;border-color:#7c3aed}
+    .wave-pill.block-wave-btn{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
+    .speed-controls{display:inline-flex;align-items:center;gap:6px;background:#f4f1e8;padding:4px 8px;border-radius:10px;border:1px solid #dcd7cc}
+    .speed-btn{width:26px;height:26px;border-radius:6px;border:1px solid #d5cfc2;background:#fff;font-size:14px;font-weight:700;cursor:pointer}
+    .speed-label{font-size:11.5px;font-weight:700;min-width:92px;text-align:center;color:var(--navy)}
+    .video-speed-select{padding:5px 8px;border-radius:7px;border:1px solid #cbd5e1;background:#fff;font-size:11.5px;font-weight:700;color:var(--navy);cursor:pointer}
+    .hall-viewport{background:#fff;border-radius:16px;border:1px solid var(--bdr);overflow:auto;padding:10px;max-height:85vh;width:100%}
+    .hall-scale-wrapper{position:relative;overflow:hidden;margin:0 auto}
+    .hall-canvas{position:relative;transform-origin:top left;width:1460px;padding:18px 28px 54px 28px;background:#fff}
+    .hall-top{display:flex;align-items:flex-start;justify-content:space-between;position:relative;height:150px;margin-bottom:14px}
+    .entry-box{background:#e9f2ec;color:#2f5941;border:1px solid #c7dfd0;font-size:10px;font-weight:700;padding:6px 36px;border-radius:4px}
+    .stage-cluster{position:absolute;left:50%;transform:translateX(-50%);top:2px;display:flex;align-items:center}
+    .stage-side-steps{width:26px;height:48px;background:#dce4ee;border:1.5px solid #7f97b2}
+    .stage-wrapper{display:flex;flex-direction:column;align-items:center;position:relative}
+    .stage-main-rect{width:720px;height:124px;background:var(--navy2);border:1.5px solid var(--navy);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:0 24px 10px 24px;color:#fff}
+    .stage-header-pill{background:var(--gold);color:var(--navy);font-family:'Fraunces',serif;font-weight:700;font-size:11px;padding:3px 24px;border-radius:0 0 6px 6px}
+    .stage-receptions-row{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 60px;position:relative}
+    .reception-desk{border:2px solid #fef08a;background:#fef9c3;border-radius:6px;padding:4px 14px;text-align:center;color:#854d0e;font-size:8px;font-weight:800}
+    .reception-desk.hidden-station{opacity:0;pointer-events:none}
+    .central-collection-desk{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:2px solid #fef08a;background:#fef9c3;border-radius:6px;padding:4px 16px;text-align:center;color:#854d0e;font-size:8px;font-weight:800;opacity:0;pointer-events:none}
+    .central-collection-desk.visible-central{opacity:1}
+    .center-return-stairs{width:56px;height:22px;background:#dce4ee;border:1.5px solid #7f97b2;border-top:none;position:absolute;top:124px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center}
+    .return-stairs-label{position:absolute;left:60px;top:4px;font-size:8px;font-weight:700;color:#5c708a;white-space:nowrap}
+    .front-banner{text-align:center;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:8px}
+    .blocks-wrapper{display:flex;align-items:flex-start;justify-content:center;position:relative}
+    .row-numbers-col{display:flex;flex-direction:column;gap:3px;padding-top:34px;margin-right:4px}
+    .row-num-label{height:20px;font-size:9px;font-weight:700;color:#64748b;display:flex;align-items:center;justify-content:flex-end;padding-right:4px}
+    .main-door-side-box{height:38px;background:#dcefe3;border:1.5px solid #2f5941;color:#1e3f2b;font-size:7.5px;font-weight:800;padding:2px 4px;border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1;margin-right:-6px;z-index:12}
+    .seating-block{display:flex;flex-direction:column;position:relative;border-radius:8px;padding:2px}
+    .seating-block.block-completed-highlight{background:rgba(22,163,74,.12);outline:2.5px solid #16a34a}
+    .block-col-spec{text-align:center;font-size:8.5px;color:#64748b;font-weight:600;height:14px}
+    .block-header{text-align:center;font-size:9.5px;color:#1e293b;font-weight:800;margin-bottom:4px;height:16px}
+    .block-footer{text-align:center;font-size:9.5px;color:#1e293b;font-weight:800;margin-top:6px}
+    .sound-box{margin:4px auto 0 auto;padding:4px 10px;border:1.5px solid #475569;background:#f8fafc;border-radius:4px;font-size:8px;font-weight:800;text-align:center;color:#0f172a}
+    .block-body{display:flex;position:relative}
+    .branch-bars-col{width:14px;position:relative;margin-right:2px}
+    .branch-bar{position:absolute;left:9px;width:3px;border-radius:2px}
+    .branch-bar-label{position:absolute;right:4px;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:7px;font-weight:700;white-space:nowrap}
+    .rows-stack{display:flex;flex-direction:column;gap:3px}
+    .seat-row{display:flex;gap:3px;height:20px}
+    .mid-cross-passage{height:38px;background:#f4f1e8;border-top:1.5px dashed #94a3b8;border-bottom:1.5px dashed #94a3b8;display:flex;align-items:center;justify-content:space-between;padding:0 6px;font-size:8px;font-weight:700;color:#475569;border-radius:3px}
+    .cam-badge{background:#fff;border:1.5px solid #475569;border-radius:4px;padding:3px 6px;font-size:7.5px;font-weight:800;color:#0f172a}
+    .seat-box{width:20px;height:20px;border-radius:4px;font-size:5px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;position:relative;border:1px solid transparent;overflow:hidden}
+    .seat-box:hover{transform:scale(1.22);z-index:15}
+    .seat-selected{outline:2.5px solid var(--navy)!important;box-shadow:0 0 0 3px rgba(230,179,51,.7);z-index:20;transform:scale(1.18)}
+    .occ-rect{position:absolute;bottom:.5px;left:50%;transform:translateX(-50%);width:10px;height:2px;border-radius:1px}
+    .occ-rect.filled{background:#16a34a}.occ-rect.unoccupied{background:#ef4444}.occ-rect.absent{background:#f97316}
+    .seat-FAC{background:#64748b;color:#fff;border-color:#475569}.seat-TOP{background:#fef3c7;color:#92400e;border-color:#f59e0b}
+    .seat-PhD{background:#ede4ff;color:#5b21b6;border-color:#d8b4fe}.seat-EE{background:#dceaff;color:#1e40af;border-color:#93c5fd}
+    .seat-PTDC{background:#d5f3f7;color:#0e7490;border-color:#67e8f9}.seat-CS{background:#d6f5e3;color:#065f46;border-color:#6ee7b7}
+    .seat-MCA{background:#e4f8cc;color:#3f6212;border-color:#bef264}.seat-CE{background:#fef0c7;color:#92400e;border-color:#fcd34d}
+    .seat-ME{background:#ffedd5;color:#9a3412;border-color:#fdba74}.seat-Arch{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+    .seat-MBA{background:#fae8ff;color:#86198f;border-color:#f0abfc}.seat-EC{background:#e0e7ff;color:#3730a3;border-color:#a5b4fc}
+    .seat-empty-slot{background:transparent!important;border:1px dashed #cbd5e1!important;color:transparent!important}
+    .seat-defective-slot{background:#374151!important;color:#fff!important}
+    .seat-absent-slot{opacity:.55;border:1.5px solid #f97316!important}
+    .passage-col{width:20px;background:#f4f1e8;align-self:stretch;border-radius:3px;margin:34px 4px 0 4px;display:flex;align-items:center;justify-content:center;position:relative}
+    .passage-col.center-6ft{width:36px;background:#ede8da;border-left:1.5px dashed #94a3b8;border-right:1.5px dashed #94a3b8;flex-direction:column;justify-content:space-between;padding-top:18px}
+    .passage-vertical-text{transform:rotate(-90deg);white-space:nowrap;font-size:8px;font-weight:700;color:#7c8898;text-transform:uppercase}
+    .central-door-box{width:100%;height:28px;background:#cbd5e1;border-top:2px solid #475569;color:#1e293b;font-size:7.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+    #walkOverlaySvg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:35}
+    .info-card{background:#fff;border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-top:14px}
+    .btn-outline{padding:8px 14px;border-radius:8px;border:1px solid #d5cfc2;background:#fff;font-weight:600;font-size:12.5px;cursor:pointer}
+    .btn-primary{padding:8px 16px;border-radius:8px;border:none;background:var(--navy);color:#fff;font-weight:600;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;text-decoration:none}
+    .btn-danger{padding:8px 14px;border-radius:8px;border:none;background:#dc2626;color:#fff;font-weight:600;font-size:12.5px;cursor:pointer}
+    .walk-banner-card{border:2px solid #94a3b8;background:#fff;border-radius:14px;padding:14px 18px;margin-top:12px;display:none}
+    .stage-queue-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0}
+    .queue-box{background:#f8fafc;border:1px solid #cbd5e1;border-left:4px solid var(--navy);border-radius:6px;padding:5px 10px}
+    .queue-box.next-box{border-left-color:#d97706;background:#fffbeb}
+    .role-view{display:none}
+    .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:14px}
+    .form-control{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #d5cfc2;font-size:13px;margin-bottom:10px}
+    .dept-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+    .dept-pill-btn{padding:5px 9px;border-radius:6px;border:1px solid #d5cfc2;background:#f9f7f2;font-size:11.5px;font-weight:600;cursor:pointer}
+    .dept-pill-btn.active{background:var(--navy);color:#fff}
+    .config-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px}
+    .config-table th,.config-table td{padding:6px;border-bottom:1px solid var(--bdr);text-align:left}
+    .config-table input{width:72px;padding:4px;border:1px solid #cbd5e1;border-radius:4px}
   </style>
 </head>
 <body>
@@ -260,8 +132,8 @@
     <div class="nav-brand">
       <div class="brand-icon">🎓</div>
       <div>
-        <div class="brand-title">CET Graduation Day 2026</div>
-        <div class="brand-sub">Seating Arrangement &amp; Live Convocation Tracker (1,149 Graduands)</div>
+        <div class="serif" style="font-size:16px;font-weight:700">CET Graduation Day 2026</div>
+        <div style="font-size:11.5px;color:#b0bfd8">Official Master Seating Arrangement (24 Rows · 1,149 Graduands)</div>
       </div>
     </div>
     <div class="nav-tabs">
@@ -273,134 +145,118 @@
   </header>
 
   <main id="seatView" class="container">
-    <div class="live-progress-banner">
+    <div class="banner">
       <div>
-        <div class="eyebrow" style="margin-bottom:2px;color:#152542">📡 LIVE CONVOCATION PROGRESS LOG</div>
-        <div id="liveProgressSummary" style="font-size:14px;font-weight:700;color:var(--text-main)">Ceremony status updates will appear here in real time.</div>
-        <div class="progress-pills-row" id="liveProgressPills"></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--navy)">📡 LIVE CONVOCATION PROGRESS LOG</div>
+        <div id="liveProgressSummary" style="font-size:13.5px;font-weight:700">Ceremony status updates appear here in real time.</div>
+        <div class="prog-row" id="liveProgressPills"></div>
       </div>
       <button id="highlightCompletedBtn" class="btn-outline" onclick="toggleHighlightCompletedBlocks()">✨ Highlight Completed Blocks</button>
     </div>
 
-    <div class="eyebrow">CERTIFICATE DISTRIBUTION · CENTRAL &amp; DUAL STATIONS</div>
-    <h1 class="hero-title">Find your seat for Graduation Day</h1>
-    <p class="hero-desc">Blocks 1–3 are numbered left-to-right (Main Door passage after Row 16); Blocks 4–5 have Camera 1 &amp; Camera 3 after Row 15 and 2 rows of Faculty at the bottom (Rows 23–24); Block 6 runs EC 1–159 (Rows 3–20) with 4 rows of Faculty (Rows 21–24).</p>
+    <h1 class="serif" style="font-size:24px;margin-bottom:4px">Find your seat for Graduation Day</h1>
+    <p class="hero-desc">All 6 blocks have 24 rows. Front row numbered faculty (`F10–F59`) and unnumbered `F` seats share the uniform faculty colour, while HoDs in Block 4 Row 1 (`F1–F9`) are colour-coded by department.</p>
 
-    <div class="dept-roster-bar" id="deptRosterBar"></div>
+    <div class="dept-bar" id="deptRosterBar"></div>
 
     <div class="search-row">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (e.g. HoD-CE, F1) or seat (e.g. EE 92, PTDC 5, Arch 12, UG 1)" oninput="handleSearch(this.value)" />
+        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (F1–F59, HoD-CE) or seat (e.g. EE 92, PTDC 5, Arch 12, UG 1, PG 5, PhD 3)" oninput="handleSearch(this.value)" />
         <button id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✕</button>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-outline" onclick="exportFullLayout('png')">🖼 Save Map as Image</button>
-        <button class="btn-primary" onclick="exportFullLayout('pdf')">📄 Print / Save Map as PDF</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-outline" onclick="exportFullLayout('png')">🖼 Save Image</button>
+        <button class="btn-primary" onclick="exportFullLayout('pdf')">📄 Save PDF</button>
       </div>
     </div>
 
-    <div class="legend-card">
-      <div class="legend-grid">
-        <div class="legend-item"><span class="dot" style="background:#d97706"></span> TOP UG (1–8) / PG (1–25)</div>
-        <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (1–12)</div>
-        <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (1–135)</div>
-        <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (1–30)</div>
-        <div class="legend-item"><span class="dot" style="background:#059669"></span> CS (1–159)</div>
-        <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA (1–34)</div>
-        <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE (1–196)</div>
-        <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME (1–198)</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (1–86)</div>
-        <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA (1–107)</div>
-        <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC (1–159)</div>
-        <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty (F1–F52)</div>
-        <div class="legend-item"><span class="rect-indicator filled"></span> Registered / Filled</div>
-        <div class="legend-item"><span class="rect-indicator unoccupied"></span> Unoccupied</div>
-        <div class="legend-item"><span class="rect-indicator absent"></span> Absent</div>
-        <div class="legend-item"><span class="dot dot-defective">✕</span> Defective</div>
-      </div>
+    <div class="legend">
+      <div class="legend-item"><span class="dot" style="background:#d97706"></span> Topper (UG 1–8 / PG 1–25)</div>
+      <div class="legend-item"><span class="dot" style="background:#7c3aed"></span> PhD (1–12)</div>
+      <div class="legend-item"><span class="dot" style="background:#2563eb"></span> EE (1–135)</div>
+      <div class="legend-item"><span class="dot" style="background:#0891b2"></span> PTDC (1–30)</div>
+      <div class="legend-item"><span class="dot" style="background:#059669"></span> CS (1–159)</div>
+      <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA (1–34)</div>
+      <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE (1–196)</div>
+      <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME (1–198)</div>
+      <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (1–86)</div>
+      <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA (1–107)</div>
+      <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC (1–159)</div>
+      <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty (F10–F59 &amp; F)</div>
+      <div class="legend-item"><span class="rect-ind" style="background:#16a34a"></span> Registered</div>
+      <div class="legend-item"><span class="rect-ind" style="background:#ef4444"></span> Unoccupied</div>
+      <div class="legend-item"><span class="rect-ind" style="background:#f97316"></span> Absent</div>
     </div>
 
     <div class="toolbar">
       <div class="zoom-controls">
-        <button class="zoom-btn" title="Zoom Out" onclick="adjustZoom(-0.1)">−</button>
+        <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
         <span id="zoomLabel" class="zoom-label">100%</span>
-        <button class="zoom-btn" title="Zoom In" onclick="adjustZoom(0.1)">+</button>
+        <button class="zoom-btn" onclick="adjustZoom(0.1)">+</button>
         <button class="zoom-fit-btn" onclick="fitEntireHallToScreen()">🔍 Fit All Seats</button>
         <button class="zoom-fit-btn" onclick="resetZoom100()">100%</button>
-        <span id="seatedCounter" style="font-size:12.5px;color:var(--text-muted);margin-left:4px">0 students seated</span>
+        <span id="seatedCounter" style="font-size:12px;color:var(--muted)">0 students seated</span>
       </div>
-
-      <div class="ceremony-bar" id="deptWaveBar">
+      <div class="ceremony-bar">
         <button class="wave-pill first-wave-btn" onclick="startFirstWave(this)">🥇 First Wave (Toppers &amp; PhD)</button>
         <button class="wave-pill full-wave-btn" onclick="startFullWave(this)">🌟 Full Wave</button>
-        <button class="wave-pill block-wave-btn" onclick="startBlockWave(1, this)">Block 1</button>
-        <button class="wave-pill block-wave-btn" onclick="startBlockWave(2, this)">Block 2</button>
-        <button class="wave-pill block-wave-btn" onclick="startBlockWave(3, this)">Block 3</button>
-        <button class="wave-pill block-wave-btn" onclick="startBlockWave(4, this)">Block 4</button>
-        <button class="wave-pill block-wave-btn" onclick="startBlockWave(5, this)">Block 5</button>
-        <button class="wave-pill block-wave-btn" onclick="startBlockWave(6, this)">Block 6</button>
-        <button class="wave-pill" onclick="startDepartmentWave('EE', this)">EE</button>
-        <button class="wave-pill" onclick="startDepartmentWave('PTDC', this)">PTDC</button>
-        <button class="wave-pill" onclick="startDepartmentWave('CS', this)">CS</button>
-        <button class="wave-pill" onclick="startDepartmentWave('MCA', this)">MCA</button>
-        <button class="wave-pill" onclick="startDepartmentWave('CE', this)">CE</button>
-        <button class="wave-pill" onclick="startDepartmentWave('ME', this)">ME</button>
-        <button class="wave-pill" onclick="startDepartmentWave('Arch', this)">Arch</button>
-        <button class="wave-pill" onclick="startDepartmentWave('MBA', this)">MBA</button>
-        <button class="wave-pill" onclick="startDepartmentWave('EC', this)">EC</button>
+        <button class="wave-pill block-wave-btn" onclick="startBlockWave(1,this)">B1</button>
+        <button class="wave-pill block-wave-btn" onclick="startBlockWave(2,this)">B2</button>
+        <button class="wave-pill block-wave-btn" onclick="startBlockWave(3,this)">B3</button>
+        <button class="wave-pill block-wave-btn" onclick="startBlockWave(4,this)">B4</button>
+        <button class="wave-pill block-wave-btn" onclick="startBlockWave(5,this)">B5</button>
+        <button class="wave-pill block-wave-btn" onclick="startBlockWave(6,this)">B6</button>
+        <button class="wave-pill" onclick="startDepartmentWave('EE',this)">EE</button>
+        <button class="wave-pill" onclick="startDepartmentWave('PTDC',this)">PTDC</button>
+        <button class="wave-pill" onclick="startDepartmentWave('CS',this)">CS</button>
+        <button class="wave-pill" onclick="startDepartmentWave('MCA',this)">MCA</button>
+        <button class="wave-pill" onclick="startDepartmentWave('CE',this)">CE</button>
+        <button class="wave-pill" onclick="startDepartmentWave('ME',this)">ME</button>
+        <button class="wave-pill" onclick="startDepartmentWave('Arch',this)">Arch</button>
+        <button class="wave-pill" onclick="startDepartmentWave('MBA',this)">MBA</button>
+        <button class="wave-pill" onclick="startDepartmentWave('EC',this)">EC</button>
       </div>
     </div>
 
     <div id="walkStatusCard" class="walk-banner-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
         <div>
-          <div id="walkEyebrow" class="walk-eyebrow">STAGE MOVEMENT SIMULATION</div>
-          <div id="walkStepTitle" class="serif-title" style="font-size:17px;font-weight:700">Entry path stops at Certificate Station; Exit path starts from Station &amp; descends Central Steps</div>
-          <div id="walkSubtext" style="font-size:12.5px;color:var(--text-muted);margin-top:2px">Video records with full stage steps, labels, and duration headers for Gallery &amp; WhatsApp at the exact Video Pace selected below.</div>
+          <div id="walkEyebrow" style="font-size:11px;font-weight:800;color:#64748b">STAGE MOVEMENT SIMULATION</div>
+          <div id="walkStepTitle" class="serif" style="font-size:16px;font-weight:700">Walking to Stage...</div>
+          <div id="walkSubtext" style="font-size:12px;color:var(--muted)">Full duration video export for Gallery &amp; WhatsApp.</div>
         </div>
-
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
           <div class="speed-controls">
-            <span style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase">Live Speed:</span>
+            <span style="font-size:10px;font-weight:700">Live:</span>
             <button class="speed-btn" onclick="changeAnimSpeed(-1)">−</button>
             <span id="speedValueLabel" class="speed-label">1x (0.15s/st)</span>
             <button class="speed-btn" onclick="changeAnimSpeed(1)">+</button>
           </div>
-
-          <div class="speed-controls" style="background:#eef2ff;border-color:#c7d2fe">
-            <span style="font-size:10.5px;font-weight:700;color:#1e3a8a;text-transform:uppercase">Video Pace:</span>
+          <div class="speed-controls" style="background:#eef2ff">
+            <span style="font-size:10px;font-weight:700;color:#1e3a8a">Video Pace:</span>
             <select id="videoSecPerStudentSelect" class="video-speed-select">
-              <option value="0.15" selected>0.15 sec / student (Max Speed)</option>
-              <option value="0.3">0.30 sec / student</option>
-              <option value="0.5">0.50 sec / student</option>
-              <option value="1.0">1.0 sec / student</option>
-              <option value="2.0">2.0 sec / student</option>
-              <option value="3.0">3.0 sec / student (Min Speed)</option>
+              <option value="0.15" selected>0.15s / student</option>
+              <option value="0.3">0.30s / student</option>
+              <option value="0.5">0.50s / student</option>
+              <option value="1.0">1.0s / student</option>
+              <option value="2.0">2.0s / student</option>
+              <option value="3.0">3.0s / student</option>
             </select>
           </div>
-
           <button class="btn-primary" onclick="downloadCurrentAnimationVideo()" id="downloadVideoBtn" style="background:#059669">🎥 Download Video</button>
-          <button class="btn-danger" onclick="finishVideoRecordingEarly()" id="stopSaveVideoBtn" style="display:none;padding:9px 14px">⏹ Stop &amp; Save Video Now</button>
-          <a id="manualVideoSaveLink" class="btn-primary" style="display:none;background:#2563eb" download>⬇ Save Video File</a>
-          <button onclick="stopWalkAnimation()" class="btn-outline" style="padding:6px 12px">Stop ✕</button>
+          <button class="btn-danger" onclick="finishVideoRecordingEarly()" id="stopSaveVideoBtn" style="display:none">⏹ Stop &amp; Save</button>
+          <a id="manualVideoSaveLink" class="btn-primary" style="display:none;background:#2563eb" download>⬇ Save Video</a>
+          <button onclick="stopWalkAnimation()" class="btn-outline">Stop ✕</button>
         </div>
       </div>
-
       <div class="stage-queue-bar">
-        <div class="queue-box">
-          <span class="queue-box-label">🎭 ON STAGE NOW</span>
-          <span class="queue-box-val" id="onStageNowIndicator">—</span>
-        </div>
-        <div class="queue-box next-box">
-          <span class="queue-box-label">⏳ UP NEXT (QUEUED AT STEPS)</span>
-          <span class="queue-box-val" id="upNextIndicator">—</span>
-        </div>
+        <div class="queue-box"><div style="font-size:9.5px;font-weight:800;color:#64748b">🎭 ON STAGE NOW</div><div id="onStageNowIndicator" style="font-size:12.5px;font-weight:700">—</div></div>
+        <div class="queue-box next-box"><div style="font-size:9.5px;font-weight:800;color:#64748b">⏳ UP NEXT</div><div id="upNextIndicator" style="font-size:12.5px;font-weight:700">—</div></div>
       </div>
-
-      <div class="station-live-log-row">
-        <div class="station-log-pill" id="st1LiveLog">Station 1: Waiting...</div>
-        <div class="station-log-pill" id="st2LiveLog">Station 2: Waiting...</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:11.5px;font-weight:700">
+        <span id="st1LiveLog" class="prog-chip">Station 1: Waiting...</span>
+        <span id="st2LiveLog" class="prog-chip">Station 2: Waiting...</span>
       </div>
     </div>
 
@@ -408,197 +264,129 @@
       <div class="hall-scale-wrapper" id="hallScaleWrapper">
         <div class="hall-canvas" id="hallCanvas">
           <svg id="walkOverlaySvg"></svg>
-
-          <div class="hall-top-architecture">
+          <div class="hall-top">
             <div class="entry-box">ENTRY (29 ft)</div>
-
-            <div class="stage-cluster" id="stageCluster">
-              <div class="stage-side-steps" id="leftStageSteps">
-                <svg width="26" height="48" viewBox="0 0 26 48">
-                  <rect width="26" height="48" fill="#dce4ee" />
-                  <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                </svg>
-              </div>
-
+            <div class="stage-cluster">
+              <div class="stage-side-steps" id="leftStageSteps"></div>
               <div class="stage-wrapper" id="stageWrapper">
                 <div class="stage-main-rect" id="stageMainRect">
                   <div class="stage-header-pill">STAGE 54 ft LENGTH — 22 ft WIDE</div>
-                  <div class="stage-led-tag">LED WALL</div>
-
-                  <div class="stage-receptions-row" id="stationsRowContainer">
-                    <div class="reception-desk" id="station1Desk"><div class="reception-desk-title">CERTIFICATE<br>STATION 1</div></div>
-                    <div class="central-collection-desk" id="centralStationDesk"><div class="reception-desk-title">CENTRAL<br>COLLECTION POINT</div></div>
-                    <div class="reception-desk" id="station2Desk"><div class="reception-desk-title">CERTIFICATE<br>STATION 2</div></div>
+                  <div style="font-size:8px;letter-spacing:.14em;color:#9ab0d4;font-weight:700">LED WALL</div>
+                  <div class="stage-receptions-row">
+                    <div class="reception-desk" id="station1Desk">CERTIFICATE<br>STATION 1</div>
+                    <div class="central-collection-desk" id="centralStationDesk">CENTRAL<br>COLLECTION POINT</div>
+                    <div class="reception-desk" id="station2Desk">CERTIFICATE<br>STATION 2</div>
                   </div>
-
-                  <div class="stage-floor-label">MAIN STAGE</div>
+                  <div style="font-size:8px;letter-spacing:.1em;color:#b0bfd8;font-weight:700">MAIN STAGE</div>
                 </div>
-                <div class="center-return-stairs" id="centerReturnStairs">
-                  <svg width="56" height="22" viewBox="0 0 56 22">
-                    <rect width="56" height="22" fill="#dce4ee" />
-                    <line x1="0" y1="5" x2="56" y2="5" stroke="#7f97b2" stroke-width="1.5" />
-                    <line x1="0" y1="10" x2="56" y2="10" stroke="#7f97b2" stroke-width="1.5" />
-                    <line x1="0" y1="15" x2="56" y2="15" stroke="#7f97b2" stroke-width="1.5" />
-                    <line x1="0" y1="20" x2="56" y2="20" stroke="#7f97b2" stroke-width="1.5" />
-                  </svg>
-                  <span class="return-stairs-label">RETURN STEPS</span>
-                </div>
+                <div class="center-return-stairs" id="centerReturnStairs"><span class="return-stairs-label">RETURN STEPS</span></div>
               </div>
-
-              <div class="stage-side-steps" id="rightStageSteps">
-                <svg width="26" height="48" viewBox="0 0 26 48">
-                  <rect width="26" height="48" fill="#dce4ee" />
-                  <line x1="5" y1="0" x2="5" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="10" y1="0" x2="10" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="15" y1="0" x2="15" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                  <line x1="20" y1="0" x2="20" y2="48" stroke="#7f97b2" stroke-width="1.5" />
-                </svg>
-              </div>
+              <div class="stage-side-steps" id="rightStageSteps"></div>
             </div>
-
             <div class="entry-box">ENTRY (29 ft)</div>
           </div>
-
-          <div class="front-area-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
+          <div class="front-banner">FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE</div>
           <div class="blocks-wrapper" id="blocksWrapper"></div>
         </div>
       </div>
     </div>
 
     <div id="seatInfoCard" class="info-card info-card-empty">
-      <h3 class="serif-title">Tap any seat</h3>
-      <p>See the student's name, branch, registration status, or pre-assigned Faculty designation, and preview or download their path video to the stage.</p>
+      <h3 class="serif">Tap any seat</h3>
+      <p style="font-size:13px;color:var(--muted)">View student name, register number, branch, or Faculty assignment, and preview their stage path.</p>
     </div>
   </main>
 
   <section id="facultyView" class="container role-view">
-    <div id="facultyGateCard" class="info-card" style="max-width:460px;margin:20px auto">
-      <div class="eyebrow">CONVOCATION PROGRESS TRACKING</div>
-      <h2 class="serif-title" style="font-size:24px;margin-bottom:8px">Faculty Login</h2>
-      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">Enter the authorized Faculty password to update which block the convocation has reached and log block completion times.</p>
-      <div class="form-group">
-        <label>Password</label>
-        <input id="facultyPassInput" type="password" class="form-control" placeholder="Enter Faculty password..." onkeydown="if(event.key==='Enter') unlockRole('faculty')" />
-      </div>
-      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('faculty')">Sign In to Faculty Tracker</button>
+    <div id="facultyGateCard" class="info-card" style="max-width:420px;margin:20px auto">
+      <h2 class="serif" style="margin-bottom:8px">Faculty Login</h2>
+      <input id="facultyPassInput" type="password" class="form-control" placeholder="Password..." onkeydown="if(event.key==='Enter')unlockRole('faculty')" />
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('faculty')">Sign In</button>
     </div>
-
     <div id="facultyConsole" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-        <div><div class="eyebrow">LIVE CEREMONY LOGS</div><h2 class="serif-title" style="font-size:26px">Convocation Block Progress Updater</h2></div>
-        <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
-      </div>
       <div class="info-card">
-        <table class="config-table" id="facultyProgressTable">
-          <thead><tr><th>Block</th><th>Departments</th><th>Status</th><th>Approx. Completion Time</th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
-          <button class="btn-primary" onclick="saveConvocationProgress()">💾 Save &amp; Broadcast Progress</button>
-          <button class="btn-danger" onclick="clearConvocationProgressLog()">🗑 Clear Progress Log</button>
-        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px"><h2 class="serif">Block Progress Updater</h2><button class="btn-outline" onclick="switchView('seat')">← Map</button></div>
+        <table class="config-table" id="facultyProgressTable"><thead><tr><th>Block</th><th>Depts</th><th>Status</th><th>Time</th></tr></thead><tbody></tbody></table>
+        <button class="btn-primary" onclick="saveConvocationProgress()">💾 Save Progress</button>
+        <button class="btn-danger" onclick="clearConvocationProgressLog()">🗑 Reset</button>
       </div>
     </div>
   </section>
 
   <section id="registrationView" class="container role-view">
-    <div id="regGateCard" class="info-card" style="max-width:460px;margin:20px auto">
-      <div class="eyebrow">REGISTRATION DESK</div>
-      <h2 class="serif-title" style="font-size:24px;margin-bottom:8px">Registration Login</h2>
-      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">Enter the authorized Registration Desk password to mark students who failed to register (Absentees) and download the post-registration student &amp; absentee PDF report.</p>
-      <div class="form-group">
-        <label>Password</label>
-        <input id="regPassInput" type="password" class="form-control" placeholder="Enter Registration password..." onkeydown="if(event.key==='Enter') unlockRole('registration')" />
-      </div>
-      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('registration')">Sign In to Registration Desk</button>
+    <div id="regGateCard" class="info-card" style="max-width:420px;margin:20px auto">
+      <h2 class="serif" style="margin-bottom:8px">Registration Login</h2>
+      <input id="regPassInput" type="password" class="form-control" placeholder="Password..." onkeydown="if(event.key==='Enter')unlockRole('registration')" />
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('registration')">Sign In</button>
     </div>
-
     <div id="regConsole" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-        <div><div class="eyebrow">ATTENDANCE &amp; ABSENTEES</div><h2 class="serif-title" style="font-size:26px">Student Registration &amp; Absentee Desk</h2></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn-primary" onclick="downloadRegistrationReportPDF()">📄 Download Registration &amp; Absentees PDF</button>
-          <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
-        </div>
-      </div>
       <div class="info-card">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
-          <select id="regDeptFilter" class="form-control" style="max-width:200px" onchange="renderRegistrationTable()">
-            <option value="ALL">All Departments</option>
-            <option value="TOP">Toppers (UG/PG)</option><option value="PhD">PhD</option>
-            <option value="EE">EE</option><option value="PTDC">PTDC</option>
-            <option value="CS">CS</option><option value="MCA">MCA</option>
-            <option value="CE">CE</option><option value="ME">ME</option>
-            <option value="Arch">Arch</option><option value="MBA">MBA</option><option value="EC">EC</option>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <h2 class="serif">Registration &amp; Absentee Desk</h2>
+          <div><button class="btn-primary" onclick="downloadRegistrationReportPDF()">📄 Download PDF Report</button> <button class="btn-outline" onclick="switchView('seat')">← Map</button></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <select id="regDeptFilter" class="form-control" style="max-width:180px;margin:0" onchange="renderRegistrationTable()">
+            <option value="ALL">All Depts</option><option value="TOP">Toppers</option><option value="PhD">PhD</option><option value="EE">EE</option><option value="PTDC">PTDC</option><option value="CS">CS</option><option value="MCA">MCA</option><option value="CE">CE</option><option value="ME">ME</option><option value="Arch">Arch</option><option value="MBA">MBA</option><option value="EC">EC</option>
           </select>
-          <input id="regSearchInput" type="text" class="form-control" style="max-width:320px" placeholder="Filter by Seat Code, Name, or Reg No..." oninput="renderRegistrationTable()" />
-          <span id="regStatsSummary" style="font-size:13px;font-weight:700;color:var(--navy-dark)"></span>
+          <input id="regSearchInput" type="text" class="form-control" style="max-width:260px;margin:0" placeholder="Filter..." oninput="renderRegistrationTable()" />
+          <span id="regStatsSummary" style="font-size:12.5px;font-weight:700;align-self:center"></span>
         </div>
-        <div style="max-height:480px;overflow:auto">
-          <table class="config-table">
-            <thead><tr><th>Seat No.</th><th>Block / Row</th><th>Student Name</th><th>Register No.</th><th>Branch / Stream</th><th>Registration Status</th></tr></thead>
-            <tbody id="regTableBody"></tbody>
-          </table>
-        </div>
+        <div style="max-height:440px;overflow:auto"><table class="config-table"><thead><tr><th>Seat</th><th>Loc</th><th>Name</th><th>Reg No</th><th>Branch</th><th>Status</th></tr></thead><tbody id="regTableBody"></tbody></table></div>
       </div>
     </div>
   </section>
 
   <section id="adminView" class="container role-view">
-    <div id="adminGateCard" class="info-card" style="max-width:460px;margin:20px auto">
-      <div class="eyebrow">SYSTEM ADMINISTRATION</div>
-      <h2 class="serif-title" style="font-size:24px;margin-bottom:8px">Admin Login</h2>
-      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">Enter the authorized Admin password to upload student Excel sheets, mark chairs defective/empty, clear student rosters, or customize block dimensions.</p>
-      <div class="form-group">
-        <label>Admin Password</label>
-        <input id="adminPassInput" type="password" class="form-control" placeholder="Enter Admin password..." onkeydown="if(event.key==='Enter') unlockRole('admin')" />
-      </div>
-      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('admin')">Unlock Admin Console</button>
+    <div id="adminGateCard" class="info-card" style="max-width:420px;margin:20px auto">
+      <h2 class="serif" style="margin-bottom:8px">Admin Login</h2>
+      <input id="adminPassInput" type="password" class="form-control" placeholder="Admin password..." onkeydown="if(event.key==='Enter')unlockRole('admin')" />
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="unlockRole('admin')">Unlock Admin</button>
     </div>
-
     <div id="adminConsole" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-        <div><div class="eyebrow">ADMINISTRATION CONSOLE</div><h2 class="serif-title" style="font-size:26px">Seating &amp; Roster Management</h2></div>
-        <button class="btn-outline" onclick="switchView('seat')">← Back to Hall Map</button>
-      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><h2 class="serif">Admin Console</h2><button class="btn-outline" onclick="switchView('seat')">← Back to Map</button></div>
       <div class="admin-grid">
         <div class="info-card" style="margin-top:0">
-          <h3 class="serif-title" style="font-size:18px;margin-bottom:8px">1. Student Excel Template &amp; Upload</h3>
+          <h3 class="serif" style="margin-bottom:8px">1. Excel Template &amp; Roster Upload</h3>
           <div class="dept-pills" id="deptButtonsContainer"></div>
-          <button class="btn-outline" style="width:100%;margin-bottom:10px" onclick="downloadBranchExcel()">⬇ Download Selected Excel Template</button>
-          <div class="form-group"><label>Upload Filled Excel (.xlsx / .xls)</label><input type="file" id="excelFileInput" accept=".xlsx,.xls" class="form-control" /></div>
-          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:10px" onclick="uploadBranchExcel()">Upload &amp; Sync Students</button>
-          <button class="btn-outline" style="width:100%;justify-content:center;border-color:#93c5fd;background:#eff6ff;color:#1e40af" onclick="autoFillSelectedDepartmentSample()">⚡ Auto-Fill Sample Students for Selected Dept</button>
+          <button class="btn-outline" style="width:100%;margin-bottom:8px" onclick="downloadBranchExcel()">⬇ Download Selected Excel Template</button>
+          <input type="file" id="excelFileInput" accept=".xlsx,.xls" class="form-control" />
+          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:8px" onclick="uploadBranchExcel()">Upload &amp; Sync Excel</button>
+          <button class="btn-outline" style="width:100%;background:#eff6ff;color:#1e40af;border-color:#93c5fd" onclick="autoFillSelectedDepartmentSample()">⚡ Auto-Fill Sample Students for Selected Dept</button>
         </div>
         <div class="info-card" style="margin-top:0">
-          <h3 class="serif-title" style="font-size:18px;margin-bottom:8px">2. Mark Seat Defective / Kept Empty</h3>
-          <div class="form-group"><label>Seat Code or Coordinate</label><input id="statusSeatInput" type="text" class="form-control" placeholder="e.g. EE 92 or B1-R4-C2" /></div>
-          <div class="form-group">
-            <label>Status</label>
-            <select id="statusTypeSelect" class="form-control">
-              <option value="normal">Normal (Available / Assigned)</option>
-              <option value="defective">✕ Defective Chair</option>
-              <option value="empty">◌ Kept Empty</option>
-            </select>
-          </div>
-          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:16px" onclick="applySeatStatusByInput()">Update Seat Status</button>
-          <div style="border-top:1px dashed #cbd5e1;padding-top:14px">
-            <button class="btn-danger" style="width:100%;justify-content:center" onclick="clearAllStudents()">🗑 Clear All Students From Seats</button>
-          </div>
+          <h3 class="serif" style="margin-bottom:8px">2. Seat Override &amp; Reset</h3>
+          <input id="statusSeatInput" type="text" class="form-control" placeholder="Seat Code (e.g. EE 92 or B1-R4-C2)" />
+          <select id="statusTypeSelect" class="form-control"><option value="normal">Normal</option><option value="defective">✕ Defective Chair</option><option value="empty">◌ Kept Empty</option></select>
+          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:12px" onclick="applySeatStatusByInput()">Update Seat Status</button>
+          <button class="btn-danger" style="width:100%" onclick="clearAllStudents()">🗑 Clear All Students</button>
+        </div>
+        <div class="info-card" style="margin-top:0">
+          <h3 class="serif" style="margin-bottom:8px">3. Assign / Edit Faculty Seat (F1–F59)</h3>
+          <select id="adminFacSelect" class="form-control" onchange="loadAdminFacSeat()"></select>
+          <input id="adminFacTitleInput" type="text" class="form-control" placeholder="Faculty Name / Designation (e.g. HoD - CE or Dr. Asha)" />
+          <select id="adminFacDeptSelect" class="form-control">
+            <option value="FAC">Standard Faculty (Uniform Grey)</option>
+            <option value="CE">HoD - CE (Civil Colour)</option>
+            <option value="Arch">HoD - Arch (Arch Colour)</option>
+            <option value="CS">HoD - CS (CS Colour)</option>
+            <option value="EC">HoD - EC (EC Colour)</option>
+            <option value="EE">HoD - EE (EE Colour)</option>
+            <option value="ME">HoD - ME (ME Colour)</option>
+            <option value="MBA">HoD - MBA (MBA Colour)</option>
+            <option value="MCA">HoD - MCA (MCA Colour)</option>
+            <option value="PTDC">HoD - PTDC (PTDC Colour)</option>
+          </select>
+          <button class="btn-primary" style="width:100%;justify-content:center" onclick="saveAdminFacSeat()">💾 Save Faculty Assignment</button>
         </div>
         <div class="info-card" style="margin-top:0;grid-column:1 / -1">
-          <h3 class="serif-title" style="font-size:18px;margin-bottom:6px">3. Customize Block Rows &amp; Seats per Row</h3>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
-            <div><table class="config-table" id="blockConfigTable"><thead><tr><th>Block</th><th>Total Rows</th><th>Seats / Row</th></tr></thead><tbody></tbody></table></div>
-            <div><table class="config-table" id="deptConfigTable"><thead><tr><th>Dept / Group</th><th>Block</th><th>Total Seats</th></tr></thead><tbody></tbody></table></div>
+          <h3 class="serif" style="margin-bottom:8px">4. Dynamic Layout Customization (Rows, Chairs &amp; Department Counts)</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+            <table class="config-table" id="blockConfigTable"><thead><tr><th>Block</th><th>Rows</th><th>Chairs/Row</th></tr></thead><tbody></tbody></table>
+            <table class="config-table" id="deptConfigTable"><thead><tr><th>Dept</th><th>Block</th><th>Total Seats</th></tr></thead><tbody></tbody></table>
           </div>
-          <div style="display:flex;gap:10px;margin-top:10px">
-            <button class="btn-primary" onclick="saveCustomLayoutConfig()">Save &amp; Rebuild Map</button>
-            <button class="btn-outline" onclick="resetDefaultLayoutConfig()">Reset to Official 2026 Layout</button>
-          </div>
+          <button class="btn-primary" onclick="saveCustomLayoutConfig()">Save &amp; Rebuild Layout</button>
+          <button class="btn-outline" onclick="resetDefaultLayoutConfig()">Reset to Official 2026 Master Layout</button>
         </div>
       </div>
     </div>
@@ -607,7 +395,7 @@
   <script>
     const firebaseConfig={apiKey:"AIzaSyAznnh1G0U6gC9M8hAA9cJtCQXHq0ts8k4",authDomain:"cet-graduation-2026.firebaseapp.com",projectId:"cet-graduation-2026",storageBucket:"cet-graduation-2026.firebasestorage.app",messagingSenderId:"788384088617",appId:"1:788384088617:web:1d79a5f04cd34e22d3d238"};
     firebase.initializeApp(firebaseConfig);
-    const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v32";
+    const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v33";
     const PASSWORDS={admin:"Admin12345",registration:"CET_Graduation@2026",faculty:"CET_Graduation@2026"};
     let unlockedRoles={admin:false,registration:false,faculty:false},currentZoom=1,selectedSeatKey=null,selectedDeptForExcel="TOP";
     let walkAnimFrame=null,highlightCompletedActive=false,activeAnimState=null,activeMediaRecorder=null,activeRecordingTimer=null;
@@ -626,21 +414,25 @@
       document.getElementById("centralStationDesk")?.classList.toggle("visible-central",c);
     }
 
-    const FACULTY_DESIGNATIONS={
+    // Only F1-F9 (HoDs in Block 4 Row 1) use department colors by default; F10-F59 use uniform FAC grey
+    const DEFAULT_FACULTY_DESIGNATIONS={
       F1:{title:"HoD - CE",dept:"CE"},F2:{title:"HoD - Arch",dept:"Arch"},F3:{title:"HoD - CS",dept:"CS"},F4:{title:"HoD - EC",dept:"EC"},
       F5:{title:"HoD - EE",dept:"EE"},F6:{title:"HoD - ME",dept:"ME"},F7:{title:"HoD - MBA",dept:"MBA"},F8:{title:"HoD - MCA",dept:"MCA"},
-      F9:{title:"HoD - PTDC",dept:"PTDC"},F10:{title:"CE - Advisor 1",dept:"CE"},F11:{title:"CE - Advisor 2",dept:"CE"},F12:{title:"Arch - Advisor 1",dept:"Arch"},
-      F13:{title:"AE - Advisor 1",dept:"EE"},F14:{title:"CS - Advisor 1",dept:"CS"},F15:{title:"CS - Advisor 2",dept:"CS"},F16:{title:"EC - Advisor 1",dept:"EC"},
-      F17:{title:"EE - Advisor 1",dept:"EE"},F18:{title:"EE - Advisor 2",dept:"EE"},F19:{title:"IE - Advisor",dept:"EE"},F20:{title:"ME - Advisor",dept:"ME"},
-      F21:{title:"M.Arch (ED)",dept:"Arch"},F22:{title:"M.Arch (UD)",dept:"Arch"},F23:{title:"M.Plan",dept:"Arch"},F24:{title:"CE - EE",dept:"CE"},
-      F25:{title:"CE - GI",dept:"CE"},F26:{title:"CE - GT",dept:"CE"},F27:{title:"CE - HE",dept:"CE"},F28:{title:"CE - SE",dept:"CE"},
-      F29:{title:"CE - TE",dept:"CE"},F30:{title:"CS - AI",dept:"CS"},F31:{title:"CS - CS",dept:"CS"},F32:{title:"CS - IS",dept:"CS"},
-      F33:{title:"EC - AEI",dept:"EC"},F34:{title:"EC - MNE",dept:"EC"},F35:{title:"EC - CS",dept:"EC"},F36:{title:"EC - RA",dept:"EC"},
-      F37:{title:"EC - SP",dept:"EC"},F38:{title:"EE - CS",dept:"EE"},F39:{title:"EE - EM",dept:"EE"},F40:{title:"EE - GNC",dept:"EE"},
-      F41:{title:"EE - PE",dept:"EE"},F42:{title:"EE - PS",dept:"EE"},F43:{title:"ME - FE",dept:"ME"},F44:{title:"ME - IE",dept:"ME"},
-      F45:{title:"ME - MD",dept:"ME"},F46:{title:"ME - MA",dept:"ME"},F47:{title:"ME - PE",dept:"ME"},F48:{title:"ME - RE",dept:"ME"},
-      F49:{title:"ME - TS",dept:"ME"},F50:{title:"MBA",dept:"MBA"},F51:{title:"MCA",dept:"MCA"},F52:{title:"PTDC - Advisor",dept:"PTDC"}
+      F9:{title:"HoD - PTDC",dept:"PTDC"},F10:{title:"CE - Advisor 1",dept:"FAC"},F11:{title:"CE - Advisor 2",dept:"FAC"},F12:{title:"Arch - Advisor 1",dept:"FAC"},
+      F13:{title:"AE - Advisor 1",dept:"FAC"},F14:{title:"CS - Advisor 1",dept:"FAC"},F15:{title:"CS - Advisor 2",dept:"FAC"},F16:{title:"EC - Advisor 1",dept:"FAC"},
+      F17:{title:"EE - Advisor 1",dept:"FAC"},F18:{title:"EE - Advisor 2",dept:"FAC"},F19:{title:"IE - Advisor",dept:"FAC"},F20:{title:"ME - Advisor",dept:"FAC"},
+      F21:{title:"M.Arch (ED)",dept:"FAC"},F22:{title:"M.Arch (UD)",dept:"FAC"},F23:{title:"M.Plan",dept:"FAC"},F24:{title:"CE - EE",dept:"FAC"},
+      F25:{title:"CE - GI",dept:"FAC"},F26:{title:"CE - GT",dept:"FAC"},F27:{title:"CE - HE",dept:"FAC"},F28:{title:"CE - SE",dept:"FAC"},
+      F29:{title:"CE - TE",dept:"FAC"},F30:{title:"CS - AI",dept:"FAC"},F31:{title:"CS - CS",dept:"FAC"},F32:{title:"CS - IS",dept:"FAC"},
+      F33:{title:"EC - AEI",dept:"FAC"},F34:{title:"EC - MNE",dept:"FAC"},F35:{title:"EC - CS",dept:"FAC"},F36:{title:"EC - RA",dept:"FAC"},
+      F37:{title:"EC - SP",dept:"FAC"},F38:{title:"EE - CS",dept:"FAC"},F39:{title:"EE - EM",dept:"FAC"},F40:{title:"EE - GNC",dept:"FAC"},
+      F41:{title:"EE - PE",dept:"FAC"},F42:{title:"EE - PS",dept:"FAC"},F43:{title:"ME - FE",dept:"FAC"},F44:{title:"ME - IE",dept:"FAC"},
+      F45:{title:"ME - MD",dept:"FAC"},F46:{title:"ME - MA",dept:"FAC"},F47:{title:"ME - PE",dept:"FAC"},F48:{title:"ME - RE",dept:"FAC"},
+      F49:{title:"ME - TS",dept:"FAC"},F50:{title:"MBA",dept:"FAC"},F51:{title:"MCA",dept:"FAC"},F52:{title:"PTDC - Advisor",dept:"FAC"},
+      F53:{title:"Faculty F53",dept:"FAC"},F54:{title:"Faculty F54",dept:"FAC"},F55:{title:"Faculty F55",dept:"FAC"},
+      F56:{title:"Faculty F56",dept:"FAC"},F57:{title:"Faculty F57",dept:"FAC"},F58:{title:"Faculty F58",dept:"FAC"},F59:{title:"Faculty F59",dept:"FAC"}
     };
+    let facultyDesignations=JSON.parse(JSON.stringify(DEFAULT_FACULTY_DESIGNATIONS));
 
     const BRANCH_META={
       TOP:{name:"Toppers (UG & PG)",color:"#d97706",bg:"#fef3c7"},PhD:{name:"Doctoral Programmes (PhD)",color:"#7c3aed",bg:"#ede4ff"},
@@ -683,7 +475,7 @@
       if(/^\d+$/.test(u)&&fallbackDept){
         const n=parseInt(u,10),fb=fallbackDept.toString().trim().toUpperCase();
         if(fb==="PHD")return `PhD ${n}`;
-        if(fb==="ARCH"||fb==="B.ARCH"||fb==="ARCHITECTURE")return `Arch ${n}`;
+        if(fb==="ARCH"||fb==="AR"||fb==="B.ARCH"||fb==="ARCHITECTURE")return `Arch ${n}`;
         if(fb==="PTDC"||fb.includes("PART"))return `PTDC ${n}`;
         if(fb==="TOP"||fb==="TOPPER"||fb==="TOPPERS")return n<=8?`TOP UG ${n}`:`TOP PG ${n-8}`;
         if(fb==="UG"||fb==="TOP UG")return `TOP UG ${n}`;
@@ -699,7 +491,7 @@
       if(dm){
         let p=dm[1].replace(/\./g,"");const n=parseInt(dm[2],10);
         if(p==="PHD")return `PhD ${n}`;
-        if(p==="ARCH"||p==="BARCH"||p==="ARCHITECTURE")return `Arch ${n}`;
+        if(p==="ARCH"||p==="AR"||p==="BARCH"||p==="ARCHITECTURE")return `Arch ${n}`;
         if(p==="PTDC"||p==="PARTTIME")return `PTDC ${n}`;
         if(seatsByCode[`${p} ${n}`])return seatsByCode[`${p} ${n}`].code;
         return `${p} ${n}`;
@@ -724,7 +516,7 @@
     }
 
     async function migratePreviousCloudRosters(){
-      const oldDocs=["seatingState_v31","seatingState_v30","seatingState_v29","seatingState_v28","seatingState_v27","seatingState_v26","seatingState_v25"];
+      const oldDocs=["seatingState_v32","seatingState_v31","seatingState_v30","seatingState_v29","seatingState_v28"];
       let changed=false;
       for(const dName of oldDocs){
         try{
@@ -751,8 +543,9 @@
           if(d.studentRoster)studentRoster={...studentRoster,...d.studentRoster};
           if(d.seatOverrides)seatOverrides=d.seatOverrides;
           if(d.convocationProgress)convocationProgress=d.convocationProgress;
+          if(d.facultyDesignations)facultyDesignations={...DEFAULT_FACULTY_DESIGNATIONS,...d.facultyDesignations};
           buildAndRenderMap();renderLiveProgressBanner();
-          if(unlockedRoles.admin)renderAdminConfigTables();
+          if(unlockedRoles.admin){renderAdminConfigTables();populateAdminFacSelect();}
           if(unlockedRoles.faculty)renderFacultyProgressTable();
           if(unlockedRoles.registration)renderRegistrationTable();
           if(Object.keys(studentRoster).length===0)migratePreviousCloudRosters();
@@ -763,91 +556,121 @@
     function saveAllCloudStorage(){
       normalizeAllLoadedRosterKeys();
       db.collection("cet2026").doc(ACTIVE_DOC_ID).set({
-        layoutConfig,studentRoster,seatOverrides,convocationProgress,
+        layoutConfig,studentRoster,seatOverrides,convocationProgress,facultyDesignations,
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
       }).catch(e=>console.error(e));
     }
 
+    function makeNumberedFacSeat(fCode){
+      const meta=facultyDesignations[fCode]||DEFAULT_FACULTY_DESIGNATIONS[fCode]||{title:`Faculty ${fCode}`,dept:"FAC"};
+      const visualDept=(/^F[1-9]$/.test(fCode)&&meta.dept!=="FAC")?meta.dept:"FAC";
+      return{type:"faculty",dept:visualDept,num:fCode,code:fCode,designation:meta.title};
+    }
+
+    function makeUnnumberedFacSeat(blockId,rowNum,colIdx){
+      return{type:"faculty",dept:"FAC",num:"F",code:`FAC_B${blockId}_R${rowNum}_${colIdx}`,designation:"Faculty"};
+    }
+
+    // Strictly 24 rows per block matching Seat numbering- Expanded.pdf
     function getRowAllocationForBlock(blockId,rowNum,cols){
       const items=[];
       const eeCap=getDeptCap("EE",135),ptdcCap=getDeptCap("PTDC",30),csCap=getDeptCap("CS",159),mcaCap=getDeptCap("MCA",34);
       const ceCap=getDeptCap("CE",196),meCap=getDeptCap("ME",198),archCap=getDeptCap("Arch",86),mbaCap=getDeptCap("MBA",107),ecCap=getDeptCap("EC",159),phdCap=getDeptCap("PhD",12);
 
+      // Row 1: Exact Front Row Faculty Numbering from PDF
       if(rowNum===1){
-        const fMap={1:[19,20,21,22,23,24,25,26],2:[10,11,12,13,14,15,16,17,18],3:[1,2,3,4,5,6,7,8,9],4:[27,28,29,30,31,32,33,34,35],5:[36,37,38,39,40,41,42,43,44],6:[45,46,47,48,49,50,51,52]};
+        const fMap={
+          1:[35,34,33,32,31,30,29,28],
+          2:[27,26,25,24,23,22,21,20,19],
+          3:[18,17,16,15,14,13,12,11,10],
+          4:[1,2,3,4,5,6,7,8,9],
+          5:[36,37,38,39,40,41,42,43,44],
+          6:[45,46,47,48,49,50,51,52]
+        };
         const fNums=fMap[blockId]||[];
         for(let i=0;i<cols;i++){
-          const fCode=`F${fNums[i]||(i+1)}`,fMeta=FACULTY_DESIGNATIONS[fCode]||{title:`Faculty ${fCode}`,dept:"FAC"};
-          items.push({type:"faculty",dept:fMeta.dept,num:fCode,code:fCode,designation:fMeta.title});
+          const fNum=fNums[i];
+          items.push(fNum?makeNumberedFacSeat(`F${fNum}`):makeUnnumberedFacSeat(blockId,rowNum,i+1));
         }
         return items;
       }
+
+      // Row 2: Toppers, PhD, and numbered Faculty F53..F59 per PDF
       if(rowNum===2){
-        if(blockId===1)for(let i=1;i<=cols;i++)if(i<=8)items.push({type:"student",dept:"TOP",subType:"UG",label:`UG${i}`,code:`TOP UG ${i}`});
-        if(blockId===2)for(let i=1;i<=cols;i++)if(i<=phdCap)items.push({type:"student",dept:"PhD",subType:"PhD",label:`PhD${i}`,code:`PhD ${i}`});
-        if(blockId===3)for(let i=10;i<=9+cols;i++)if(i<=phdCap)items.push({type:"student",dept:"PhD",subType:"PhD",label:`PhD${i}`,code:`PhD ${i}`});
-        if(blockId===4)for(let i=cols;i>=1;i--)items.push({type:"student",dept:"TOP",subType:"PG",label:`PG${i}`,code:`TOP PG ${i}`});
-        if(blockId===5)for(let i=9+cols;i>=10;i--)items.push({type:"student",dept:"TOP",subType:"PG",label:`PG${i}`,code:`TOP PG ${i}`});
-        if(blockId===6){
-          items.push({type:"empty",dept:null,label:null,code:null});
+        if(blockId===1){
+          for(let i=1;i<=cols;i++)items.push(i<=8?{type:"student",dept:"TOP",subType:"UG",label:`UG${i}`,code:`TOP UG ${i}`}:makeUnnumberedFacSeat(1,2,i));
+        }else if(blockId===2){
+          for(let i=1;i<=cols;i++)items.push(i<=phdCap?{type:"student",dept:"PhD",subType:"PhD",label:`PhD${i}`,code:`PhD ${i}`}:makeUnnumberedFacSeat(2,2,i));
+        }else if(blockId===3){
+          const fExtra=[53,54,55,56,57,58];
+          for(let i=0;i<cols;i++){
+            const pNum=10+i;
+            if(pNum<=phdCap)items.push({type:"student",dept:"PhD",subType:"PhD",label:`PhD${pNum}`,code:`PhD ${pNum}`});
+            else{const fN=fExtra[i-3];items.push(fN?makeNumberedFacSeat(`F${fN}`):makeUnnumberedFacSeat(3,2,i+1));}
+          }
+        }else if(blockId===4){
+          for(let i=cols;i>=1;i--)items.push({type:"student",dept:"TOP",subType:"PG",label:`PG${i}`,code:`TOP PG ${i}`});
+        }else if(blockId===5){
+          for(let i=9+cols;i>=10;i--)items.push({type:"student",dept:"TOP",subType:"PG",label:`PG${i}`,code:`TOP PG ${i}`});
+        }else if(blockId===6){
+          items.push(makeNumberedFacSeat("F59"));
           for(let i=25;i>=19;i--)items.push({type:"student",dept:"TOP",subType:"PG",label:`PG${i}`,code:`TOP PG ${i}`});
         }
         return items;
       }
 
+      // Rows 3..24: Student & Unnumbered 'F' seats per PDF
       if(blockId===1){
         const eeRows=Math.ceil(eeCap/cols);
+        const ptdcRows=Math.ceil(ptdcCap/cols);
         if(rowNum>=3&&rowNum<3+eeRows){
           const s=(rowNum-3)*cols+1;
-          for(let i=0;i<cols;i++){const n=s+i;if(n<=eeCap)items.push({type:"student",dept:"EE",label:`${n}`,code:`EE ${n}`});}
-        }else if(rowNum>=3+eeRows&&rowNum<3+eeRows+Math.ceil(ptdcCap/cols)){
+          for(let i=0;i<cols;i++){const n=s+i;items.push(n<=eeCap?{type:"student",dept:"EE",label:`${n}`,code:`EE ${n}`}:makeUnnumberedFacSeat(1,rowNum,i+1));}
+        }else if(rowNum>=3+eeRows&&rowNum<3+eeRows+ptdcRows){
           const s=(rowNum-(3+eeRows))*cols+1;
-          for(let i=0;i<cols;i++){const n=s+i;if(n<=ptdcCap)items.push({type:"student",dept:"PTDC",label:`${n}`,code:`PTDC ${n}`});}
+          for(let i=0;i<cols;i++){const n=s+i;items.push(n<=ptdcCap?{type:"student",dept:"PTDC",label:`${n}`,code:`PTDC ${n}`}:makeUnnumberedFacSeat(1,rowNum,i+1));}
         }else{
-          for(let i=1;i<=cols;i++)items.push({type:"faculty",dept:"FAC",num:"Fac",code:`FAC_B1_R${rowNum}_${i}`,designation:"Faculty"});
+          for(let i=1;i<=cols;i++)items.push(makeUnnumberedFacSeat(1,rowNum,i));
         }
       }else if(blockId===2){
         const csRows=Math.ceil(csCap/cols);
         if(rowNum>=3&&rowNum<3+csRows){
           const s=(rowNum-3)*cols+1;
-          for(let i=0;i<cols;i++){const n=s+i;if(n<=csCap)items.push({type:"student",dept:"CS",label:`${n}`,code:`CS ${n}`});}
+          for(let i=0;i<cols;i++){const n=s+i;items.push(n<=csCap?{type:"student",dept:"CS",label:`${n}`,code:`CS ${n}`}:makeUnnumberedFacSeat(2,rowNum,i+1));}
         }else{
           const s=(rowNum-(3+csRows))*cols+1;
-          for(let i=0;i<cols;i++){const n=s+i;if(n<=mcaCap)items.push({type:"student",dept:"MCA",label:`${n}`,code:`MCA ${n}`});}
+          for(let i=0;i<cols;i++){const n=s+i;items.push(n<=mcaCap?{type:"student",dept:"MCA",label:`${n}`,code:`MCA ${n}`}:makeUnnumberedFacSeat(2,rowNum,i+1));}
         }
       }else if(blockId===3){
         const s=(rowNum-3)*cols+1;
-        for(let i=0;i<cols;i++){const n=s+i;if(n<=ceCap)items.push({type:"student",dept:"CE",label:`${n}`,code:`CE ${n}`});}
+        for(let i=0;i<cols;i++){const n=s+i;items.push(n<=ceCap?{type:"student",dept:"CE",label:`${n}`,code:`CE ${n}`}:makeUnnumberedFacSeat(3,rowNum,i+1));}
       }else if(blockId===4){
-        const meRows=Math.ceil(meCap/cols);
-        if(rowNum>=3&&rowNum<3+meRows){
-          const end=(rowNum-2)*cols;
-          for(let i=end;i>=end-(cols-1);i--)if(i<=meCap&&i>=1)items.push({type:"student",dept:"ME",label:`${i}`,code:`ME ${i}`});
-        }else{
-          for(let i=1;i<=cols;i++)items.push({type:"faculty",dept:"FAC",num:"Fac",code:`FAC_B4_R${rowNum}_${i}`,designation:"Faculty"});
+        const end=(rowNum-2)*cols;
+        for(let i=end;i>=end-(cols-1);i--){
+          items.push(i<=meCap&&i>=1?{type:"student",dept:"ME",label:`${i}`,code:`ME ${i}`}:makeUnnumberedFacSeat(4,rowNum,i));
         }
       }else if(blockId===5){
         const archRows=Math.ceil(archCap/cols);
         const mbaRows=Math.ceil(mbaCap/cols);
         if(rowNum>=3&&rowNum<3+archRows){
           const end=Math.min(archCap,(rowNum-2)*cols),start=(rowNum-3)*cols+1,cnt=end-start+1;
-          for(let i=0;i<cols-cnt;i++)items.push({type:"empty",dept:null,label:null,code:null});
+          for(let i=0;i<cols-cnt;i++)items.push(makeUnnumberedFacSeat(5,rowNum,i+1));
           for(let i=end;i>=start;i--)items.push({type:"student",dept:"Arch",label:`${i}`,code:`Arch ${i}`});
         }else if(rowNum>=3+archRows&&rowNum<3+archRows+mbaRows){
           const mIdx=rowNum-(3+archRows),end=Math.min(mbaCap,(mIdx+1)*cols),start=mIdx*cols+1,cnt=end-start+1;
-          for(let i=0;i<cols-cnt;i++)items.push({type:"empty",dept:null,label:null,code:null});
+          for(let i=0;i<cols-cnt;i++)items.push(makeUnnumberedFacSeat(5,rowNum,i+1));
           for(let i=end;i>=start;i--)items.push({type:"student",dept:"MBA",label:`${i}`,code:`MBA ${i}`});
         }else{
-          for(let i=1;i<=cols;i++)items.push({type:"faculty",dept:"FAC",num:"Fac",code:`FAC_B5_R${rowNum}_${i}`,designation:"Faculty"});
+          for(let i=1;i<=cols;i++)items.push(makeUnnumberedFacSeat(5,rowNum,i));
         }
       }else if(blockId===6){
         const ecRows=Math.ceil(ecCap/cols);
         if(rowNum>=3&&rowNum<3+ecRows){
           const end=Math.min(ecCap,(rowNum-2)*cols),start=(rowNum-3)*cols+1,cnt=end-start+1;
-          for(let i=0;i<cols-cnt;i++)items.push({type:"empty",dept:null,label:null,code:null});
+          for(let i=0;i<cols-cnt;i++)items.push(makeUnnumberedFacSeat(6,rowNum,i+1));
           for(let i=end;i>=start;i--)items.push({type:"student",dept:"EC",label:`${i}`,code:`EC ${i}`});
         }else{
-          for(let i=1;i<=cols;i++)items.push({type:"faculty",dept:"FAC",num:"Fac",code:`FAC_B6_R${rowNum}_${i}`,designation:"Faculty"});
+          for(let i=1;i<=cols;i++)items.push(makeUnnumberedFacSeat(6,rowNum,i));
         }
       }
       return items;
@@ -871,14 +694,15 @@
       const wrapper=document.getElementById("blocksWrapper");
       wrapper.innerHTML="";
 
+      // Left Row Numbers Column (1..16, Main Door Side Box connecting to 6ft passage, 17..24)
       const rowNumCol=document.createElement("div");
       rowNumCol.className="row-numbers-col";
       for(let r=1;r<=16;r++){
         const l=document.createElement("div");l.className="row-num-label";l.textContent=r;rowNumCol.appendChild(l);
       }
       const md=document.createElement("div");
-      md.className="row-num-label";md.style.height="43px";md.style.fontSize="7.5px";md.style.lineHeight="1.1";md.style.textAlign="right";
-      md.innerHTML="Main<br>Door<br>Entry";
+      md.className="main-door-side-box";
+      md.innerHTML="Main Door<br>Entry (6ft)";
       rowNumCol.appendChild(md);
       for(let r=17;r<=24;r++){
         const l=document.createElement("div");l.className="row-num-label";l.textContent=r;rowNumCol.appendChild(l);
@@ -886,11 +710,12 @@
       wrapper.appendChild(rowNumCol);
       wrapper.appendChild(createPassageDOM("Passage (3 ft)",false,"passage-left-outer"));
 
+      // First pass: register all 24 rows per block
       layoutConfig.blocks.forEach((blk)=>{
-        const totalRows=(blk.id===4||blk.id===5||blk.id===6)?Math.max(blk.rows,26):blk.rows;
+        const totalRows=blk.rows||24;
         for(let r=1;r<=totalRows;r++){
           const ordered=getRowAllocationForBlock(blk.id,r,blk.cols);
-          while(ordered.length<blk.cols)ordered.push({type:"empty",dept:null,label:null,code:null});
+          while(ordered.length<blk.cols)ordered.push(makeUnnumberedFacSeat(blk.id,r,ordered.length+1));
           for(let c=1;c<=blk.cols;c++){
             const it=ordered[c-1],ck=`B${blk.id}-R${r}-C${c}`;
             const sObj={coordKey:ck,block:blk.id,row:r,col:c,type:it.type,dept:it.dept,subType:it.subType||null,label:it.label,code:it.code,designation:it.designation||null,num:it.num||null};
@@ -917,19 +742,17 @@
         const rowsStack=document.createElement("div");rowsStack.className="rows-stack";
         const deptRowSpans={};
 
-        const totalRows=(blk.id===4||blk.id===5||blk.id===6)?Math.max(blk.rows,26):blk.rows;
-        let visualSlot=0;
+        const totalRows=blk.rows||24;
 
         for(let r=1;r<=totalRows;r++){
-          visualSlot++;
           const rowEl=document.createElement("div");rowEl.className="seat-row";rowEl.id=`row-el-B${blk.id}-R${r}`;
           for(let c=1;c<=blk.cols;c++){
             const ck=`B${blk.id}-R${r}-C${c}`,sObj=seatsByCoord[ck];
             if(sObj.type==="student"&&sObj.dept){
-              const half=(blk.id<=3&&r>16)||(blk.id>=4&&blk.id<=5&&r>15)?"bot":"top";
+              const half=r<=16?"top":"bot";
               const sk=`${sObj.dept}_${half}`;
-              if(!deptRowSpans[sk])deptRowSpans[sk]={dept:sObj.dept,startSlot:visualSlot,endSlot:visualSlot};
-              else deptRowSpans[sk].endSlot=visualSlot;
+              if(!deptRowSpans[sk])deptRowSpans[sk]={dept:sObj.dept,startRow:r,endRow:r};
+              else deptRowSpans[sk].endRow=r;
 
               const mKey=sObj.dept==="TOP"?"TOP":sObj.dept;
               if(!deptRowsMap[mKey])deptRowsMap[mKey]=[];
@@ -942,27 +765,30 @@
           }
           rowsStack.appendChild(rowEl);
 
-          if(blk.id<=3&&r===16){
-            const mid1=document.createElement("div");mid1.className="mid-cross-passage";
-            const mid2=document.createElement("div");mid2.className="mid-cross-passage";
-            if(blk.id===1||blk.id===2){
-              mid1.innerHTML=`<span>Passage (6 ft)</span>`;mid2.innerHTML=`<span></span>`;
-            }else if(blk.id===3){
-              mid1.innerHTML=`<span class="camera-box-3x3">📷 Camera 3 (3X3)</span><span>Passage (6 ft)</span>`;mid2.innerHTML=`<span></span>`;
-            }
-            rowsStack.appendChild(mid1);rowsStack.appendChild(mid2);
-            visualSlot+=2;
-          }
-          if((blk.id===4||blk.id===5)&&r===15){
+          // 6ft Cross-Passage / Camera Boxes after Row 16 so all 24 rows align across all 6 blocks
+          if(r===16){
             const mid=document.createElement("div");mid.className="mid-cross-passage";
-            mid.innerHTML=blk.id===4?`<span class="camera-box-3x3">📷 Camera 1 (3X3)</span>`:`<span class="camera-box-3x3">📷 Camera 3 (3X3)</span>`;
+            if(blk.id===1){
+              mid.innerHTML=`<span style="color:#1e3f2b;font-weight:800">⬅ Main Door</span><span>Passage (6 ft)</span>`;
+            }else if(blk.id===2){
+              mid.innerHTML=`<span>Passage (6 ft)</span>`;
+            }else if(blk.id===3){
+              mid.innerHTML=`<span class="cam-badge">📷 Camera 3 (3X3)</span><span>Passage (6 ft)</span>`;
+            }else if(blk.id===4){
+              mid.innerHTML=`<span class="cam-badge">📷 Camera 1 (3X3)</span>`;
+            }else if(blk.id===5){
+              mid.innerHTML=`<span class="cam-badge">📷 Camera 3 (3X3)</span>`;
+            }else if(blk.id===6){
+              mid.style.background="transparent";mid.style.border="none";
+            }
             rowsStack.appendChild(mid);
-            visualSlot+=1;
           }
         }
 
         Object.values(deptRowSpans).forEach((sp)=>{
-          const topPx=(sp.startSlot-1)*23,heightPx=(sp.endSlot-sp.startSlot+1)*23-3;
+          const extraOffset=sp.startRow>16?41:0;
+          const topPx=(sp.startRow-1)*23+extraOffset;
+          const heightPx=(sp.endRow-sp.startRow+1)*23-3;
           const bar=document.createElement("div");bar.className="branch-bar";
           bar.style.top=`${topPx}px`;bar.style.height=`${heightPx}px`;
           bar.style.backgroundColor=BRANCH_META[sp.dept]?.color||"#333";
@@ -973,12 +799,14 @@
         });
 
         body.appendChild(barsCol);body.appendChild(rowsStack);blockEl.appendChild(body);
+
         const footer=document.createElement("div");footer.className="block-footer";footer.textContent=`Block ${blk.id}`;
         blockEl.appendChild(footer);
         if(blk.id===4){
           const snd=document.createElement("div");snd.className="sound-box";snd.textContent="6X6 Sound System";
           blockEl.appendChild(snd);
         }
+
         wrapper.appendChild(blockEl);
 
         if(idx===2){
@@ -1035,7 +863,7 @@
       });
       document.getElementById("seatedCounter").textContent=`${count} students registered · ${absentCount} absent`;
       const bar=document.getElementById("deptRosterBar");
-      if(bar)bar.innerHTML=Object.entries(dCounts).map(([d,o])=>`<span class="dept-stat-badge ${o.f>0?'has-students':''}">${d}: ${o.f}/${o.t}</span>`).join("");
+      if(bar)bar.innerHTML=Object.entries(dCounts).map(([d,o])=>`<span class="dept-badge ${o.f>0?'ok':''}">${d}: ${o.f}/${o.t}</span>`).join("");
     }
 
     function renderLiveProgressBanner(){
@@ -1078,11 +906,11 @@
       if(isFac)title=s.designation||r?.name||`Faculty (${s.num})`;
       else if(isDef)title="Defective Chair";else if(isEmp)title="Kept Empty";else if(r?.name)title=r.name;
       const isFW=s.row===2&&(s.dept==="TOP"||s.dept==="PhD");
-      const stTxt=isFW?"Central Collection Point (Quarter-Point Perpendicular Exit)":`Station ${s.block<=3?1:2}`;
-      const brTxt=isFac?"Faculty / HoD":(r?.branch||BRANCH_META[s.dept]?.name||"Unallocated");
+      const stTxt=isFW?"Central Collection Point":`Station ${s.block<=3?1:2}`;
+      const brTxt=isFac?(s.num==="F"?"Faculty (Unnumbered)":`Faculty Seat ${s.num}`):(r?.branch||BRANCH_META[s.dept]?.name||"Unallocated");
       const regBadge=r?.absent?`<span style="color:#ea580c;font-weight:700">Absent</span>`:(r?.name?`<span style="color:#16a34a;font-weight:700">Registered</span>`:"Pending");
       const btns=(!isFac&&!isEmp&&!isDef)?`<button class="btn-outline" onclick="highlightMySeat('${s.coordKey}')">This is my seat</button><button class="btn-primary" onclick="animateSingleStudentPath(${s.block},${s.row},${s.col},'${s.coordKey}')">👣 Show my path to stage</button>`:"";
-      card.innerHTML=`<div class="seat-detail-header"><div class="seat-badge-lg" style="background:${col}">${txt}</div><div><div class="assigned-label">${isFac?'FACULTY DESIGNATION':'ASSIGNED TO'}</div><div class="assigned-name">${title}</div>${r?.regNo?`<div style="font-size:13px;color:var(--text-muted)">Reg No: ${r.regNo}</div>`:""}</div></div><div class="meta-grid"><div><div class="meta-item-label">🎖 BRANCH / GROUP</div><div class="meta-item-val">${brTxt}</div></div><div><div class="meta-item-label">💺 SEAT NUMBER</div><div class="meta-item-val">${s.code||s.coordKey}</div></div><div><div class="meta-item-label">📍 LOCATION</div><div class="meta-item-val">Block ${s.block} · Row ${s.row} · Col ${s.col}</div></div>${!isFac?`<div><div class="meta-item-label">📋 STATION &amp; STATUS</div><div class="meta-item-val">${stTxt} · ${regBadge}</div></div>`:""}</div><div class="card-actions">${btns}</div>`;
+      card.innerHTML=`<div class="seat-detail-header"><div class="seat-badge-lg" style="background:${col}">${txt}</div><div><div class="assigned-label">${isFac?'FACULTY ASSIGNMENT':'ASSIGNED TO'}</div><div class="assigned-name">${title}</div>${r?.regNo?`<div style="font-size:12.5px;color:var(--muted)">Reg No: ${r.regNo}</div>`:""}</div></div><div class="meta-grid"><div><div class="meta-item-label">CATEGORY / BRANCH</div><div class="meta-item-val">${brTxt}</div></div><div><div class="meta-item-label">SEAT CODE</div><div class="meta-item-val">${s.num==="F"?"F (Unnumbered)":(s.code||s.coordKey)}</div></div><div><div class="meta-item-label">LOCATION</div><div class="meta-item-val">Block ${s.block} · Row ${s.row} · Col ${s.col}</div></div>${!isFac?`<div><div class="meta-item-label">STATION &amp; STATUS</div><div class="meta-item-val">${stTxt} · ${regBadge}</div></div>`:""}</div><div class="card-actions">${btns}</div>`;
     }
 
     function highlightMySeat(ck){document.getElementById(`seat-${ck}`)?.scrollIntoView({behavior:"smooth",block:"center",inline:"center"});}
@@ -1132,7 +960,7 @@
           if(!fLbl)fLbl=s.label;lLbl=s.label;
         }
       }
-      return{pts,cumDist:cum,entryPts:ePts,entryCumDist:eCum,exitPts:xPts,d:ptsToSvgPath(pts),entryD:ptsToSvgPath(ePts),exitD:ptsToSvgPath(xPts),deptLabel:rDept,displayTitle:`${rDept} · Block ${blockId} Row ${rowNum} (${fLbl}–${lLbl})`,stationNum:useCentral?0:(isL?1:2),useCentralStation:useCentral,studentCount:Math.max(1,cnt),blockId,rowNum,distToStepOfStage:cum[idxStep],distToStageEntry:cum[idxEnt],distToCollectionCenter:cum[idxCen],distToStageExit:cum[idxEx],totalLength:cum[cum.length-1]};
+      return cnt===0?null:{pts,cumDist:cum,entryPts:ePts,entryCumDist:eCum,exitPts:xPts,d:ptsToSvgPath(pts),entryD:ptsToSvgPath(ePts),exitD:ptsToSvgPath(xPts),deptLabel:rDept,displayTitle:`${rDept} · B${blockId} R${rowNum} (${fLbl}–${lLbl})`,stationNum:useCentral?0:(isL?1:2),useCentralStation:useCentral,studentCount:cnt,blockId,rowNum,distToStepOfStage:cum[idxStep],distToStageEntry:cum[idxEnt],distToCollectionCenter:cum[idxCen],distToStageExit:cum[idxEx],totalLength:cum[cum.length-1]};
     }
 
     function updateOnStageAndNextIndicators(simDist,convoys){
@@ -1145,8 +973,8 @@
         else if(lh<c.distToStepOfStage&&tl<c.distToStageExit)upL.push({title:c.displayTitle,eta:c.distToStepOfStage-lh});
       });
       upL.sort((a,b)=>a.eta-b.eta);
-      onEl.textContent=onL.length?onL.slice(0,2).join("  |  "):"Transitioning between rows...";
-      upEl.textContent=upL.length?upL.slice(0,2).map(x=>x.title).join("  |  "):"No further rows queued";
+      onEl.textContent=onL.length?onL.slice(0,2).join(" | "):"Transitioning...";
+      upEl.textContent=upL.length?upL.slice(0,2).map(x=>x.title).join(" | "):"None";
     }
 
     function animateSingleStudentPath(bId,rNum,cNum,ck){
@@ -1164,7 +992,7 @@
       dot.innerHTML=`<circle cx="0" cy="-3" r="3.8" fill="#152542" stroke="#fff" stroke-width="1.2"/><rect x="-4" y="0.5" width="8" height="5" rx="2" fill="#152542" stroke="#fff" stroke-width="1.2"/>`;svg.appendChild(dot);
       document.getElementById("walkStatusCard").style.display="block";
       const rE=sObj?.code?getRosterEntry(sObj.code):null,nm=rE?.name?"_"+rE.name.replace(/[^a-zA-Z0-9]/g,"_"):"",lbl=sObj?.code?sObj.code.replace(/[^a-zA-Z0-9]/g,"_") :`B${bId}_R${rNum}`;
-      const sc={...pInfo,displayTitle:sObj?`${sObj.code} (Block ${bId} Row ${rNum})`:pInfo.displayTitle,studentCount:1,startDist:0,finishDist:pInfo.totalLength};
+      const sc={...pInfo,displayTitle:sObj?`${sObj.code} (B${bId} R${rNum})`:pInfo.displayTitle,studentCount:1,startDist:0,finishDist:pInfo.totalLength};
       activeAnimState={mode:`Student_${lbl}_${nm}`,isCentralMode:Boolean(isCen),convoys:[sc]};
       let dist=0,last=performance.now();
       function step(now){
@@ -1245,10 +1073,9 @@
     function startBlockWave(bId,btn){
       stopWalkAnimation();setCentralStationMode(false);if(btn)btn.classList.add("active-wave");
       const cR=document.getElementById("hallCanvas").getBoundingClientRect(),cfgs=[],depts=new Set();
-      for(let r=3;r<=26;r++){
-        let has=false;
-        for(let c=1;c<=9;c++){const s=seatsByCoord[`B${bId}-R${r}-C${c}`];if(s?.type==="student"){has=true;if(s.dept)depts.add(s.dept);}}
-        if(has){const p=buildNonIntersectingRowPath(bId,r,cR,false);if(p)cfgs.push(p);}
+      for(let r=3;r<=24;r++){
+        const p=buildNonIntersectingRowPath(bId,r,cR,false);
+        if(p){cfgs.push(p);depts.add(p.deptLabel);}
       }
       if(!cfgs.length)return;
       document.getElementById("walkStatusCard").style.display="block";
@@ -1268,11 +1095,9 @@
       stopWalkAnimation();setCentralStationMode(false);if(btn)btn.classList.add("active-wave");
       const cR=document.getElementById("hallCanvas").getBoundingClientRect(),st1=[],st2=[];
       [[3,4],[2,5],[1,6]].forEach(([lB,rB])=>{
-        for(let r=3;r<=26;r++){
-          let hL=false,hR=false;
-          for(let c=1;c<=9;c++){if(seatsByCoord[`B${lB}-R${r}-C${c}`]?.type==="student")hL=true;if(seatsByCoord[`B${rB}-R${r}-C${c}`]?.type==="student")hR=true;}
-          if(hL){const p=buildNonIntersectingRowPath(lB,r,cR,false);if(p)st1.push(p);}
-          if(hR){const p=buildNonIntersectingRowPath(rB,r,cR,false);if(p)st2.push(p);}
+        for(let r=3;r<=24;r++){
+          const lp=buildNonIntersectingRowPath(lB,r,cR,false);if(lp)st1.push(lp);
+          const rp=buildNonIntersectingRowPath(rB,r,cR,false);if(rp)st2.push(rp);
         }
       });
       document.getElementById("walkStatusCard").style.display="block";
@@ -1288,16 +1113,16 @@
       return Object.values(map);
     }
     function getStationLogString(simDist,convoys,stNum){
-      const pre=stNum===0?"Central Collection Point":`Station ${stNum}`,t=computeStationDepartmentTimings(convoys,stNum);
+      const pre=stNum===0?"Central Station":`Station ${stNum}`,t=computeStationDepartmentTimings(convoys,stNum);
       if(!t.length)return`${pre}: Idle`;
       const comp=[];let act=null;
       t.forEach(x=>{if(simDist>=x.endDist)comp.push(x.dept);else if(simDist>=x.startDist)act=x.dept;});
-      const p=[];if(act)p.push(`Active: ${act}`);if(comp.length)p.push(`Completed: ${comp.join(", ")}`);if(!p.length)p.push(`Queued: ${t[0].dept}`);
+      const p=[];if(act)p.push(`Active: ${act}`);if(comp.length)p.push(`Done: ${comp.join(", ")}`);if(!p.length)p.push(`Queued: ${t[0].dept}`);
       return`${pre} — ${p.join(" | ")}`;
     }
     function updateLiveStationLogs(simDist,convoys,isCen=false){
       document.getElementById("st1LiveLog").textContent=getStationLogString(simDist,convoys,isCen?0:1);
-      document.getElementById("st2LiveLog").textContent=isCen?"Stations 1 & 2 Temporarily Hidden":getStationLogString(simDist,convoys,2);
+      document.getElementById("st2LiveLog").textContent=isCen?"Stations 1 & 2 Hidden":getStationLogString(simDist,convoys,2);
     }
 
     function runContinuousDualWingAnimation(lCfgs,rCfgs,mode){
@@ -1318,7 +1143,7 @@
           }
           q.push({...p,entryPathEl,exitPathEl,dots,startDist:sD,finishDist:sD+p.totalLength+(p.studentCount-1)*STUDENT_SPACING_PX});
         });
-        return queue=q;
+        return q;
       }
       const all=[...buildQ(lCfgs),...buildQ(rCfgs)];if(!all.length)return;
       const minS=Math.min(...all.map(x=>x.startDist));all.forEach(x=>{x.startDist-=minS;x.finishDist-=minS;});
@@ -1337,7 +1162,7 @@
           });
         });
         updateLiveStationLogs(gD,all,false);updateOnStageAndNextIndicators(gD,all);
-                walkAnimFrame=requestAnimationFrame(step);
+        walkAnimFrame=requestAnimationFrame(step);
       }
       walkAnimFrame=requestAnimationFrame(step);
     }
@@ -1372,53 +1197,21 @@
       const bg=document.createElement("canvas");bg.width=fW;bg.height=fH;
       const ctx=bg.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,fW,fH);
       const toU=(el)=>{if(!el)return null;const r=el.getBoundingClientRect();return{x:(r.left-cR.left)+padX,y:(r.top-cR.top)+padY,w:r.width,h:r.height,cx:(r.left-cR.left+r.width/2)+padX,cy:(r.top-cR.top+r.height/2)+padY};};
-
-      document.querySelectorAll(".entry-box").forEach(el=>{
-        const p=toU(el);
-        if(p){ctx.fillStyle="#e9f2ec";ctx.fillRect(p.x,p.y,p.w,p.h);ctx.strokeStyle="#c7dfd0";ctx.strokeRect(p.x,p.y,p.w,p.h);ctx.fillStyle="#2f5941";ctx.font="bold 10px sans-serif";ctx.textAlign="center";ctx.fillText("ENTRY (29 ft)",p.cx,p.cy+3);}
-      });
-
       const stg=toU(document.getElementById("stageMainRect"));
-      if(stg){
-        ctx.fillStyle="#192a48";ctx.fillRect(stg.x,stg.y,stg.w,stg.h);
-        ctx.fillStyle="#e6b333";ctx.font="bold 11px sans-serif";ctx.textAlign="center";ctx.fillText("STAGE 54 ft LENGTH — 22 ft WIDE",stg.cx,stg.y+16);
-        ctx.fillStyle="#b0bfd8";ctx.font="bold 9px sans-serif";ctx.fillText("MAIN STAGE",stg.cx,stg.y+stg.h-8);
-      }
-
+      if(stg){ctx.fillStyle="#192a48";ctx.fillRect(stg.x,stg.y,stg.w,stg.h);ctx.fillStyle="#e6b333";ctx.font="bold 11px sans-serif";ctx.textAlign="center";ctx.fillText("STAGE 54 ft LENGTH — 22 ft WIDE",stg.cx,stg.y+16);}
       (isCen?["centralStationDesk"]:["station1Desk","station2Desk"]).forEach(id=>{
         const d=toU(document.getElementById(id));
-        if(d&&d.w>0){
-          ctx.fillStyle="#fef9c3";ctx.fillRect(d.x,d.y,d.w,d.h);ctx.strokeStyle="#eab308";ctx.lineWidth=2;ctx.strokeRect(d.x,d.y,d.w,d.h);
-          ctx.fillStyle="#854d0e";ctx.font="bold 8px sans-serif";ctx.textAlign="center";
-          ctx.fillText(id==="centralStationDesk"?"CENTRAL STATION":(id==="station1Desk"?"STATION 1":"STATION 2"),d.cx,d.cy+3);
-        }
+        if(d&&d.w>0){ctx.fillStyle="#fef9c3";ctx.fillRect(d.x,d.y,d.w,d.h);ctx.strokeStyle="#eab308";ctx.strokeRect(d.x,d.y,d.w,d.h);}
       });
-
-      ["leftStageSteps","rightStageSteps"].forEach(id=>{
-        const p=toU(document.getElementById(id));
-        if(p){
-          ctx.fillStyle="#dce4ee";ctx.fillRect(p.x,p.y,p.w,p.h);ctx.strokeStyle="#7f97b2";ctx.lineWidth=1.5;ctx.strokeRect(p.x,p.y,p.w,p.h);
-          for(let x=p.x+5;x<p.x+p.w;x+=5){ctx.beginPath();ctx.moveTo(x,p.y);ctx.lineTo(x,p.y+p.h);ctx.stroke();}
-        }
-      });
-
-      const retStp=toU(document.getElementById("centerReturnStairs"));
-      if(retStp){
-        ctx.fillStyle="#dce4ee";ctx.fillRect(retStp.x,retStp.y,retStp.w,retStp.h);ctx.strokeStyle="#7f97b2";ctx.lineWidth=1.5;ctx.strokeRect(retStp.x,retStp.y,retStp.w,retStp.h);
-        for(let y=retStp.y+5;y<retStp.y+retStp.h;y+=5){ctx.beginPath();ctx.moveTo(retStp.x,y);ctx.lineTo(retStp.x+retStp.w,y);ctx.stroke();}
-      }
-
-      document.querySelectorAll(".passage-col").forEach(el=>{const p=toU(el);if(p){ctx.fillStyle=el.classList.contains("center-6ft")?"#ede8da":"#f4f1e8";ctx.fillRect(p.x,p.y,p.w,p.h);}});
-      document.querySelectorAll(".row-num-label").forEach(el=>{const p=toU(el);if(p){ctx.fillStyle="#64748b";ctx.font="bold 8.5px sans-serif";ctx.textAlign="right";ctx.fillText(el.textContent.replace(/\s+/g," "),p.x+p.w-2,p.cy+3);}});
-      document.querySelectorAll(".block-header,.block-footer,.sound-box").forEach(el=>{const p=toU(el);if(p){ctx.fillStyle="#1e293b";ctx.font="bold 9.5px sans-serif";ctx.textAlign="center";ctx.fillText(el.textContent,p.cx,p.cy+3);}});
-
+      document.querySelectorAll(".passage-col,.main-door-side-box").forEach(el=>{const p=toU(el);if(p){ctx.fillStyle="#f4f1e8";ctx.fillRect(p.x,p.y,p.w,p.h);}});
+      document.querySelectorAll(".block-header,.block-footer").forEach(el=>{const p=toU(el);if(p){ctx.fillStyle="#1e293b";ctx.font="bold 10px sans-serif";ctx.textAlign="center";ctx.fillText(el.textContent,p.cx,p.cy+3);}});
       ctx.font="bold 5.5px sans-serif";ctx.textAlign="center";
       Object.values(seatsByCoord).forEach(s=>{
         if(s.type==="empty"||s.statusOverride==="empty")return;
         const p=toU(document.getElementById(`seat-${s.coordKey}`));if(!p)return;
         const m=BRANCH_META[s.dept]||{color:"#64748b",bg:"#e2e8f0"};
-        ctx.fillStyle=s.type==="faculty"?m.color:m.bg;ctx.fillRect(p.x,p.y,p.w,p.h);
-        ctx.fillStyle=s.type==="faculty"?"#fff":"#1e293b";ctx.fillText(s.label||s.num||"",p.cx,p.cy+2);
+        ctx.fillStyle=s.type==="faculty"?(s.dept==="FAC"?"#64748b":m.bg):m.bg;ctx.fillRect(p.x,p.y,p.w,p.h);
+        ctx.fillStyle=(s.type==="faculty"&&s.dept==="FAC")?"#fff":"#1e293b";ctx.fillText(s.label||s.num||"",p.cx,p.cy+2);
       });
       canvasEl.style.transform=`scale(${prevZ})`;
       return{bgCanvas:bg,padX,padY};
@@ -1430,7 +1223,7 @@
     }
 
     async function downloadCurrentAnimationVideo(){
-      if(!activeAnimState?.convoys?.length){alert("Trigger First Wave, Full Wave, a Block Wave, a Department Wave, or a Student Path first!");return;}
+      if(!activeAnimState?.convoys?.length){alert("Trigger a Wave or Student Path first!");return;}
       const secPerSt=parseFloat(document.getElementById("videoSecPerStudentSelect")?.value||"0.15");
       const btn=document.getElementById("downloadVideoBtn"),stopBtn=document.getElementById("stopSaveVideoBtn"),saveLnk=document.getElementById("manualVideoSaveLink");
       saveLnk.style.display="none";const orig=btn.textContent;btn.disabled=true;stopBtn.style.display="inline-flex";
@@ -1438,7 +1231,7 @@
       setCentralStationMode(Boolean(activeAnimState.isCentralMode));
       let audioCtx=null;
       try{
-        const hH=92,{bgCanvas,padX,padY}=createUnclippedHallBackgroundCanvas(canvasEl,Boolean(activeAnimState.isCentralMode));
+        const hH=86,{bgCanvas,padX,padY}=createUnclippedHallBackgroundCanvas(canvasEl,Boolean(activeAnimState.isCentralMode));
         const rW=bgCanvas.width,rH=bgCanvas.height+hH,sc=Math.min(1,1280/rW),oW=Math.floor((rW*sc)/2)*2,oH=Math.floor((rH*sc)/2)*2;
         const wC=document.createElement("canvas");wC.width=rW;wC.height=rH;const ctx=wC.getContext("2d");
         const oC=document.createElement("canvas");oC.width=oW;oC.height=oH;const oCtx=oC.getContext("2d");
@@ -1472,27 +1265,13 @@
           const elS=Math.max(0,(performance.now()-t0)/1000),simD=elS*pxPerS;
           if(simD>maxD){finishVideoRecordingEarly();return;}
           const pct=Math.min(100,Math.round((simD/maxD)*100));
-          btn.textContent=`⏳ Recording ${pct}% (${Math.floor(elS)}s / ${totS}s)...`;
-
-          const onL=[],upL=[];
-          convoys.forEach(c=>{
-            const lh=simD-c.startDist,tl=lh-(c.studentCount-1)*STUDENT_SPACING_PX;
-            if(lh>=c.distToStepOfStage&&tl<=c.distToStageExit)onL.push(c.displayTitle);
-            else if(lh<c.distToStepOfStage&&tl<c.distToStageExit)upL.push({title:c.displayTitle,eta:c.distToStepOfStage-lh});
-          });
-          upL.sort((a,b)=>a.eta-b.eta);
-
+          btn.textContent=`⏳ ${pct}% (${Math.floor(elS)}s/${totS}s)`;
           ctx.fillStyle="#152542";ctx.fillRect(0,0,rW,hH);
           ctx.fillStyle="#e6b333";ctx.font="bold 14px sans-serif";ctx.textAlign="left";
-          ctx.fillText(`CET GRADUATION DAY 2026 — ${activeAnimState.mode.replace(/_/g," ").toUpperCase()} (${secPerSt}s/student · ${pct}%)`,24,22);
-          ctx.fillStyle="#86efac";ctx.font="bold 12.5px sans-serif";
-          ctx.fillText(`ON STAGE NOW: ${onL.length?onL.slice(0,2).join(" | "):"Transitioning..."}`,24,44);
-          ctx.fillStyle="#fde047";
-          ctx.fillText(`UP NEXT: ${upL.length?upL.slice(0,2).map(x=>x.title).join(" | "):"None"}`,24,64);
+          ctx.fillText(`CET GRADUATION DAY 2026 — ${activeAnimState.mode.replace(/_/g," ").toUpperCase()} (${secPerSt}s/st · ${pct}%)`,24,26);
           ctx.fillStyle="#fff";ctx.font="12px sans-serif";
-          ctx.fillText(activeAnimState.isCentralMode?getStationLogString(simD,convoys,0):`${getStationLogString(simD,convoys,1)}  •  ${getStationLogString(simD,convoys,2)}`,24,82);
+          ctx.fillText(activeAnimState.isCentralMode?getStationLogString(simD,convoys,0):`${getStationLogString(simD,convoys,1)}  •  ${getStationLogString(simD,convoys,2)}`,24,58);
           ctx.drawImage(bgCanvas,0,hH);
-
           convoys.forEach(c=>{
             const lh=simD-c.startDist,tl=lh-(c.studentCount-1)*STUDENT_SPACING_PX;
             if(lh>0&&tl<c.totalLength){
@@ -1555,7 +1334,7 @@
       document.getElementById("tabAdminBtn").classList.toggle("active",v==="admin");
       if(v==="faculty"&&unlockedRoles.faculty)renderFacultyProgressTable();
       if(v==="registration"&&unlockedRoles.registration)renderRegistrationTable();
-      if(v==="admin"&&unlockedRoles.admin)renderAdminConfigTables();
+      if(v==="admin"&&unlockedRoles.admin){renderAdminConfigTables();populateAdminFacSelect();}
     }
 
     function unlockRole(r){
@@ -1564,16 +1343,41 @@
         unlockedRoles[r]=true;
         if(r==="faculty"){document.getElementById("facultyGateCard").style.display="none";document.getElementById("facultyConsole").style.display="block";renderFacultyProgressTable();}
         if(r==="registration"){document.getElementById("regGateCard").style.display="none";document.getElementById("regConsole").style.display="block";renderRegistrationTable();}
-        if(r==="admin"){document.getElementById("adminGateCard").style.display="none";document.getElementById("adminConsole").style.display="block";renderDeptPills();renderAdminConfigTables();}
+        if(r==="admin"){document.getElementById("adminGateCard").style.display="none";document.getElementById("adminConsole").style.display="block";renderDeptPills();renderAdminConfigTables();populateAdminFacSelect();}
       }else alert("Incorrect password!");
+    }
+
+    function populateAdminFacSelect(){
+      const sel=document.getElementById("adminFacSelect");if(!sel)return;
+      const cur=sel.value||"F1";sel.innerHTML="";
+      for(let i=1;i<=59;i++){
+        const k=`F${i}`,m=facultyDesignations[k]||DEFAULT_FACULTY_DESIGNATIONS[k]||{title:`Faculty ${k}`,dept:"FAC"};
+        const opt=document.createElement("option");opt.value=k;opt.textContent=`${k} — ${m.title}`;
+        sel.appendChild(opt);
+      }
+      sel.value=cur;loadAdminFacSeat();
+    }
+    function loadAdminFacSeat(){
+      const k=document.getElementById("adminFacSelect").value;
+      const m=facultyDesignations[k]||DEFAULT_FACULTY_DESIGNATIONS[k]||{title:`Faculty ${k}`,dept:"FAC"};
+      document.getElementById("adminFacTitleInput").value=m.title;
+      document.getElementById("adminFacDeptSelect").value=m.dept||"FAC";
+    }
+    function saveAdminFacSeat(){
+      const k=document.getElementById("adminFacSelect").value;
+      const t=document.getElementById("adminFacTitleInput").value.trim()||`Faculty ${k}`;
+      const d=document.getElementById("adminFacDeptSelect").value||"FAC";
+      facultyDesignations[k]={title:t,dept:d};
+      saveAllCloudStorage();buildAndRenderMap();populateAdminFacSelect();
+      alert(`Faculty seat ${k} updated to "${t}"!`);
     }
 
     function renderFacultyProgressTable(){
       const tb=document.querySelector("#facultyProgressTable tbody");tb.innerHTML="";
-      const d={1:"UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty",2:"PhD (1–9), CS (1–159), MCA (1–34)",3:"PhD (10–12), CE (1–196)",4:"PG Toppers (9–1), ME (1–198), Faculty",5:"PG Toppers (18–10), Arch (1–86), MBA (1–107), Faculty",6:"PG Toppers (25–19), EC (1–159), Faculty"};
+      const d={1:"UG Toppers, EE, PTDC",2:"PhD, CS, MCA",3:"PhD, CE",4:"PG Toppers, ME",5:"PG Toppers, Arch, MBA",6:"PG Toppers, EC"};
       for(let b=1;b<=6;b++){
         const p=convocationProgress[b]||{status:"Pending",time:""},tr=document.createElement("tr");
-        tr.innerHTML=`<td><b>Block ${b}</b></td><td>${d[b]}</td><td><select id="prog-status-${b}" class="form-control" style="max-width:160px;margin:0"><option value="Pending" ${p.status==='Pending'?'selected':''}>Pending</option><option value="In Progress" ${p.status==='In Progress'?'selected':''}>In Progress</option><option value="Completed" ${p.status==='Completed'?'selected':''}>Completed</option></select></td><td><input id="prog-time-${b}" type="text" value="${p.time||''}" placeholder="11:30 AM"/></td>`;
+        tr.innerHTML=`<td><b>Block ${b}</b></td><td>${d[b]}</td><td><select id="prog-status-${b}" class="form-control" style="margin:0"><option value="Pending" ${p.status==='Pending'?'selected':''}>Pending</option><option value="In Progress" ${p.status==='In Progress'?'selected':''}>In Progress</option><option value="Completed" ${p.status==='Completed'?'selected':''}>Completed</option></select></td><td><input id="prog-time-${b}" type="text" value="${p.time||''}" placeholder="11:30 AM"/></td>`;
         tb.appendChild(tr);
       }
     }
@@ -1593,26 +1397,26 @@
         if(sq&&!(s.code.toUpperCase().includes(sq)||nm.toUpperCase().includes(sq)||rg.toUpperCase().includes(sq)))return;
         tot++;if(r.absent)abs++;
         const tr=document.createElement("tr");
-        tr.innerHTML=`<td><b>${s.code}</b></td><td>B${s.block}·R${s.row}</td><td>${nm||'<span style="color:#94a3b8">Unassigned</span>'}</td><td>${rg||'-'}</td><td>${r.branch||s.dept}</td><td><label style="cursor:pointer;font-weight:600;color:${r.absent?'#ea580c':'#16a34a'}"><input type="checkbox" ${r.absent?'checked':''} onchange="toggleStudentAbsent('${s.code}',this.checked)"/> ${r.absent?'Absent':'Present'}</label></td>`;
+        tr.innerHTML=`<td><b>${s.code}</b></td><td>B${s.block}·R${s.row}</td><td>${nm||'-'}</td><td>${rg||'-'}</td><td>${r.branch||s.dept}</td><td><label><input type="checkbox" ${r.absent?'checked':''} onchange="toggleStudentAbsent('${s.code}',this.checked)"/> ${r.absent?'Absent':'Present'}</label></td>`;
         tb.appendChild(tr);
       });
-      document.getElementById("regStatsSummary").textContent=`Showing ${tot} seats · ${abs} marked Absent`;
+      document.getElementById("regStatsSummary").textContent=`Showing ${tot} · ${abs} Absent`;
     }
     function toggleStudentAbsent(code,isA){
-      const c=normalizeSeatCode(code),ex=getRosterEntry(c)||{name:"Unassigned Student",regNo:"",branch:"",stream:""};
+      const c=normalizeSeatCode(code),ex=getRosterEntry(c)||{name:"Unassigned",regNo:"",branch:"",stream:""};
       ex.absent=isA;studentRoster[c]=ex;saveAllCloudStorage();renderRegistrationTable();buildAndRenderMap();
     }
     function downloadRegistrationReportPDF(){
       const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"portrait",unit:"pt",format:"a4"});
-      doc.setFontSize(15);doc.text("CET Graduation Day 2026 — Registration & Absentees Report",40,40);
+      doc.text("CET Graduation 2026 — Registration & Absentees",40,40);
       const absR=[],regR=[];
       Object.values(seatsByCoord).filter(s=>s.type==="student"&&s.code).forEach(s=>{
         const r=getRosterEntry(s.code)||{},row=[s.code,`B${s.block}-R${s.row}`,r.name||"Unassigned",r.regNo||"-",r.branch||s.dept,r.absent?"ABSENT":"Registered"];
         if(r.absent)absR.push(row);else if(r.name)regR.push(row);
       });
-      doc.autoTable({startY:60,head:[["Seat No","Location","Student Name","Reg No","Branch","Status"]],body:absR.length?absR:[["-","-","No absentees marked","-","-","-"]]});
-      doc.autoTable({startY:doc.lastAutoTable.finalY+25,head:[["Seat No","Location","Student Name","Reg No","Branch","Status"]],body:regR.length?regR:[["-","-","No registered students uploaded","-","-","-"]]});
-      doc.save("CET_2026_Registration_And_Absentees_Report.pdf");
+      doc.autoTable({startY:60,head:[["Seat","Loc","Name","Reg No","Branch","Status"]],body:absR.length?absR:[["-","-","No absentees","-","-","-"]]});
+      doc.autoTable({startY:doc.lastAutoTable.finalY+25,head:[["Seat","Loc","Name","Reg No","Branch","Status"]],body:regR.length?regR:[["-","-","No registered students","-","-","-"]]});
+      doc.save("CET_2026_Registration_Report.pdf");
     }
 
     function renderDeptPills(){
@@ -1642,7 +1446,7 @@
       return "";
     }
     function uploadBranchExcel(){
-      const fi=document.getElementById("excelFileInput");if(!fi.files.length){alert("Please select an Excel file first.");return;}
+      const fi=document.getElementById("excelFileInput");if(!fi.files.length){alert("Select an Excel file first.");return;}
       const reader=new FileReader();
       reader.onload=e=>{
         const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"}),fbCodes=getOrderedSeatCodesForDept(selectedDeptForExcel);
@@ -1653,37 +1457,35 @@
             const rawS=getExcelRowField(row,["seatnumber","seatno","seat","chair","slno","sno"]);
             const rDept=getExcelRowField(row,["department","dept","group"])||selectedDeptForExcel;
             const name=getExcelRowField(row,["studentname","name","candidate","student"]);
-            const regNo=getExcelRowField(row,["registerno","regno","registration","rollno","ktuid","id"]);
-            const branch=getExcelRowField(row,["branch","programme","course","discipline"]);
-            const stream=getExcelRowField(row,["streampg","stream","specialization","spec"]);
+            const regNo=getExcelRowField(row,["registerno","regno","registration","rollno","ktuid"]);
+            const branch=getExcelRowField(row,["branch","programme","course"]);
+            const stream=getExcelRowField(row,["streampg","stream","specialization"]);
             let canon=normalizeSeatCode(rawS,rDept);
             if(!canon&&fbCodes[idx])canon=fbCodes[idx];
             if(canon){
               if(name){
                 const pr=getRosterEntry(canon);
-                if(rawS)delete studentRoster[rawS.toUpperCase()];
-                delete studentRoster[canon.toUpperCase()];
                 studentRoster[canon]={name,regNo,branch:branch||BRANCH_META[rDept]?.name||rDept,stream,absent:pr?.absent||false};
                 cnt++;
               }else delete studentRoster[canon];
             }
           });
         });
-        saveAllCloudStorage();buildAndRenderMap();alert(`Successfully synced ${cnt} students for ${selectedDeptForExcel} to Firebase Cloud!`);
+        saveAllCloudStorage();buildAndRenderMap();alert(`Synced ${cnt} students for ${selectedDeptForExcel}!`);
       };
       reader.readAsArrayBuffer(fi.files[0]);
     }
     function autoFillSelectedDepartmentSample(){
       const codes=getOrderedSeatCodesForDept(selectedDeptForExcel),defB=BRANCH_META[selectedDeptForExcel]?.name||selectedDeptForExcel;
-      codes.forEach((c,i)=>{studentRoster[c]={name:`${selectedDeptForExcel} Student ${i+1}`,regNo:`CET26${selectedDeptForExcel.toUpperCase()}${String(i+1).padStart(3,"0")}`,branch:defB,stream:c.startsWith("TOP UG")?"UG":(c.startsWith("TOP PG")?"PG":""),absent:false};});
+      codes.forEach((c,i)=>{studentRoster[c]={name:`${selectedDeptForExcel} Student ${i+1}`,regNo:`CET26${selectedDeptForExcel.toUpperCase()}${String(i+1).padStart(3,"0")}`,branch:defB,stream:"",absent:false};});
       saveAllCloudStorage();buildAndRenderMap();alert(`Auto-filled ${codes.length} seats for ${selectedDeptForExcel}!`);
     }
-    function clearAllStudents(){if(!confirm("Clear all student assignments from all seats?"))return;studentRoster={};saveAllCloudStorage();buildAndRenderMap();}
+    function clearAllStudents(){if(!confirm("Clear all students?"))return;studentRoster={};saveAllCloudStorage();buildAndRenderMap();}
     function applySeatStatusByInput(){
       const rk=document.getElementById("statusSeatInput").value.trim(),st=document.getElementById("statusTypeSelect").value;if(!rk)return;
       const c=normalizeSeatCode(rk).toUpperCase();
-      if(st==="normal"){delete seatOverrides[rk.toUpperCase()];delete seatOverrides[c];}else seatOverrides[c]=st;
-      saveAllCloudStorage();buildAndRenderMap();alert(`Seat "${c}" status updated.`);
+      if(st==="normal")delete seatOverrides[c];else seatOverrides[c]=st;
+      saveAllCloudStorage();buildAndRenderMap();
     }
     function renderAdminConfigTables(){
       const bB=document.querySelector("#blockConfigTable tbody");bB.innerHTML="";
@@ -1696,11 +1498,10 @@
       layoutConfig.allocations.forEach((a,i)=>{a.block=parseInt(document.getElementById(`cfg-d-blk-${i}`).value)||a.block;a.count=parseInt(document.getElementById(`cfg-d-cnt-${i}`).value)||a.count;});
       saveAllCloudStorage();buildAndRenderMap();renderDeptPills();alert("Layout rebuilt and saved!");switchView("seat");
     }
-    function resetDefaultLayoutConfig(){if(!confirm("Reset to the official 2026 layout?"))return;layoutConfig=JSON.parse(JSON.stringify(DEFAULT_LAYOUT));saveAllCloudStorage();buildAndRenderMap();renderAdminConfigTables();renderDeptPills();}
+    function resetDefaultLayoutConfig(){layoutConfig=JSON.parse(JSON.stringify(DEFAULT_LAYOUT));facultyDesignations=JSON.parse(JSON.stringify(DEFAULT_FACULTY_DESIGNATIONS));saveAllCloudStorage();buildAndRenderMap();renderAdminConfigTables();renderDeptPills();populateAdminFacSelect();}
 
     window.addEventListener("resize",()=>requestAnimationFrame(()=>{alignExitStepsWithCentralPassage();updateScaleWrapperBounds();}));
     window.addEventListener("DOMContentLoaded",initFirestoreListener);
   </script>
 </body>
 </html>
-
