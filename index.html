@@ -114,7 +114,11 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.04); overflow: auto; padding: 14px; position: relative; max-height: 85vh; width: 100%;
     }
     .hall-scale-wrapper { position: relative; overflow: hidden; margin: 0 auto; }
-    .hall-canvas { position: relative; transform-origin: top left; width: 1460px; padding: 20px 32px 54px 32px; background: #ffffff; }
+    .hall-canvas {
+      position: relative; transform-origin: top left;
+      width: max-content; min-width: 1560px;
+      padding: 20px 38px 54px 38px; background: #ffffff;
+    }
     .hall-top-architecture { display: flex; align-items: flex-start; justify-content: space-between; position: relative; height: 154px; margin-bottom: 16px; }
     .entry-box {
       background: #e9f2ec; color: #2f5941; border: 1px solid #c7dfd0;
@@ -153,26 +157,26 @@
     }
     .return-stairs-label { position: absolute; left: 62px; top: 4px; font-size: 8px; font-weight: 700; color: #5c708a; white-space: nowrap; }
     .front-area-banner { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #5e6b7c; margin-bottom: 10px; text-transform: uppercase; }
-    .blocks-wrapper { display: flex; align-items: flex-start; justify-content: center; gap: 0; position: relative; }
-    .row-numbers-col { display: flex; flex-direction: column; gap: 3px; padding-top: 34px; margin-right: 4px; }
+    .blocks-wrapper { display: flex; align-items: flex-start; justify-content: center; gap: 0; position: relative; width: max-content; }
+    .row-numbers-col { display: flex; flex-direction: column; gap: 3px; padding-top: 34px; margin-right: 4px; flex-shrink: 0; }
     .row-num-label { height: 20px; font-size: 9px; font-weight: 700; color: #64748b; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; }
     .main-door-side-box {
       height: 36px; background: #dcefe3; border: 1.5px solid #2f5941; color: #1e3f2b;
       font-size: 7.5px; font-weight: 800; padding: 2px 4px; border-radius: 4px 0 0 4px;
       display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.1; margin-right: -4px; z-index: 12;
     }
-    .seating-block { display: flex; flex-direction: column; position: relative; transition: all 0.25s; border-radius: 8px; padding: 2px; }
+    .seating-block { display: flex; flex-direction: column; position: relative; transition: all 0.25s; border-radius: 8px; padding: 2px; flex-shrink: 0; }
     .seating-block.block-completed-highlight { background: rgba(22, 163, 74, 0.12); outline: 2.5px solid #16a34a; }
     .block-col-spec { text-align: center; font-size: 8.5px; color: #64748b; font-weight: 600; height: 14px; }
     .block-header { text-align: center; font-size: 9.5px; letter-spacing: 0.06em; color: #1e293b; font-weight: 800; margin-bottom: 4px; height: 16px; text-transform: uppercase; }
     .block-footer { text-align: center; font-size: 9.5px; letter-spacing: 0.04em; color: #1e293b; font-weight: 800; margin-top: 6px; }
     .sound-box { margin: 4px auto 0 auto; padding: 4px 10px; border: 1.5px solid #475569; background: #f8fafc; border-radius: 4px; font-size: 8px; font-weight: 800; text-align: center; color: #0f172a; }
-    .block-body { display: flex; position: relative; }
-    .branch-bars-col { width: 14px; position: relative; margin-right: 2px; }
+    .block-body { display: flex; position: relative; flex-shrink: 0; }
+    .branch-bars-col { width: 14px; position: relative; margin-right: 2px; flex-shrink: 0; }
     .branch-bar { position: absolute; left: 9px; width: 3px; border-radius: 2px; }
     .branch-bar-label { position: absolute; right: 4px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center; font-size: 7px; font-weight: 700; white-space: nowrap; }
-    .rows-stack { display: flex; flex-direction: column; gap: 3px; }
-    .seat-row { display: flex; gap: 3px; height: 20px; }
+    .rows-stack { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+    .seat-row { display: flex; gap: 3px; height: 20px; width: max-content; flex-shrink: 0; }
     .mid-cross-passage {
       height: 36px; background: #f4f1e8; border-top: 1.5px dashed #94a3b8; border-bottom: 1.5px dashed #94a3b8;
       display: flex; align-items: center; justify-content: space-between; padding: 0 8px; font-size: 8.5px; font-weight: 700; color: #475569; border-radius: 4px;
@@ -180,7 +184,7 @@
     .seat-box {
       width: 20px; height: 20px; border-radius: 4px; font-size: 5px; font-weight: 800;
       display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none;
-      transition: transform 0.12s, box-shadow 0.12s; position: relative; border: 1px solid transparent; white-space: nowrap; overflow: hidden;
+      transition: transform 0.12s, box-shadow 0.12s; position: relative; border: 1px solid transparent; white-space: nowrap; overflow: hidden; flex-shrink: 0;
     }
     .seat-box:hover { transform: scale(1.25); z-index: 15; }
     .seat-selected { outline: 2.5px solid #152542 !important; outline-offset: 1px; box-shadow: 0 0 0 4px rgba(230,179,51,0.65); z-index: 20; transform: scale(1.2); }
@@ -204,12 +208,12 @@
     .seat-defective-slot { background: #374151 !important; border-color: #1f2937 !important; color: #ffffff !important; }
     .seat-absent-slot { opacity: 0.55; border: 1.5px solid #f97316 !important; }
     .passage-col {
-      width: 24px; background: #f4f1e8; align-self: stretch; border-radius: 3px;
-      position: relative; margin: 34px 4px 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 22px; background: #f4f1e8; align-self: stretch; border-radius: 3px;
+      position: relative; margin: 34px 4px 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .passage-col.center-6ft {
       width: 36px; background: #ede8da; border-left: 1.5px dashed #94a3b8; border-right: 1.5px dashed #94a3b8;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 0 0;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 0 0; flex-shrink: 0;
     }
     .passage-vertical-text { transform: rotate(-90deg); white-space: nowrap; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; color: #7c8898; text-transform: uppercase; }
     .passage-cam-square {
@@ -633,7 +637,7 @@
   <script>
     const firebaseConfig={apiKey:"AIzaSyAznnh1G0U6gC9M8hAA9cJtCQXHq0ts8k4",authDomain:"cet-graduation-2026.firebaseapp.com",projectId:"cet-graduation-2026",storageBucket:"cet-graduation-2026.firebasestorage.app",messagingSenderId:"788384088617",appId:"1:788384088617:web:1d79a5f04cd34e22d3d238"};
     firebase.initializeApp(firebaseConfig);
-    const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v34";
+    const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v35";
     const PASSWORDS={admin:"Admin12345",registration:"CET_Graduation@2026",faculty:"CET_Graduation@2026"};
     let unlockedRoles={admin:false,registration:false,faculty:false},currentZoom=1,selectedSeatKey=null,selectedDeptForExcel="TOP";
     let walkAnimFrame=null,highlightCompletedActive=false,activeAnimState=null,activeMediaRecorder=null,activeRecordingTimer=null;
@@ -680,7 +684,6 @@
       EC:{name:"Electronics & Communication Engineering (EC)",color:"#4f46e5",bg:"#e0e7ff"},FAC:{name:"Faculty Member",color:"#64748b",bg:"#64748b"}
     };
 
-    // Arch updated to 90 seats per Seat numbering- Expanded.pdf
     const DEFAULT_LAYOUT={
       blocks:[
         {id:1,rows:24,cols:8,spec:"Column 1 · 13 ft · 8 chairs"},{id:2,rows:24,cols:9,spec:"Column 2 · 16 ft · 9 chairs"},
@@ -754,7 +757,7 @@
     }
 
     async function migratePreviousCloudRosters(){
-      const oldDocs=["seatingState_v33","seatingState_v32","seatingState_v31","seatingState_v30","seatingState_v29","seatingState_v28"];
+      const oldDocs=["seatingState_v34","seatingState_v33","seatingState_v32","seatingState_v31","seatingState_v30","seatingState_v29"];
       let changed=false;
       for(const dName of oldDocs){
         try{
@@ -781,6 +784,8 @@
             layoutConfig=d.layoutConfig;
             const archAlloc=layoutConfig.allocations?.find(a=>a.dept==="Arch");
             if(archAlloc&&archAlloc.count===86)archAlloc.count=90;
+            const b6=layoutConfig.blocks?.find(b=>b.id===6);
+            if(b6&&(!b6.cols||b6.cols<8)){b6.cols=8;b6.spec="Column 6 · 13 ft · 8 chairs";}
           }
           if(d.studentRoster)studentRoster={...studentRoster,...d.studentRoster};
           if(d.seatOverrides)seatOverrides=d.seatOverrides;
@@ -854,6 +859,7 @@
         }else if(blockId===6){
           items.push(makeNumberedFacSeat("F59"));
           for(let i=25;i>=19;i--)items.push({type:"student",dept:"TOP",subType:"PG",label:`PG${i}`,code:`TOP PG ${i}`});
+          while(items.length<cols)items.push(makeUnnumberedFacSeat(6,2,items.length+1));
         }
         return items;
       }
@@ -921,7 +927,8 @@
     function updateScaleWrapperBounds(){
       const cEl=document.getElementById("hallCanvas"),sWrap=document.getElementById("hallScaleWrapper");
       if(!cEl||!sWrap)return;
-      sWrap.style.width=`${Math.ceil(1460*currentZoom)}px`;
+      const trueW=Math.max(cEl.scrollWidth,cEl.offsetWidth,1560);
+      sWrap.style.width=`${Math.ceil(trueW*currentZoom)}px`;
       sWrap.style.height=`${Math.ceil(cEl.scrollHeight*currentZoom)}px`;
     }
 
@@ -947,10 +954,12 @@
 
       layoutConfig.blocks.forEach((blk)=>{
         const totalRows=blk.rows||24;
+        const colsCount=blk.id===6?Math.max(8,blk.cols||8):(blk.cols||8);
+        blk.cols=colsCount;
         for(let r=1;r<=totalRows;r++){
-          const ordered=getRowAllocationForBlock(blk.id,r,blk.cols);
-          while(ordered.length<blk.cols)ordered.push(makeUnnumberedFacSeat(blk.id,r,ordered.length+1));
-          for(let c=1;c<=blk.cols;c++){
+          const ordered=getRowAllocationForBlock(blk.id,r,colsCount);
+          while(ordered.length<colsCount)ordered.push(makeUnnumberedFacSeat(blk.id,r,ordered.length+1));
+          for(let c=1;c<=colsCount;c++){
             const it=ordered[c-1],ck=`B${blk.id}-R${r}-C${c}`;
             const sObj={coordKey:ck,block:blk.id,row:r,col:c,type:it.type,dept:it.dept,subType:it.subType||null,label:it.label,code:it.code,designation:it.designation||null,num:it.num||null};
             seatsByCoord[ck]=sObj;
@@ -999,7 +1008,6 @@
           }
           rowsStack.appendChild(rowEl);
 
-          // ONLY Blocks 1, 2, 3 have the 6 ft Cross-Passage after Row 16; Blocks 4, 5, 6 have NO passage after Row 16!
           if(blk.id<=3&&r===16){
             const mid=document.createElement("div");mid.className="mid-cross-passage";
             if(blk.id===1)mid.innerHTML=`<span style="color:#1e3f2b;font-weight:800">⬅ Main Door</span><span>Passage (6 ft)</span>`;
@@ -1029,7 +1037,6 @@
         }
         wrapper.appendChild(blockEl);
 
-        // Cameras 1, 2, 3 placed in small square boxes inside the vertical passages!
         if(idx===1){
           wrapper.appendChild(createPassageDOM("Passage (3 ft)",false,`passage-after-${blk.id}`,"Cam 2"));
         }else if(idx===2){
@@ -1347,7 +1354,7 @@
       });
       return Object.values(map);
     }
-    function getStationLogString(simDist,convoys,stNum){
+        function getStationLogString(simDist,convoys,stNum){
       const pre=stNum===0?"Central Collection Point":`Station ${stNum}`,t=computeStationDepartmentTimings(convoys,stNum);
       if(!t.length)return`${pre}: Idle`;
       const comp=[];let act=null;
@@ -1429,7 +1436,7 @@
     function createUnclippedHallBackgroundCanvas(canvasEl,isCen){
       const prevZ=currentZoom;canvasEl.style.transform="scale(1)";
       const cR=canvasEl.getBoundingClientRect(),padX=24,padY=24;
-      const fW=Math.ceil(Math.max(canvasEl.scrollWidth,1460))+padX*2,fH=Math.ceil(Math.max(canvasEl.scrollHeight,880))+padY*2;
+      const fW=Math.ceil(Math.max(canvasEl.scrollWidth,1560))+padX*2,fH=Math.ceil(Math.max(canvasEl.scrollHeight,880))+padY*2;
       const bg=document.createElement("canvas");bg.width=fW;bg.height=fH;
       const ctx=bg.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,fW,fH);
       const toU=(el)=>{if(!el)return null;const r=el.getBoundingClientRect();return{x:(r.left-cR.left)+padX,y:(r.top-cR.top)+padY,w:r.width,h:r.height,cx:(r.left-cR.left+r.width/2)+padX,cy:(r.top-cR.top+r.height/2)+padY};};
@@ -1627,7 +1634,13 @@
       updateScaleWrapperBounds();requestAnimationFrame(alignExitStepsWithCentralPassage);
     }
     function adjustZoom(d){applyZoomLevel(currentZoom+d);}
-    function fitEntireHallToScreen(){const vp=document.getElementById("hallViewport");if(vp)applyZoomLevel(Math.min(1,Math.max(0.20,(vp.clientWidth-28)/1460)));}
+    function fitEntireHallToScreen(){
+      const vp=document.getElementById("hallViewport"),cEl=document.getElementById("hallCanvas");
+      if(vp&&cEl){
+        const trueW=Math.max(cEl.scrollWidth,cEl.offsetWidth,1560);
+        applyZoomLevel(Math.min(1,Math.max(0.20,(vp.clientWidth-28)/trueW)));
+      }
+    }
     function resetZoom100(){applyZoomLevel(1);}
 
     function switchView(v){
