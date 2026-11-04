@@ -207,13 +207,16 @@
     .seat-empty-slot { background: transparent !important; border: 1.5px dashed #cbd5e1 !important; color: transparent !important; }
     .seat-defective-slot { background: #374151 !important; border-color: #1f2937 !important; color: #ffffff !important; }
     .seat-absent-slot { opacity: 0.55; border: 1.5px solid #f97316 !important; }
+  </style>
+</head>
+<body>
     .passage-col {
       width: 22px; background: #f4f1e8; align-self: stretch; border-radius: 3px;
       position: relative; margin: 34px 4px 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .passage-col.center-6ft {
       width: 36px; background: #ede8da; border-left: 1.5px dashed #94a3b8; border-right: 1.5px dashed #94a3b8;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 18px 0 0 0; flex-shrink: 0;
+      display: flex; flex-direction: column; justify-space-between; padding: 18px 0 0 0; flex-shrink: 0;
     }
     .passage-vertical-text { transform: rotate(-90deg); white-space: nowrap; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; color: #7c8898; text-transform: uppercase; }
     .passage-cam-square {
@@ -254,7 +257,7 @@
     .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-top: 18px; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
-    .form-control { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid #d5cfc2; font-size: 13.5px; }
+    .form-control { width: 100%; padding: 9px 12px; border-radius: 99px; border: 1px solid #d5cfc2; font-size: 13.5px; }
     .dept-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
     .dept-pill-btn { padding: 6px 11px; border-radius: 7px; border: 1px solid #d5cfc2; background: #f9f7f2; font-size: 12px; font-weight: 600; cursor: pointer; }
     .dept-pill-btn.active { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
@@ -300,7 +303,7 @@
     <div class="search-row">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (F1–F59, HoD-CE) or seat (e.g. EE 92, PTDC 5, Arch 90, UG 1)" oninput="handleSearch(this.value)" />
+        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (F1–F59, HoD-CE) or seat (e.g. EE 92, PTDC 5, Arch 86, UG 1)" oninput="handleSearch(this.value)" />
         <button id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✕</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -319,7 +322,7 @@
         <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA (1–34)</div>
         <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE (1–196)</div>
         <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME (1–198)</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (1–90)</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (1–86)</div>
         <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA (1–107)</div>
         <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC (1–159)</div>
         <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty (F10–F59 &amp; F)</div>
@@ -693,7 +696,7 @@
       allocations:[
         {dept:"TOP",block:1,count:33},{dept:"PhD",block:2,count:12},{dept:"EE",block:1,count:135},
         {dept:"PTDC",block:1,count:30},{dept:"CS",block:2,count:159},{dept:"MCA",block:2,count:34},
-        {dept:"CE",block:3,count:196},{dept:"ME",block:4,count:198},{dept:"Arch",block:5,count:90},
+        {dept:"CE",block:3,count:196},{dept:"ME",block:4,count:198},{dept:"Arch",block:5,count:86},
         {dept:"MBA",block:5,count:107},{dept:"EC",block:6,count:159}
       ]
     };
@@ -783,7 +786,7 @@
           if(d.layoutConfig){
             layoutConfig=d.layoutConfig;
             const archAlloc=layoutConfig.allocations?.find(a=>a.dept==="Arch");
-            if(archAlloc&&archAlloc.count===86)archAlloc.count=90;
+            if(archAlloc)archAlloc.count=86;
             const b6=layoutConfig.blocks?.find(b=>b.id===6);
             if(b6&&(!b6.cols||b6.cols<8)){b6.cols=8;b6.spec="Column 6 · 13 ft · 8 chairs";}
           }
@@ -821,7 +824,7 @@
     function getRowAllocationForBlock(blockId,rowNum,cols){
       const items=[];
       const eeCap=getDeptCap("EE",135),ptdcCap=getDeptCap("PTDC",30),csCap=getDeptCap("CS",159),mcaCap=getDeptCap("MCA",34);
-      const ceCap=getDeptCap("CE",196),meCap=getDeptCap("ME",198),archCap=getDeptCap("Arch",90),mbaCap=getDeptCap("MBA",107),ecCap=getDeptCap("EC",159),phdCap=getDeptCap("PhD",12);
+      const ceCap=getDeptCap("CE",196),meCap=getDeptCap("ME",198),archCap=getDeptCap("Arch",86),mbaCap=getDeptCap("MBA",107),ecCap=getDeptCap("EC",159),phdCap=getDeptCap("PhD",12);
 
       if(rowNum===1){
         const fMap={
@@ -1691,7 +1694,7 @@
 
     function renderFacultyProgressTable(){
       const tb=document.querySelector("#facultyProgressTable tbody");tb.innerHTML="";
-      const d={1:"UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty",2:"PhD (1–9), CS (1–159), MCA (1–34)",3:"PhD (10–12), CE (1–196)",4:"PG Toppers (9–1), ME (1–198)",5:"PG Toppers (18–10), Arch (1–90), MBA (1–107), Faculty",6:"PG Toppers (25–19), EC (1–159), Faculty"};
+      const d={1:"UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty",2:"PhD (1–9), CS (1–159), MCA (1–34)",3:"PhD (10–12), CE (1–196)",4:"PG Toppers (9–1), ME (1–198)",5:"PG Toppers (18–10), Arch (1–86), MBA (1–107), Faculty",6:"PG Toppers (25–19), EC (1–159), Faculty"};
       for(let b=1;b<=6;b++){
         const p=convocationProgress[b]||{status:"Pending",time:""},tr=document.createElement("tr");
         tr.innerHTML=`<td><b>Block ${b}</b></td><td>${d[b]}</td><td><select id="prog-status-${b}" class="form-control" style="max-width:160px;margin:0"><option value="Pending" ${p.status==='Pending'?'selected':''}>Pending</option><option value="In Progress" ${p.status==='In Progress'?'selected':''}>In Progress</option><option value="Completed" ${p.status==='Completed'?'selected':''}>Completed</option></select></td><td><input id="prog-time-${b}" type="text" value="${p.time||''}" placeholder="11:30 AM"/></td>`;
@@ -1824,3 +1827,4 @@
   </script>
 </body>
 </html>
+
