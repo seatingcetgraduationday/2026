@@ -638,7 +638,15 @@
     const firebaseConfig={apiKey:"AIzaSyAznnh1G0U6gC9M8hAA9cJtCQXHq0ts8k4",authDomain:"cet-graduation-2026.firebaseapp.com",projectId:"cet-graduation-2026",storageBucket:"cet-graduation-2026.firebasestorage.app",messagingSenderId:"788384088617",appId:"1:788384088617:web:1d79a5f04cd34e22d3d238"};
     firebase.initializeApp(firebaseConfig);
     const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v35";
-    const PASSWORDS={admin:"Admin12345",registration:"CET_Graduation@2026",faculty:"CET_Graduation@2026"};
+    const PASSWORD_HASHES={
+      admin:"242b337f929b416b1c80110567e134f111aa2a542bc8c6e0c2596d4916eb2026",
+      registration:"d734b099b88ef6d354f3045b25480fa14e4f37c0ef3e6eb7929dfbc6f8d38087",
+      faculty:"d734b099b88ef6d354f3045b25480fa14e4f37c0ef3e6eb7929dfbc6f8d38087"
+    };
+    async function sha256(str){
+      const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
     let unlockedRoles={admin:false,registration:false,faculty:false},currentZoom=1,selectedSeatKey=null,selectedDeptForExcel="TOP";
     let walkAnimFrame=null,highlightCompletedActive=false,activeAnimState=null,activeMediaRecorder=null,activeRecordingTimer=null;
     const STUDENT_SPACING_PX=15,ENTRY_TAIL_GAP_PX=18,BASE_PX_PER_SECOND=100,SPEED_STEPS=[0.05,0.1,0.25,0.5,0.75,1,1.5,2];
@@ -817,7 +825,6 @@
     function makeUnnumberedFacSeat(blockId,rowNum,colIdx){
       return{type:"faculty",dept:"FAC",num:"F",code:`FAC_B${blockId}_R${rowNum}_${colIdx}`,designation:"Faculty"};
     }
-
     function getRowAllocationForBlock(blockId,rowNum,cols){
       const items=[];
       const eeCap=getDeptCap("EE",135),ptdcCap=getDeptCap("PTDC",30),csCap=getDeptCap("CS",159),mcaCap=getDeptCap("MCA",34);
@@ -1354,7 +1361,7 @@
       });
       return Object.values(map);
     }
-        function getStationLogString(simDist,convoys,stNum){
+    function getStationLogString(simDist,convoys,stNum){
       const pre=stNum===0?"Central Collection Point":`Station ${stNum}`,t=computeStationDepartmentTimings(convoys,stNum);
       if(!t.length)return`${pre}: Idle`;
       const comp=[];let act=null;
@@ -1654,9 +1661,11 @@
       if(v==="admin"&&unlockedRoles.admin){renderAdminConfigTables();populateAdminFacSelect();}
     }
 
-    function unlockRole(r){
+    async function unlockRole(r){
       const m={faculty:"facultyPassInput",registration:"regPassInput",admin:"adminPassInput"};
-      if(document.getElementById(m[r]).value===PASSWORDS[r]){
+      const entered=document.getElementById(m[r]).value;
+      const enteredHash=await sha256(entered);
+      if(enteredHash===PASSWORD_HASHES[r]){
         unlockedRoles[r]=true;
         if(r==="faculty"){document.getElementById("facultyGateCard").style.display="none";document.getElementById("facultyConsole").style.display="block";renderFacultyProgressTable();}
         if(r==="registration"){document.getElementById("regGateCard").style.display="none";document.getElementById("regConsole").style.display="block";renderRegistrationTable();}
