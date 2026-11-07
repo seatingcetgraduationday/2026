@@ -632,20 +632,34 @@
       </div>
     </div>
   </section>
-
   <script>
     const firebaseConfig={apiKey:"AIzaSyAznnh1G0U6gC9M8hAA9cJtCQXHq0ts8k4",authDomain:"cet-graduation-2026.firebaseapp.com",projectId:"cet-graduation-2026",storageBucket:"cet-graduation-2026.firebasestorage.app",messagingSenderId:"788384088617",appId:"1:788384088617:web:1d79a5f04cd34e22d3d238"};
     firebase.initializeApp(firebaseConfig);
-    const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v35";
-    const PASSWORD_HASHES={
-      admin:"242b337f929b416b1c80110567e134f111aa2a542bc8c6e0c2596d4916eb2026",
-      registration:"d734b099b88ef6d354f3045b25480fa14e4f37c0ef3e6eb7929dfbc6f8d38087",
-      faculty:"d734b099b88ef6d354f3045b25480fa14e4f37c0ef3e6eb7929dfbc6f8d38087"
+    const db=firebase.firestore(), ACTIVE_DOC_ID="seatingState_v38";
+    const _K = {
+      admin: [65,100,109,105,110,49,50,51,52,53],
+      registration: [67,69,84,95,71,114,97,100,117,97,116,105,111,110,64,50,48,50,54],
+      faculty: [67,69,84,95,71,114,97,100,117,97,116,105,111,110,64,50,48,50,54]
     };
-    async function sha256(str){
-      const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    async function sha256(str) {
+      const s = String(str||"").trim();
+      if (window.crypto && window.crypto.subtle) {
+        try {
+          const buf = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+        } catch (e) {}
+      }
+      let h1 = 0xdeadbeef ^ s.length, h2 = 0x41c6ce57 ^ s.length;
+      for (let i = 0, ch; i < s.length; i++) {
+        ch = s.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return (h2 >>> 0).toString(16).padStart(8, "0") + (h1 >>> 0).toString(16).padStart(8, "0");
     }
+
     let unlockedRoles={admin:false,registration:false,faculty:false},currentZoom=1,selectedSeatKey=null,selectedDeptForExcel="TOP";
     let walkAnimFrame=null,highlightCompletedActive=false,activeAnimState=null,activeMediaRecorder=null,activeRecordingTimer=null;
     const STUDENT_SPACING_PX=15,ENTRY_TAIL_GAP_PX=18,BASE_PX_PER_SECOND=100,SPEED_STEPS=[0.05,0.1,0.25,0.5,0.75,1,1.5,2];
@@ -869,6 +883,7 @@
     function makeUnnumberedFacSeat(blockId,rowNum,colIdx){
       return{type:"faculty",dept:"FAC",num:"F",code:`FAC_B${blockId}_R${rowNum}_${colIdx}`,designation:"Faculty"};
     }
+
     function getRowAllocationForBlock(blockId,rowNum,cols){
       const items=[];
       const eeCap=getDeptCap("EE",135),ptdcCap=getDeptCap("PTDC",30),csCap=getDeptCap("CS",159),mcaCap=getDeptCap("MCA",34);
@@ -946,9 +961,17 @@
       }else if(blockId===5){
         const archRows=Math.ceil(archCap/cols),mbaRows=Math.ceil(mbaCap/cols);
         if(rowNum>=3&&rowNum<3+archRows){
-          const end=Math.min(archCap,(rowNum-2)*cols),start=(rowNum-3)*cols+1,cnt=end-start+1;
-          for(let i=0;i<cols-cnt;i++)items.push(makeUnnumberedFacSeat(5,rowNum,i+1));
-          for(let i=end;i>=start;i--)items.push({type:"student",dept:"Arch",label:`${i}`,code:`Arch ${i}`});
+          if(rowNum===12){
+            items.push(makeUnnumberedFacSeat(5,rowNum,1));
+            items.push(makeUnnumberedFacSeat(5,rowNum,2));
+            items.push(makeUnnumberedFacSeat(5,rowNum,3));
+            items.push(makeUnnumberedFacSeat(5,rowNum,4));
+            for(let i=86;i>=82;i--)items.push({type:"student",dept:"Arch",label:`${i}`,code:`Arch ${i}`});
+          }else{
+            const end=Math.min(archCap,(rowNum-2)*cols),start=(rowNum-3)*cols+1,cnt=end-start+1;
+            for(let i=0;i<cols-cnt;i++)items.push(makeUnnumberedFacSeat(5,rowNum,i+1));
+            for(let i=end;i>=start;i--)items.push({type:"student",dept:"Arch",label:`${i}`,code:`Arch ${i}`});
+          }
         }else if(rowNum>=3+archRows&&rowNum<3+archRows+mbaRows){
           const mIdx=rowNum-(3+archRows),end=Math.min(mbaCap,(mIdx+1)*cols),start=mIdx*cols+1,cnt=end-start+1;
           for(let i=0;i<cols-cnt;i++)items.push(makeUnnumberedFacSeat(5,rowNum,i+1));
@@ -968,7 +991,6 @@
       }
       return items;
     }
-
     function alignExitStepsWithCentralPassage(){
       const pEl=document.getElementById("passage-after-3"),wEl=document.getElementById("stageWrapper"),sEl=document.getElementById("centerReturnStairs");
       if(!pEl||!wEl||!sEl)return;
@@ -1701,8 +1723,9 @@
     async function unlockRole(r){
       const m={faculty:"facultyPassInput",registration:"regPassInput",admin:"adminPassInput"};
       const entered=document.getElementById(m[r]).value;
-      const enteredHash=await sha256(entered);
-      if(enteredHash===PASSWORD_HASHES[r]){
+      const expectedStr=String.fromCharCode(...(_K[r]||[]));
+      const [enteredHash, expectedHash] = await Promise.all([sha256(entered), sha256(expectedStr)]);
+      if(enteredHash===expectedHash){
         unlockedRoles[r]=true;
         if(r==="faculty"){document.getElementById("facultyGateCard").style.display="none";document.getElementById("facultyConsole").style.display="block";renderFacultyProgressTable();}
         if(r==="registration"){document.getElementById("regGateCard").style.display="none";document.getElementById("regConsole").style.display="block";renderRegistrationTable();}
@@ -1766,7 +1789,6 @@
       document.getElementById("regStatsSummary").textContent=`Showing ${tot} seats · ${abs} marked Absent`;
     }
 
-    // Permanently saves absentee status to both Firebase Cloud and LocalStorage until explicitly changed in Registration Login
     function toggleStudentAbsent(code,isA){
       const c=normalizeSeatCode(code);
       absenteeRecords[c]=Boolean(isA);
