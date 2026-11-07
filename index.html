@@ -300,7 +300,7 @@
     <div class="search-row">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (F1–F59, HoD-CE) or seat (e.g. EE 92, PTDC 5, Arch 90, UG 1)" oninput="handleSearch(this.value)" />
+        <input id="searchInput" type="text" placeholder="Search name, reg no., faculty (F1–F59, HoD-CE) or seat (e.g. EE 92, PTDC 5, Arch 86, UG 1)" oninput="handleSearch(this.value)" />
         <button id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✕</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -319,7 +319,7 @@
         <div class="legend-item"><span class="dot" style="background:#65a30d"></span> MCA (1–34)</div>
         <div class="legend-item"><span class="dot" style="background:#d97706"></span> CE (1–196)</div>
         <div class="legend-item"><span class="dot" style="background:#ea580c"></span> ME (1–198)</div>
-        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (1–90)</div>
+        <div class="legend-item"><span class="dot" style="background:#dc2626"></span> Arch (1–86)</div>
         <div class="legend-item"><span class="dot" style="background:#c026d3"></span> MBA (1–107)</div>
         <div class="legend-item"><span class="dot" style="background:#4f46e5"></span> EC (1–159)</div>
         <div class="legend-item"><span class="dot" style="background:#64748b"></span> Faculty (F10–F59 &amp; F)</div>
@@ -412,7 +412,6 @@
         <div class="station-log-pill" id="st2LiveLog">Station 2: Waiting...</div>
       </div>
     </div>
-
     <div class="hall-viewport" id="hallViewport">
       <div class="hall-scale-wrapper" id="hallScaleWrapper">
         <div class="hall-canvas" id="hallCanvas">
@@ -701,13 +700,15 @@
       allocations:[
         {dept:"TOP",block:1,count:33},{dept:"PhD",block:2,count:12},{dept:"EE",block:1,count:135},
         {dept:"PTDC",block:1,count:30},{dept:"CS",block:2,count:159},{dept:"MCA",block:2,count:34},
-        {dept:"CE",block:3,count:196},{dept:"ME",block:4,count:198},{dept:"Arch",block:5,count:90},
+        {dept:"CE",block:3,count:196},{dept:"ME",block:4,count:198},{dept:"Arch",block:5,count:86},
         {dept:"MBA",block:5,count:107},{dept:"EC",block:6,count:159}
       ]
     };
 
     const DEFAULT_PROGRESS={1:{status:"Pending",time:""},2:{status:"Pending",time:""},3:{status:"Pending",time:""},4:{status:"Pending",time:""},5:{status:"Pending",time:""},6:{status:"Pending",time:""}};
     let layoutConfig=JSON.parse(JSON.stringify(DEFAULT_LAYOUT)),studentRoster={},seatOverrides={},convocationProgress=JSON.parse(JSON.stringify(DEFAULT_PROGRESS));
+    let absenteeRecords={};
+    try{absenteeRecords=JSON.parse(localStorage.getItem("cet2026_permanent_absentees")||"{}");}catch(e){absenteeRecords={};}
     let seatsByCoord={},seatsByCode={},deptRowsMap={};
 
     function getDeptCap(dept,def){
@@ -751,7 +752,15 @@
     function getRosterEntry(code){
       if(!code)return null;
       const u=code.toUpperCase(),n=normalizeSeatCode(code);
-      return studentRoster[code]||studentRoster[u]||studentRoster[n]||studentRoster[n.toUpperCase()]||null;
+      const base=studentRoster[code]||studentRoster[u]||studentRoster[n]||studentRoster[n.toUpperCase()]||null;
+      const isPermAbsent=absenteeRecords[n]!==undefined?Boolean(absenteeRecords[n]):(absenteeRecords[u]!==undefined?Boolean(absenteeRecords[u]):Boolean(base?.absent));
+      if(base){
+        return {...base,absent:isPermAbsent};
+      }
+      if(isPermAbsent){
+        return {name:"Unassigned Student",regNo:"",branch:"",stream:"",absent:true};
+      }
+      return null;
     }
 
     function normalizeAllLoadedRosterKeys(){
@@ -759,22 +768,44 @@
       const out={};
       for(const [k,v] of Object.entries(studentRoster)){
         if(!v)continue;
-        out[normalizeSeatCode(k,v.dept||v.branch||"")]=v;
+        const c=normalizeSeatCode(k,v.dept||v.branch||"");
+        const permAbs=absenteeRecords[c]!==undefined?Boolean(absenteeRecords[c]):Boolean(v.absent);
+        if(permAbs)absenteeRecords[c]=true;
+        out[c]={...v,absent:permAbs};
+      }
+      for(const [ak,av] of Object.entries(absenteeRecords)){
+        const c=normalizeSeatCode(ak);
+        if(av){
+          absenteeRecords[c]=true;
+          if(!out[c])out[c]={name:"Unassigned Student",regNo:"",branch:"",stream:"",absent:true};
+          else out[c].absent=true;
+        }
       }
       studentRoster=out;
+      try{localStorage.setItem("cet2026_permanent_absentees",JSON.stringify(absenteeRecords));}catch(e){}
     }
 
     async function migratePreviousCloudRosters(){
-      const oldDocs=["seatingState_v34","seatingState_v33","seatingState_v32","seatingState_v31","seatingState_v30","seatingState_v29"];
+      const oldDocs=["seatingState_v36","seatingState_v35","seatingState_v34","seatingState_v33","seatingState_v32","seatingState_v31","seatingState_v30"];
       let changed=false;
       for(const dName of oldDocs){
         try{
           const snap=await db.collection("cet2026").doc(dName).get();
-          if(snap.exists&&snap.data()?.studentRoster){
-            for(const [k,v] of Object.entries(snap.data().studentRoster)){
-              if(v&&v.name){
-                const c=normalizeSeatCode(k,v.dept||v.branch||"");
-                if(!studentRoster[c]?.name){studentRoster[c]=v;changed=true;}
+          if(snap.exists){
+            const data=snap.data();
+            if(data?.absenteeRecords){
+              for(const [ak,av] of Object.entries(data.absenteeRecords)){
+                const c=normalizeSeatCode(ak);
+                if(absenteeRecords[c]===undefined){absenteeRecords[c]=Boolean(av);changed=true;}
+              }
+            }
+            if(data?.studentRoster){
+              for(const [k,v] of Object.entries(data.studentRoster)){
+                if(v&&(v.name||v.absent)){
+                  const c=normalizeSeatCode(k,v.dept||v.branch||"");
+                  if(v.absent&&absenteeRecords[c]===undefined){absenteeRecords[c]=true;changed=true;}
+                  if(!studentRoster[c]?.name&&v.name){studentRoster[c]=v;changed=true;}
+                }
               }
             }
           }
@@ -791,14 +822,27 @@
           if(d.layoutConfig){
             layoutConfig=d.layoutConfig;
             const archAlloc=layoutConfig.allocations?.find(a=>a.dept==="Arch");
-            if(archAlloc&&archAlloc.count===86)archAlloc.count=90;
+            if(archAlloc&&archAlloc.count===90)archAlloc.count=86;
             const b6=layoutConfig.blocks?.find(b=>b.id===6);
             if(b6&&(!b6.cols||b6.cols<8)){b6.cols=8;b6.spec="Column 6 · 13 ft · 8 chairs";}
           }
-          if(d.studentRoster)studentRoster={...studentRoster,...d.studentRoster};
+          if(d.absenteeRecords){
+            for(const [ak,av] of Object.entries(d.absenteeRecords)){
+              const c=normalizeSeatCode(ak);
+              absenteeRecords[c]=Boolean(av);
+            }
+          }
+          if(d.studentRoster){
+            for(const [k,v] of Object.entries(d.studentRoster)){
+              const c=normalizeSeatCode(k,v?.dept||v?.branch||"");
+              if(v?.absent&&absenteeRecords[c]===undefined)absenteeRecords[c]=true;
+              studentRoster[c]={...(studentRoster[c]||{}),...v,absent:absenteeRecords[c]!==undefined?Boolean(absenteeRecords[c]):Boolean(v?.absent)};
+            }
+          }
           if(d.seatOverrides)seatOverrides=d.seatOverrides;
           if(d.convocationProgress)convocationProgress=d.convocationProgress;
           if(d.facultyDesignations)facultyDesignations={...DEFAULT_FACULTY_DESIGNATIONS,...d.facultyDesignations};
+          normalizeAllLoadedRosterKeys();
           buildAndRenderMap();renderLiveProgressBanner();
           if(unlockedRoles.admin){renderAdminConfigTables();populateAdminFacSelect();}
           if(unlockedRoles.faculty)renderFacultyProgressTable();
@@ -811,9 +855,9 @@
     function saveAllCloudStorage(){
       normalizeAllLoadedRosterKeys();
       db.collection("cet2026").doc(ACTIVE_DOC_ID).set({
-        layoutConfig,studentRoster,seatOverrides,convocationProgress,facultyDesignations,
+        layoutConfig,studentRoster,absenteeRecords,seatOverrides,convocationProgress,facultyDesignations,
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-      }).catch(e=>console.error(e));
+      },{merge:true}).catch(e=>console.error(e));
     }
 
     function makeNumberedFacSeat(fCode){
@@ -828,7 +872,7 @@
     function getRowAllocationForBlock(blockId,rowNum,cols){
       const items=[];
       const eeCap=getDeptCap("EE",135),ptdcCap=getDeptCap("PTDC",30),csCap=getDeptCap("CS",159),mcaCap=getDeptCap("MCA",34);
-      const ceCap=getDeptCap("CE",196),meCap=getDeptCap("ME",198),archCap=getDeptCap("Arch",90),mbaCap=getDeptCap("MBA",107),ecCap=getDeptCap("EC",159),phdCap=getDeptCap("PhD",12);
+      const ceCap=getDeptCap("CE",196),meCap=getDeptCap("ME",198),archCap=getDeptCap("Arch",86),mbaCap=getDeptCap("MBA",107),ecCap=getDeptCap("EC",159),phdCap=getDeptCap("PhD",12);
 
       if(rowNum===1){
         const fMap={
@@ -1439,7 +1483,6 @@
       }catch(e){return blob;}
     }
 
-    // Complete Canvas Renderer for Video Export (Draws Stage Steps + Treads + All Text Labels + Camera Boxes)
     function createUnclippedHallBackgroundCanvas(canvasEl,isCen){
       const prevZ=currentZoom;canvasEl.style.transform="scale(1)";
       const cR=canvasEl.getBoundingClientRect(),padX=24,padY=24;
@@ -1448,7 +1491,6 @@
       const ctx=bg.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,fW,fH);
       const toU=(el)=>{if(!el)return null;const r=el.getBoundingClientRect();return{x:(r.left-cR.left)+padX,y:(r.top-cR.top)+padY,w:r.width,h:r.height,cx:(r.left-cR.left+r.width/2)+padX,cy:(r.top-cR.top+r.height/2)+padY};};
 
-      // 1. Entry boxes & Front Area Banner
       document.querySelectorAll(".entry-box").forEach(el=>{
         const p=toU(el);
         if(p){ctx.fillStyle="#e9f2ec";ctx.fillRect(p.x,p.y,p.w,p.h);ctx.strokeStyle="#c7dfd0";ctx.strokeRect(p.x,p.y,p.w,p.h);ctx.fillStyle="#2f5941";ctx.font="bold 10px sans-serif";ctx.textAlign="center";ctx.fillText("ENTRY (29 ft)",p.cx,p.cy+3);}
@@ -1456,7 +1498,6 @@
       const fbEl=toU(document.querySelector(".front-area-banner"));
       if(fbEl){ctx.fillStyle="#5e6b7c";ctx.font="bold 10px sans-serif";ctx.textAlign="center";ctx.fillText("FRONT AREA — 24 ft WIDE — 114 ft LONG · ROWS 3 ft WIDE",fbEl.cx,fbEl.cy+3);}
 
-      // 2. Main Stage + Texts
       const stg=toU(document.getElementById("stageMainRect"));
       if(stg){
         ctx.fillStyle="#192a48";ctx.fillRect(stg.x,stg.y,stg.w,stg.h);
@@ -1466,7 +1507,6 @@
         ctx.fillStyle="#b0bfd8";ctx.font="bold 8.5px sans-serif";ctx.fillText("MAIN STAGE",stg.cx,stg.y+stg.h-8);
       }
 
-      // 3. Certificate Stations + Titles
       (isCen?["centralStationDesk"]:["station1Desk","station2Desk"]).forEach(id=>{
         const d=toU(document.getElementById(id));
         if(d&&d.w>0){
@@ -1476,7 +1516,6 @@
         }
       });
 
-      // 4. Left, Right & Central Return Stage Steps + Treads + Label
       ["leftStageSteps","rightStageSteps"].forEach(id=>{
         const p=toU(document.getElementById(id));
         if(p){
@@ -1491,7 +1530,6 @@
         ctx.fillStyle="#5c708a";ctx.font="bold 8px sans-serif";ctx.textAlign="left";ctx.fillText("RETURN STEPS",retStp.x+retStp.w+6,retStp.cy+3);
       }
 
-      // 5. Passages, Main Door, Camera Squares, Row Numbers & Block Headers
       document.querySelectorAll(".passage-col,.mid-cross-passage").forEach(el=>{
         const p=toU(el);if(p){ctx.fillStyle=el.classList.contains("center-6ft")?"#ede8da":"#f4f1e8";ctx.fillRect(p.x,p.y,p.w,p.h);}
       });
@@ -1508,7 +1546,6 @@
         const p=toU(el);if(p){ctx.fillStyle="#1e293b";ctx.font="bold 9px sans-serif";ctx.textAlign="center";ctx.fillText(el.textContent.trim(),p.cx,p.cy+3);}
       });
 
-      // 6. All Seats + Text
       ctx.font="bold 5.5px sans-serif";ctx.textAlign="center";
       Object.values(seatsByCoord).forEach(s=>{
         if(s.type==="empty"||s.statusOverride==="empty")return;
@@ -1700,7 +1737,7 @@
 
     function renderFacultyProgressTable(){
       const tb=document.querySelector("#facultyProgressTable tbody");tb.innerHTML="";
-      const d={1:"UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty",2:"PhD (1–9), CS (1–159), MCA (1–34)",3:"PhD (10–12), CE (1–196)",4:"PG Toppers (9–1), ME (1–198)",5:"PG Toppers (18–10), Arch (1–90), MBA (1–107), Faculty",6:"PG Toppers (25–19), EC (1–159), Faculty"};
+      const d={1:"UG Toppers (1–8), EE (1–135), PTDC (1–30), Faculty",2:"PhD (1–9), CS (1–159), MCA (1–34)",3:"PhD (10–12), CE (1–196)",4:"PG Toppers (9–1), ME (1–198)",5:"PG Toppers (18–10), Arch (1–86), MBA (1–107), Faculty",6:"PG Toppers (25–19), EC (1–159), Faculty"};
       for(let b=1;b<=6;b++){
         const p=convocationProgress[b]||{status:"Pending",time:""},tr=document.createElement("tr");
         tr.innerHTML=`<td><b>Block ${b}</b></td><td>${d[b]}</td><td><select id="prog-status-${b}" class="form-control" style="max-width:160px;margin:0"><option value="Pending" ${p.status==='Pending'?'selected':''}>Pending</option><option value="In Progress" ${p.status==='In Progress'?'selected':''}>In Progress</option><option value="Completed" ${p.status==='Completed'?'selected':''}>Completed</option></select></td><td><input id="prog-time-${b}" type="text" value="${p.time||''}" placeholder="11:30 AM"/></td>`;
@@ -1723,15 +1760,28 @@
         if(sq&&!(s.code.toUpperCase().includes(sq)||nm.toUpperCase().includes(sq)||rg.toUpperCase().includes(sq)))return;
         tot++;if(r.absent)abs++;
         const tr=document.createElement("tr");
-        tr.innerHTML=`<td><b>${s.code}</b></td><td>B${s.block}·R${s.row}</td><td>${nm||'<span style="color:#94a3b8">Unassigned</span>'}</td><td>${rg||'-'}</td><td>${r.branch||s.dept}</td><td><label style="cursor:pointer;font-weight:600;color:${r.absent?'#ea580c':'#16a34a'}"><input type="checkbox" ${r.absent?'checked':''} onchange="toggleStudentAbsent('${s.code}',this.checked)"/> ${r.absent?'Absent':'Present'}</label></td>`;
+        tr.innerHTML=`<td><b>${s.code}</b></td><td>B${s.block}·R${s.row}</td><td>${nm||'<span style="color:#94a3b8">Unassigned</span>'}</td><td>${rg||'-'}</td><td>${r.branch||s.dept}</td><td><label style="cursor:pointer;font-weight:600;color:${r.absent?'#ea580c':'#16a34a'}"><input type="checkbox" ${r.absent?'checked':''} onchange="toggleStudentAbsent('${s.code}',this.checked)"/> ${r.absent?'Absent (Permanent)':'Present'}</label></td>`;
         tb.appendChild(tr);
       });
       document.getElementById("regStatsSummary").textContent=`Showing ${tot} seats · ${abs} marked Absent`;
     }
+
+    // Permanently saves absentee status to both Firebase Cloud and LocalStorage until explicitly changed in Registration Login
     function toggleStudentAbsent(code,isA){
-      const c=normalizeSeatCode(code),ex=getRosterEntry(c)||{name:"Unassigned Student",regNo:"",branch:"",stream:""};
-      ex.absent=isA;studentRoster[c]=ex;saveAllCloudStorage();renderRegistrationTable();buildAndRenderMap();
+      const c=normalizeSeatCode(code);
+      absenteeRecords[c]=Boolean(isA);
+      try{localStorage.setItem("cet2026_permanent_absentees",JSON.stringify(absenteeRecords));}catch(e){}
+      const ex=getRosterEntry(c)||{name:"Unassigned Student",regNo:"",branch:"",stream:""};
+      ex.absent=Boolean(isA);
+      studentRoster[c]=ex;
+      db.collection("cet2026").doc(ACTIVE_DOC_ID).set({
+        absenteeRecords:{[c]:Boolean(isA)},
+        studentRoster:{[c]:ex},
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true}).catch(()=>saveAllCloudStorage());
+      renderRegistrationTable();buildAndRenderMap();
     }
+
     function downloadRegistrationReportPDF(){
       const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"portrait",unit:"pt",format:"a4"});
       doc.setFontSize(15);doc.text("CET Graduation Day 2026 — Registration & Absentees Report",40,40);
@@ -1791,11 +1841,14 @@
             if(canon){
               if(name){
                 const pr=getRosterEntry(canon);
+                const permAbs=absenteeRecords[canon]!==undefined?Boolean(absenteeRecords[canon]):Boolean(pr?.absent);
                 if(rawS)delete studentRoster[rawS.toUpperCase()];
                 delete studentRoster[canon.toUpperCase()];
-                studentRoster[canon]={name,regNo,branch:branch||BRANCH_META[rDept]?.name||rDept,stream,absent:pr?.absent||false};
+                studentRoster[canon]={name,regNo,branch:branch||BRANCH_META[rDept]?.name||rDept,stream,absent:permAbs};
                 cnt++;
-              }else delete studentRoster[canon];
+              }else if(!absenteeRecords[canon]){
+                delete studentRoster[canon];
+              }
             }
           });
         });
@@ -1805,10 +1858,18 @@
     }
     function autoFillSelectedDepartmentSample(){
       const codes=getOrderedSeatCodesForDept(selectedDeptForExcel),defB=BRANCH_META[selectedDeptForExcel]?.name||selectedDeptForExcel;
-      codes.forEach((c,i)=>{studentRoster[c]={name:`${selectedDeptForExcel} Student ${i+1}`,regNo:`CET26${selectedDeptForExcel.toUpperCase()}${String(i+1).padStart(3,"0")}`,branch:defB,stream:c.startsWith("TOP UG")?"UG":(c.startsWith("TOP PG")?"PG":""),absent:false};});
+      codes.forEach((c,i)=>{
+        const permAbs=absenteeRecords[c]!==undefined?Boolean(absenteeRecords[c]):false;
+        studentRoster[c]={name:`${selectedDeptForExcel} Student ${i+1}`,regNo:`CET26${selectedDeptForExcel.toUpperCase()}${String(i+1).padStart(3,"0")}`,branch:defB,stream:c.startsWith("TOP UG")?"UG":(c.startsWith("TOP PG")?"PG":""),absent:permAbs};
+      });
       saveAllCloudStorage();buildAndRenderMap();alert(`Auto-filled ${codes.length} seats for ${selectedDeptForExcel}!`);
     }
-    function clearAllStudents(){if(!confirm("Clear all student assignments from all seats?"))return;studentRoster={};saveAllCloudStorage();buildAndRenderMap();}
+    function clearAllStudents(){
+      if(!confirm("Clear all student assignments from all seats?"))return;
+      studentRoster={};absenteeRecords={};
+      try{localStorage.removeItem("cet2026_permanent_absentees");}catch(e){}
+      saveAllCloudStorage();buildAndRenderMap();
+    }
     function applySeatStatusByInput(){
       const rk=document.getElementById("statusSeatInput").value.trim(),st=document.getElementById("statusTypeSelect").value;if(!rk)return;
       const c=normalizeSeatCode(rk).toUpperCase();
